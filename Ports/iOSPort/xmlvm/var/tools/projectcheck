@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# find XMLVMHOME
+pushd >/dev/null `dirname $0`
+cd ../..
+export XMLVMHOME=`pwd`
+popd >/dev/null
+
+PLUGINS=var/tools/projectcheck.d
+
+IOSDEMO=`find demo/iphone -name project.properties | grep nbproject/project.properties | sed -e 's#/nbproject/project.properties##g'`
+ANDDEMO=`find demo/android -name project.properties | grep nbproject/project.properties | sed -e 's#/nbproject/project.properties##g'`
+IOSTUTO=`find tutorial/ios -name project.properties | grep nbproject/project.properties | sed -e 's#/nbproject/project.properties##g'`
+ANDTUTO=`find tutorial/android -name project.properties | grep nbproject/project.properties | sed -e 's#/nbproject/project.properties##g'`
+export IPHONE_PROJECTS="$IOSDEMO $IOSTUTO"
+export ANDROID_PROJECTS="$ANDDEMO $ANDTUTO"
+
+# Useful functions
+function ask () {
+    echo -n "$1 [Y/n/q] "
+    local __FULL
+    read __FULL
+	if [ -z "$__FULL" ] ; then return 0; fi
+	if [ "`expr $__FULL : [qQ]`" == "1" ] ; then
+		exit 1
+	fi
+    return `expr $__FULL : [^yY]`
+}
+export -f ask
+
+# Execute all plugins
+for i in `ls "$XMLVMHOME/$PLUGINS"` ; do
+	cd "$XMLVMHOME"
+	NAME=`echo $i | sed -e 's/^[0123456789]*-//g' | sed -e 's/_/ /g'`
+	if ask "Do you want to perform '$NAME'?" ; then
+		echo "Executing '$NAME'"
+		bash "$XMLVMHOME/$PLUGINS/$i"
+		if [ "$?" != 0 ] ; then
+			echo "Error while executing $i"
+			exit 1
+		fi
+	fi
+done
+

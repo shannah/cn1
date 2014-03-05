@@ -1,0 +1,92 @@
+#ifndef __ORG_XMLVM_IPHONE_UINAVIGATIONBAR__
+#define __ORG_XMLVM_IPHONE_UINAVIGATIONBAR__
+
+#include "xmlvm.h"
+
+// Preprocessor constants for interfaces:
+// Implemented interfaces:
+// Super Class:
+#include "org_xmlvm_iphone_UIView.h"
+
+// Circular references:
+#ifndef XMLVM_FORWARD_DECL_java_util_ArrayList
+#define XMLVM_FORWARD_DECL_java_util_ArrayList
+XMLVM_FORWARD_DECL(java_util_ArrayList)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_CGRect
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_CGRect
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_CGRect)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UIColor
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UIColor
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_UIColor)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationBarDelegate
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationBarDelegate
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_UINavigationBarDelegate)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationController
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationController
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_UINavigationController)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationItem
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationItem
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_UINavigationItem)
+#endif
+// Class declarations for org.xmlvm.iphone.UINavigationBar
+XMLVM_DEFINE_CLASS(org_xmlvm_iphone_UINavigationBar, 13, XMLVM_ITABLE_SIZE_org_xmlvm_iphone_UINavigationBar)
+
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationBar;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationBar_1ARRAY;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationBar_2ARRAY;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationBar_3ARRAY;
+//XMLVM_BEGIN_DECLARATIONS
+#define __ADDITIONAL_INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationBar
+//XMLVM_END_DECLARATIONS
+
+#define __INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationBar \
+    __INSTANCE_FIELDS_org_xmlvm_iphone_UIView; \
+    struct { \
+        JAVA_OBJECT nbcontroller_; \
+        __ADDITIONAL_INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationBar \
+    } org_xmlvm_iphone_UINavigationBar
+
+struct org_xmlvm_iphone_UINavigationBar {
+    __TIB_DEFINITION_org_xmlvm_iphone_UINavigationBar* tib;
+    struct {
+        __INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationBar;
+    } fields;
+};
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationBar
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationBar
+typedef struct org_xmlvm_iphone_UINavigationBar org_xmlvm_iphone_UINavigationBar;
+#endif
+
+#define XMLVM_VTABLE_SIZE_org_xmlvm_iphone_UINavigationBar 13
+
+void __INIT_org_xmlvm_iphone_UINavigationBar();
+void __INIT_IMPL_org_xmlvm_iphone_UINavigationBar();
+void __DELETE_org_xmlvm_iphone_UINavigationBar(void* me, void* client_data);
+void __INIT_INSTANCE_MEMBERS_org_xmlvm_iphone_UINavigationBar(JAVA_OBJECT me, int derivedClassWillRegisterFinalizer);
+JAVA_OBJECT __NEW_org_xmlvm_iphone_UINavigationBar();
+JAVA_OBJECT __NEW_INSTANCE_org_xmlvm_iphone_UINavigationBar();
+void org_xmlvm_iphone_UINavigationBar___INIT___(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationBar___INIT____org_xmlvm_iphone_CGRect(JAVA_OBJECT me, JAVA_OBJECT n1);
+void org_xmlvm_iphone_UINavigationBar_pushNavigationItem___org_xmlvm_iphone_UINavigationItem_boolean(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_BOOLEAN n2);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationBar_popNavigationItemAnimated___boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1);
+void org_xmlvm_iphone_UINavigationBar_setItems___java_util_ArrayList(JAVA_OBJECT me, JAVA_OBJECT n1);
+void org_xmlvm_iphone_UINavigationBar_setItems___java_util_ArrayList_boolean(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_BOOLEAN n2);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationBar_getDelegate__(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationBar_setDelegate___org_xmlvm_iphone_UINavigationBarDelegate(JAVA_OBJECT me, JAVA_OBJECT n1);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationBar_getTopItem__(JAVA_OBJECT me);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationBar_getBackitem__(JAVA_OBJECT me);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationBar_getItems__(JAVA_OBJECT me);
+JAVA_INT org_xmlvm_iphone_UINavigationBar_getBarStyle__(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationBar_setBarStyle___int(JAVA_OBJECT me, JAVA_INT n1);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationBar_getTintColor__(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationBar_setTintColor___org_xmlvm_iphone_UIColor(JAVA_OBJECT me, JAVA_OBJECT n1);
+JAVA_BOOLEAN org_xmlvm_iphone_UINavigationBar_isTranslucent__(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationBar_setTranslucent___boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1);
+void org_xmlvm_iphone_UINavigationBar_updateViews__(JAVA_OBJECT me);
+
+#endif

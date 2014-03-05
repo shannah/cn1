@@ -1,0 +1,76 @@
+<!--
+ * Copyright (c) 2002-2011 by XMLVM.org
+ *
+ * Project Info:  http://www.xmlvm.org
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+-->
+
+<project name="xmlvm" default="gen-html" basedir=".">
+	<property name="dist.universalfile" value="../../dist/universalfile"/>
+	<property name="dist.generator" value="../../dist/tutorial-generator"/>
+	<property name="html-output" value="dist/html/tutorial" />
+	<path id="classpath">
+		<pathelement location="../../lib/jdom.jar" />
+	</path>
+
+	<target name="gen-html" depends="compile-generator">
+		<echo message="Generating tutorial HTML" />
+		<delete dir="../../${html-output}" failonerror="false" />
+		<java classname="org.xmlvm.util.TutorialWebGenerator">
+			<arg value="--overview=tutorial/doc/overview.xml" />
+			<arg value="--output=${html-output}" />
+			<arg value="--template=tutorial/doc/template.html" />
+			<classpath refid="classpath" />
+			<classpath location="${dist.generator}" />
+			<classpath location="${dist.universalfile}" />
+		</java>
+		<echo message="Copying required resources" />
+		<copy todir="../../${html-output}" flatten="false">
+			<fileset dir="website" >
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<echo message="Tutorial HTML stored in: ${html-output}" />
+	</target>
+	
+	<target name="compile-generator" depends="build-universalfile-lib">
+		<echo message="Compiling tutorial site generator" />
+		<mkdir dir="${dist.generator}" />
+		<javac srcdir="../../src/xmlvm/org/xmlvm/util" destdir="${dist.generator}">
+			<include name="TutorialWebGenerator.java" />
+			<classpath refid="classpath" />
+			<classpath location="${dist.universalfile}" />
+		</javac>
+	</target>
+	
+	<target name="build-universalfile-lib">
+		<echo message="Compiling universal file API" />
+		<mkdir dir="${dist.universalfile}" />
+		<javac srcdir="../../src/xmlvm/org/xmlvm" destdir="${dist.universalfile}">
+			<include name="Log.java" />
+			<include name="util/FileUtil.java" />
+			<include name="util/universalfile/*.java" />
+		</javac>      
+	</target>
+
+	<target name="clean">
+		<delete dir="${dist.universalfile}" failonerror="false" />
+		<delete dir="${dist.generator}" failonerror="false" />
+		<delete dir="../../${html-output}" failonerror="false" />
+	</target>
+
+</project>

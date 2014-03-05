@@ -1,0 +1,259 @@
+Index: src/xmlvm2c/compat-lib/java/xmlvm.c
+===================================================================
+--- src/xmlvm2c/compat-lib/java/xmlvm.c	(revision 2133)
++++ src/xmlvm2c/compat-lib/java/xmlvm.c	(working copy)
+@@ -45,9 +45,9 @@
+ #include "uthash.h"
+ 
+ #define HASH_ADD_JAVA_LONG(head,javalongfield,add) \
+-    HASH_ADD(hh,head,javalongfield,sizeof(JAVA_LONG),add)
++HASH_ADD(hh,head,javalongfield,sizeof(JAVA_LONG),add)
+ #define HASH_FIND_JAVA_LONG(head,findjavalong,out) \
+-    HASH_FIND(hh,head,findjavalong,sizeof(JAVA_LONG),out)
++HASH_FIND(hh,head,findjavalong,sizeof(JAVA_LONG),out)
+ 
+ // A map of type UTHash with a key of JAVA_LONG and value of JAVA_OBJECT
+ struct hash_struct {
+@@ -70,11 +70,11 @@
+     threadToStackTraceMapPtr = malloc(sizeof(struct hash_struct**));
+     struct hash_struct* map = NULL; // This must be set to NULL according to the UTHash documentation
+     *threadToStackTraceMapPtr = map;
+-
++    
+     JAVA_LONG nativeThreadId = (JAVA_LONG) pthread_self();
+     createStackForNewThread(nativeThreadId);
+ #endif
+-
++    
+ #ifndef XMLVM_NO_GC
+ #ifdef DEBUG
+     setenv("GC_PRINT_STATS", "1", 1);
+@@ -82,13 +82,13 @@
+     GC_INIT();
+     GC_enable_incremental();
+ #endif
+-
++    
+     staticInitializerController = XMLVM_MALLOC(sizeof(XMLVM_STATIC_INITIALIZER_CONTROLLER));
+     staticInitializerController->initMutex = XMLVM_MALLOC(sizeof(pthread_mutex_t));
+     if (0 != pthread_mutex_init(staticInitializerController->initMutex, NULL)) {
+         XMLVM_ERROR("Error initializing static initializer mutex", __FILE__, __FUNCTION__, __LINE__);
+     }
+-
++    
+     __INIT_org_xmlvm_runtime_XMLVMArray();
+     java_lang_Class_initNativeLayer__();
+     __INIT_java_lang_System();
+@@ -112,18 +112,18 @@
+ void xmlvm_destroy(java_lang_Thread* mainThread)
+ {
+     java_lang_Thread_threadTerminating__(mainThread);
+-
++    
+ #ifdef XMLVM_ENABLE_STACK_TRACES
+     JAVA_LONG nativeThreadId = (JAVA_LONG) pthread_self();
+     destroyStackForExitingThread(nativeThreadId);
+ #endif
+-
++    
+     // Unregister the current thread.  Only an explicitly registered
+     // thread (i.e. for which GC_register_my_thread() returns GC_SUCCESS)
+     // is allowed (and required) to call this function.  (As a special
+     // exception, it is also allowed to once unregister the main thread.)
+     GC_unregister_my_thread();
+-
++    
+     // Call pthread_exit(0) so that the main thread does not terminate until
+     // the other threads have finished
+     pthread_exit(0);
+@@ -139,7 +139,7 @@
+         printf("Error locking mutex in %s: %i\n", className, result);
+         exit(1);
+     }
+-//    else { printf("SUCCESSFUL mutex lock in %s\n", className); }
++    //    else { printf("SUCCESSFUL mutex lock in %s\n", className); }
+ }
+ 
+ /**
+@@ -152,7 +152,7 @@
+         printf("Error unlocking mutex in %s: %i\n", className, result);
+         exit(1);
+     }
+-//    else { printf("SUCCESSFUL mutex unlock in %s\n", className); }
++    //    else { printf("SUCCESSFUL mutex unlock in %s\n", className); }
+ }
+ 
+ /**
+@@ -277,18 +277,40 @@
+ 
+ int XMLVM_ISA(JAVA_OBJECT obj, JAVA_OBJECT clazz)
+ {
+-    int i;
+-    __TIB_DEFINITION_TEMPLATE* tib1;
+     if (obj == JAVA_NULL) {
+         return 0;
+     }
+-    tib1 = (__TIB_DEFINITION_TEMPLATE*) ((java_lang_Object*) obj)->tib;
++    
++    int dimension_tib1 = 0;
++    int dimension_tib2 = 0;
++    __TIB_DEFINITION_TEMPLATE* tib1 = (__TIB_DEFINITION_TEMPLATE*) ((java_lang_Object*) obj)->tib;
+     __TIB_DEFINITION_TEMPLATE* tib2 = (__TIB_DEFINITION_TEMPLATE*) ((java_lang_Class*) clazz)->fields.java_lang_Class.tib_;
++    
++    if (tib1 == &__TIB_org_xmlvm_runtime_XMLVMArray) {
++        java_lang_Class* clazz = ((org_xmlvm_runtime_XMLVMArray*) obj)->fields.org_xmlvm_runtime_XMLVMArray.type_;
++        tib1 = clazz->fields.java_lang_Class.tib_;
++    }
++    
++    while (tib1->baseType != JAVA_NULL) {
++        tib1 = ((java_lang_Class*) tib1->baseType)->fields.java_lang_Class.tib_;
++        dimension_tib1++;
++    }
++    
++    while (tib2->baseType != JAVA_NULL) {
++        tib2 = ((java_lang_Class*) tib2->baseType)->fields.java_lang_Class.tib_;
++        dimension_tib2++;
++    }
++    
++    if (dimension_tib1 < dimension_tib2) {
++        return 0;
++    }
++    
+     while (tib1 != JAVA_NULL) {
+         if (tib1 == tib2) {
+             return 1;
+         }
+         // Check all implemented interfaces
++        int i;
+         for (i = 0; i < tib1->numImplementedInterfaces; i++) {
+             if (tib1->implementedInterfaces[0][i] == tib2) {
+                 return 1;
+@@ -302,17 +324,18 @@
+ //---------------------------------------------------------------------------------------------
+ // Stack traces
+ 
+-#ifdef XMLVM_ENABLE_STACK_TRACES
++#if 0
++//#ifdef XMLVM_ENABLE_STACK_TRACES
+ 
+ void createStackForNewThread(JAVA_LONG threadId)
+ {
+     struct hash_struct *s = malloc(sizeof(struct hash_struct));
+     s->key = threadId;
+-
++    
+     XMLVM_STACK_TRACE_CURRENT* newStack = malloc(sizeof(XMLVM_STACK_TRACE_CURRENT));
+     newStack->stackSize = 0;
+     newStack->topOfStack = NULL;
+-
++    
+     s->value = newStack;
+     HASH_ADD_JAVA_LONG((struct hash_struct *)*threadToStackTraceMapPtr, key, s);
+ }
+@@ -346,20 +369,20 @@
+ void xmlvmEnterMethod(XMLVM_STACK_TRACE_CURRENT* threadStack, const char* className, const char* methodName, const char* fileName)
+ {
+     //printf("Entering method %s\n", className);
+-
++    
+     XMLVM_STACK_TRACE_ELEMENT* newLocationElement = malloc(sizeof(XMLVM_STACK_TRACE_ELEMENT));
+     newLocationElement->className = className;
+     newLocationElement->methodName = methodName;
+     newLocationElement->fileName = fileName;
+     newLocationElement->lineNumber = -2;
+-
++    
+     XMLVM_STACK_TRACE_LINK* link = malloc(sizeof(XMLVM_STACK_TRACE_LINK));
+     link->nextLink = threadStack->topOfStack;
+     if (threadStack->topOfStack != NULL) {
+         link->element = threadStack->topOfStack->currentLocation;
+     }
+     link->currentLocation = newLocationElement;
+-
++    
+     // Push what was the current location onto the stack and set the new current location
+     threadStack->stackSize++;
+     threadStack->topOfStack = link;
+@@ -368,7 +391,7 @@
+ void xmlvmSourcePosition(XMLVM_STACK_TRACE_CURRENT* threadStack, const char* fileName, int lineNumber)
+ {
+     //printf("Source position update %i\n", lineNumber);
+-
++    
+     threadStack->topOfStack->currentLocation->fileName = fileName;
+     threadStack->topOfStack->currentLocation->lineNumber = lineNumber;
+ }
+@@ -376,11 +399,11 @@
+ void xmlvmExitMethod(XMLVM_STACK_TRACE_CURRENT* threadStack)
+ {
+     //printf("Exiting method\n");
+-
++    
+     XMLVM_STACK_TRACE_LINK* linkToDestroy = threadStack->topOfStack;
+     threadStack->topOfStack = linkToDestroy->nextLink;
+     threadStack->stackSize--;
+-
++    
+     free(linkToDestroy->currentLocation);
+     free(linkToDestroy);
+ }
+@@ -444,36 +467,36 @@
+     java_lang_Thread* curThread;
+     curThread = (java_lang_Thread*) java_lang_Thread_currentThread__();
+     JAVA_OBJECT exception = curThread->fields.java_lang_Thread.xmlvmException_;
+-
++    
+     JAVA_OBJECT thread_name;
+ #ifdef XMLVM_VTABLE_IDX_java_lang_Thread_getName__
+     thread_name =  ((Func_OO) ((java_lang_Thread*) curThread)->tib->vtable[XMLVM_VTABLE_IDX_java_lang_Thread_getName__])(curThread);
+ #else
+     thread_name = java_lang_Thread_getName__(curThread);
+ #endif
+-
++    
+ #ifdef XMLVM_ENABLE_STACK_TRACES
+-
++    
+     printf("Exception in thread \"%s\" ",
+-            xmlvm_java_string_to_const_char(thread_name));
++           xmlvm_java_string_to_const_char(thread_name));
+     java_lang_Throwable_printStackTrace__(exception);
+-
++    
+ #else
+-
++    
+     JAVA_OBJECT message;
+ #ifdef XMLVM_VTABLE_IDX_java_lang_Throwable_getMessage__
+     message = ((Func_OO) ((java_lang_Throwable*) exception)->tib->vtable[XMLVM_VTABLE_IDX_java_lang_Throwable_getMessage__])(exception);
+ #else
+     message = java_lang_Throwable_getMessage__(exception);
+ #endif
+-
++    
+     JAVA_OBJECT exception_class;
+ #ifdef XMLVM_VTABLE_IDX_java_lang_Object_getClass__
+     exception_class = ((Func_OO) ((java_lang_Object*) exception)->tib->vtable[XMLVM_VTABLE_IDX_java_lang_Object_getClass__])(exception);
+ #else
+     exception_class = java_lang_Object_getClass__(exception);
+ #endif
+-
++    
+     JAVA_OBJECT class_name;
+ #ifdef XMLVM_VTABLE_IDX_java_lang_Class_getName__
+     class_name = ((Func_OO) ((java_lang_Class*) exception_class)->tib->vtable[XMLVM_VTABLE_IDX_java_lang_Class_getName__])(exception_class);
+@@ -482,10 +505,10 @@
+ #endif
+     
+     printf("Exception in thread \"%s\" %s: %s\n",
+-            xmlvm_java_string_to_const_char(thread_name),
+-            xmlvm_java_string_to_const_char(class_name),
+-            xmlvm_java_string_to_const_char(message));
+-
++           xmlvm_java_string_to_const_char(thread_name),
++           xmlvm_java_string_to_const_char(class_name),
++           xmlvm_java_string_to_const_char(message));
++    
+ #endif
+ }
+ 

@@ -1,0 +1,77 @@
+#ifndef __ORG_XMLVM_IPHONE_CLLOCATIONMANAGERDELEGATE__
+#define __ORG_XMLVM_IPHONE_CLLOCATIONMANAGERDELEGATE__
+
+#include "xmlvm.h"
+
+// Preprocessor constants for interfaces:
+// Implemented interfaces:
+// Super Class:
+#include "java_lang_Object.h"
+
+// Circular references:
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLHeading
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLHeading
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_CLHeading)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLLocation
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLLocation
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_CLLocation)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLLocationManager
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLLocationManager
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_CLLocationManager)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLRegion
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLRegion
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_CLRegion)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_NSError
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_NSError
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_NSError)
+#endif
+// Class declarations for org.xmlvm.iphone.CLLocationManagerDelegate
+XMLVM_DEFINE_CLASS(org_xmlvm_iphone_CLLocationManagerDelegate, 6, XMLVM_ITABLE_SIZE_org_xmlvm_iphone_CLLocationManagerDelegate)
+
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_CLLocationManagerDelegate;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_CLLocationManagerDelegate_1ARRAY;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_CLLocationManagerDelegate_2ARRAY;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_CLLocationManagerDelegate_3ARRAY;
+//XMLVM_BEGIN_DECLARATIONS
+#define __ADDITIONAL_INSTANCE_FIELDS_org_xmlvm_iphone_CLLocationManagerDelegate
+//XMLVM_END_DECLARATIONS
+
+#define __INSTANCE_FIELDS_org_xmlvm_iphone_CLLocationManagerDelegate \
+    __INSTANCE_FIELDS_java_lang_Object; \
+    struct { \
+        __ADDITIONAL_INSTANCE_FIELDS_org_xmlvm_iphone_CLLocationManagerDelegate \
+    } org_xmlvm_iphone_CLLocationManagerDelegate
+
+struct org_xmlvm_iphone_CLLocationManagerDelegate {
+    __TIB_DEFINITION_org_xmlvm_iphone_CLLocationManagerDelegate* tib;
+    struct {
+        __INSTANCE_FIELDS_org_xmlvm_iphone_CLLocationManagerDelegate;
+    } fields;
+};
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLLocationManagerDelegate
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_CLLocationManagerDelegate
+typedef struct org_xmlvm_iphone_CLLocationManagerDelegate org_xmlvm_iphone_CLLocationManagerDelegate;
+#endif
+
+#define XMLVM_VTABLE_SIZE_org_xmlvm_iphone_CLLocationManagerDelegate 6
+
+void __INIT_org_xmlvm_iphone_CLLocationManagerDelegate();
+void __INIT_IMPL_org_xmlvm_iphone_CLLocationManagerDelegate();
+void __DELETE_org_xmlvm_iphone_CLLocationManagerDelegate(void* me, void* client_data);
+void __INIT_INSTANCE_MEMBERS_org_xmlvm_iphone_CLLocationManagerDelegate(JAVA_OBJECT me, int derivedClassWillRegisterFinalizer);
+JAVA_OBJECT __NEW_org_xmlvm_iphone_CLLocationManagerDelegate();
+JAVA_OBJECT __NEW_INSTANCE_org_xmlvm_iphone_CLLocationManagerDelegate();
+void org_xmlvm_iphone_CLLocationManagerDelegate___INIT___(JAVA_OBJECT me);
+void org_xmlvm_iphone_CLLocationManagerDelegate_didUpdateToLocation___org_xmlvm_iphone_CLLocationManager_org_xmlvm_iphone_CLLocation_org_xmlvm_iphone_CLLocation(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_OBJECT n2, JAVA_OBJECT n3);
+void org_xmlvm_iphone_CLLocationManagerDelegate_didFailWithError___org_xmlvm_iphone_CLLocationManager_org_xmlvm_iphone_NSError(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_OBJECT n2);
+void org_xmlvm_iphone_CLLocationManagerDelegate_didUpdateHeading___org_xmlvm_iphone_CLLocationManager_org_xmlvm_iphone_CLHeading(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_OBJECT n2);
+JAVA_BOOLEAN org_xmlvm_iphone_CLLocationManagerDelegate_locationManagerShouldDisplayHeadingCalibration___org_xmlvm_iphone_CLLocationManager(JAVA_OBJECT me, JAVA_OBJECT n1);
+void org_xmlvm_iphone_CLLocationManagerDelegate_didEnterRegion___org_xmlvm_iphone_CLLocationManager_org_xmlvm_iphone_CLRegion(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_OBJECT n2);
+void org_xmlvm_iphone_CLLocationManagerDelegate_didExitRegion___org_xmlvm_iphone_CLLocationManager_org_xmlvm_iphone_CLRegion(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_OBJECT n2);
+void org_xmlvm_iphone_CLLocationManagerDelegate_monitoringDidFailForRegion___org_xmlvm_iphone_CLLocationManager_org_xmlvm_iphone_CLRegion_org_xmlvm_iphone_NSError(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_OBJECT n2, JAVA_OBJECT n3);
+
+#endif

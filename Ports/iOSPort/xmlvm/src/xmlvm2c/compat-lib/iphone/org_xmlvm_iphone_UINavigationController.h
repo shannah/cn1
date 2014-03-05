@@ -1,0 +1,105 @@
+#ifndef __ORG_XMLVM_IPHONE_UINAVIGATIONCONTROLLER__
+#define __ORG_XMLVM_IPHONE_UINAVIGATIONCONTROLLER__
+
+#include "xmlvm.h"
+
+// Preprocessor constants for interfaces:
+// Implemented interfaces:
+// Super Class:
+#include "org_xmlvm_iphone_UIViewController.h"
+
+// Circular references:
+#ifndef XMLVM_FORWARD_DECL_java_util_ArrayList
+#define XMLVM_FORWARD_DECL_java_util_ArrayList
+XMLVM_FORWARD_DECL(java_util_ArrayList)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_CGRect
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_CGRect
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_CGRect)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationBar
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationBar
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_UINavigationBar)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationControllerDelegate
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationControllerDelegate
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_UINavigationControllerDelegate)
+#endif
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UIToolbar
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UIToolbar
+XMLVM_FORWARD_DECL(org_xmlvm_iphone_UIToolbar)
+#endif
+// Class declarations for org.xmlvm.iphone.UINavigationController
+XMLVM_DEFINE_CLASS(org_xmlvm_iphone_UINavigationController, 14, XMLVM_ITABLE_SIZE_org_xmlvm_iphone_UINavigationController)
+
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationController;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationController_1ARRAY;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationController_2ARRAY;
+extern JAVA_OBJECT __CLASS_org_xmlvm_iphone_UINavigationController_3ARRAY;
+//XMLVM_BEGIN_DECLARATIONS
+#define __ADDITIONAL_INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationController
+
+void org_xmlvm_iphone_UINavigationController_INTERNAL_CONSTRUCTOR(JAVA_OBJECT me, NSObject* wrappedCObj);
+//XMLVM_END_DECLARATIONS
+
+#define __INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationController \
+    __INSTANCE_FIELDS_org_xmlvm_iphone_UIViewController; \
+    struct { \
+        __ADDITIONAL_INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationController \
+    } org_xmlvm_iphone_UINavigationController
+
+struct org_xmlvm_iphone_UINavigationController {
+    __TIB_DEFINITION_org_xmlvm_iphone_UINavigationController* tib;
+    struct {
+        __INSTANCE_FIELDS_org_xmlvm_iphone_UINavigationController;
+    } fields;
+};
+#ifndef XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationController
+#define XMLVM_FORWARD_DECL_org_xmlvm_iphone_UINavigationController
+typedef struct org_xmlvm_iphone_UINavigationController org_xmlvm_iphone_UINavigationController;
+#endif
+
+#define XMLVM_VTABLE_SIZE_org_xmlvm_iphone_UINavigationController 14
+#define XMLVM_VTABLE_IDX_org_xmlvm_iphone_UINavigationController_requestInternalFrame__ 10
+#define XMLVM_VTABLE_IDX_org_xmlvm_iphone_UINavigationController_setDelegate___org_xmlvm_iphone_UINavigationControllerDelegate 13
+#define XMLVM_VTABLE_IDX_org_xmlvm_iphone_UINavigationController_getDelegate__ 12
+#define XMLVM_VTABLE_IDX_org_xmlvm_iphone_UINavigationController_loadView__ 9
+#define XMLVM_VTABLE_IDX_org_xmlvm_iphone_UINavigationController_updateViews__ 11
+
+void __INIT_org_xmlvm_iphone_UINavigationController();
+void __INIT_IMPL_org_xmlvm_iphone_UINavigationController();
+void __DELETE_org_xmlvm_iphone_UINavigationController(void* me, void* client_data);
+void __INIT_INSTANCE_MEMBERS_org_xmlvm_iphone_UINavigationController(JAVA_OBJECT me, int derivedClassWillRegisterFinalizer);
+JAVA_OBJECT __NEW_org_xmlvm_iphone_UINavigationController();
+JAVA_OBJECT __NEW_INSTANCE_org_xmlvm_iphone_UINavigationController();
+void org_xmlvm_iphone_UINavigationController___INIT___(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationController___INIT____org_xmlvm_iphone_UIViewController(JAVA_OBJECT me, JAVA_OBJECT n1);
+// Vtable index: 10
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_requestInternalFrame__(JAVA_OBJECT me);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_getTopViewController__(JAVA_OBJECT me);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_getVisibleViewController__(JAVA_OBJECT me);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_getViewControllers__(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationController_setViewControllers___java_util_ArrayList(JAVA_OBJECT me, JAVA_OBJECT n1);
+void org_xmlvm_iphone_UINavigationController_setViewControllers___java_util_ArrayList_boolean(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_BOOLEAN n2);
+void org_xmlvm_iphone_UINavigationController_pushViewController___org_xmlvm_iphone_UIViewController_boolean(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_BOOLEAN n2);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_popViewControllerAnimated___boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_popToRootViewControllerAnimated___boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_popToViewController___org_xmlvm_iphone_UIViewController_boolean(JAVA_OBJECT me, JAVA_OBJECT n1, JAVA_BOOLEAN n2);
+JAVA_BOOLEAN org_xmlvm_iphone_UINavigationController_isNavigationBarHidden__(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationController_setNavigationBarHidden___boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1);
+void org_xmlvm_iphone_UINavigationController_setNavigationBarHidden___boolean_boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1, JAVA_BOOLEAN n2);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_getNavigationBar__(JAVA_OBJECT me);
+JAVA_BOOLEAN org_xmlvm_iphone_UINavigationController_isToolbarHidden__(JAVA_OBJECT me);
+void org_xmlvm_iphone_UINavigationController_setToolbarHidden___boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1);
+void org_xmlvm_iphone_UINavigationController_setToolbarHidden___boolean_boolean(JAVA_OBJECT me, JAVA_BOOLEAN n1, JAVA_BOOLEAN n2);
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_getToolbar__(JAVA_OBJECT me);
+// Vtable index: 13
+void org_xmlvm_iphone_UINavigationController_setDelegate___org_xmlvm_iphone_UINavigationControllerDelegate(JAVA_OBJECT me, JAVA_OBJECT n1);
+// Vtable index: 12
+JAVA_OBJECT org_xmlvm_iphone_UINavigationController_getDelegate__(JAVA_OBJECT me);
+// Vtable index: 9
+void org_xmlvm_iphone_UINavigationController_loadView__(JAVA_OBJECT me);
+// Vtable index: 11
+void org_xmlvm_iphone_UINavigationController_updateViews__(JAVA_OBJECT me);
+
+#endif

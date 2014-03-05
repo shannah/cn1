@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="JavaSE" default="default" basedir=".">
+    <description>Builds, tests, and runs the project JavaSE.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="JavaSE-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+    <target name="build-skins">
+        <copy file="../../Themes/androidTheme.res" todir="../../Skins/android" />
+        <copy file="../../Themes/androidTheme.res" todir="../../Skins/nexus" />
+        <copy file="../../Themes/iPhoneTheme.res" todir="../../Skins/ipad" />
+        <copy file="../../Themes/iPhoneTheme.res" todir="../../Skins/iphone4" />
+        <copy file="../../Themes/iPhoneTheme.res" todir="../../Skins/ipad3" />
+        <copy file="../../Themes/iPhoneTheme.res" todir="../../Skins/iphone3gs" />
+        <copy file="../../Themes/iPhoneTheme.res" todir="../../Skins/iphone5" />
+        <copy file="../../Themes/blackberry_theme.res" todir="../../Skins/torch" />
+        <copy file="../../Themes/android_holo_light.res" todir="../../Skins/xoom" />
+        <copy file="../../Themes/winTheme.res" todir="../../Skins/lumia" />
+        <copy file="../../Themes/iOS7Theme.res" todir="../../Skins/iphone5_os7" />
+        <copy file="../../Themes/iOS7Theme.res" todir="../../Skins/ipad_os7" />
+        <copy file="../../Themes/iOS7Theme.res" todir="../../Skins/iphone3gs_os7" />
+        <copy file="../../Themes/iOS7Theme.res" todir="../../Skins/iphone4_os7" />
+
+        
+        <zip basedir="../../Skins/nexus" destfile="../../Skins/nexus.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/torch" destfile="../../Skins/torch.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/android" destfile="../../Skins/android.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/feature_phone" destfile="../../Skins/feature_phone.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/ipad" destfile="../../Skins/ipad.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/ipad3" destfile="../../Skins/ipad3.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/iphone3gs" destfile="../../Skins/iphone3gs.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/iphone4" destfile="../../Skins/iphone4.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/iphone5" destfile="../../Skins/iphone5.skin" compress="false">
+            <exclude name="**/svn/"/>
+            <exclude name="*.psd"/>
+        </zip>
+        <zip basedir="../../Skins/ipad_os7" destfile="../../Skins/ipad_os7.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/iphone3gs_os7" destfile="../../Skins/iphone3gs_os7.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/iphone4_os7" destfile="../../Skins/iphone4_os7.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/iphone5_os7" destfile="../../Skins/iphone5_os7.skin" compress="false">
+            <exclude name="**/svn/"/>
+            <exclude name="*.psd"/>
+        </zip>
+        <zip basedir="../../Skins/xoom" destfile="../../Skins/xoom.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <zip basedir="../../Skins/lumia" destfile="../../Skins/lumia.skin" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+    </target>    
+    
+    <target name="-pre-compile">
+        <copy file="../../Skins/torch.skin" todir="src" />
+        <copy file="../../Skins/lumia.skin" todir="src" />
+        <!-- copy file="../../Skins/android.skin" todir="src" / -->
+        <copy file="../../Skins/feature_phone.skin" todir="src" />
+        <copy file="../../Skins/ipad_os7.skin" tofile="src/ipad.skin" />
+        <copy file="../../Skins/nexus.skin" todir="src" />
+        <copy file="../../Skins/iphone3gs_os7.skin" tofile="src/iphone3gs.skin" />
+        <copy file="../../Skins/iphone4_os7.skin" tofile="src/iphone4.skin" />
+        <copy file="../../Skins/iphone5_os7.skin" tofile="src/iphone5.skin" />
+        <copy file="../../Skins/xoom.skin" todir="src" />
+    </target>
+    
+    <target name="-post-compile">
+        <copydir src="${project.CodenameOne}/build/classes" dest="build/classes" />
+        <unjar src="lib/sqlitejdbc-v056.jar" dest="build/classes" /> 
+    </target>    
+
+    <target name="desktop" depends="jar">
+        <jar destfile="dist/JavaSEClean.jar">
+            <zipfileset src="${dist.jar}" excludes="*.skin,*.png"/>
+        </jar>
+    </target>
+
+</project>

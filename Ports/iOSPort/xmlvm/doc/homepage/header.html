@@ -1,0 +1,48 @@
+<?php
+function print_code($code) {
+  echo(nl2br(str_replace(" ", "&nbsp;", htmlentities($code))));
+}
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>XMLVM<?php if($site_title!=''){print(' - '.$site_title);}?></title>
+    <link rel="stylesheet" type="text/css" href="../styles.css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta property="fb:page_id" content="176815715685215" />
+	<meta property="fb:admins" content="1516145352" />
+  </head>
+  <body>
+    <div><map name="main_menu" id="main_menu">
+      <area 
+          href="../overview" alt="XMLVM.org Main Page" title="XMLVM.org Main Page"
+          shape="rect" coords="0,0,190,89" />
+      <area 
+          href="../overview" alt="Overview" title="Overview"
+          shape="rect" coords="318,66,411,89" />
+      <area 
+          href="../documentation" alt="Documentation" title="Documentation"
+          shape="rect" coords="412,66,548,89" />
+      <area 
+          href="../stories" alt="Stories" title="Stories"
+          shape="rect" coords="549,66,620,89" />
+      <area 
+          href="../download" alt="Download" title="Download"
+          shape="rect" coords="621,66,717,89" />
+      <area 
+          href="../contribute" alt="Contribute" title="Contribute"
+          shape="rect" coords="718,66,817,89" />
+      <area 
+          href="../contact" alt="Contact" title="Contact"
+          shape="rect" coords="818,66,900,89" />
+      <!-- Check out our tutorials -->
+      <area 
+          href="../tutorial" alt="Check out our tutorials" title="Check out our tutorials"
+          shape="rect" coords="730,0,900,22" target="_blank" />
+    </map></div>
+    <table id="main_table" cellspacing="0" cellpadding="0">
+      <tr>
+        <td style="height:89px;">
+          <img src="../header_menu.jpg" alt="Header" usemap="#main_menu"/>
+        </td>
+      </tr>

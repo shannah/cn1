@@ -1,0 +1,5 @@
+<plugins>
+  <plugin id="Codename One" 
+          url="https://codenameone.googlecode.com/svn/trunk/CodenameOne/repo/idea/CodenameOnePlugin.jar" 
+          version="2.0.1"/>
+</plugins>

@@ -1,0 +1,75 @@
+*|* { margin:0pt; padding:0pt; font-family: Helvetica,Arial; }
+ body { color: #737373; }
+ div.paragraph { }
+ p { }
+ h1, h2, h3{ color: #22667b; text-shadow: 0px 1px #ffffff; }
+ #wrapper { }
+ #logo { background-image:url('theme/TitleAreaBackgroundLogo.png?120772'); background-repeat:no-repeat; height: 115px; width: 289px; margin-left: 80px; }
+ #titleArea { background-image:url('theme/TitleAreaBackground.png?120772'); background-repeat:repeat-x; height: 115px; }
+ #loginSignupBar { position: absolute; top: 0px; left: 0px; right: 0px; height: 25px; background-image:url('theme/LoginSignupBackground.png?120772'); background-repeat:repeat-x; }
+ #loginSignupArea { position: absolute; width: 152px; height: 25px; right: 50px; text-align:center; padding-left:3px; display: inline; background-image:url('theme/CurvedBackground.png?120772'); background-repeat:no-repeat; }
+ #loginSignupLinks { color: white; display: inline; }
+ #loginSignupLinks a { font-size: 12px; margin: 0px; text-decoration:none; color: white; display:inline; }
+ #header { }
+ #sitename { }
+ #navigation { position: absolute; top: 60px; right: 80px; height: 27px; font-weight:bold; font-size:19px; }
+ #navigation ul { }
+ #navigation li { display:inline; padding-right: 10px; padding-left: 10px; background-image:url('theme/Menu_Column_Separator.png?120772'); background-repeat:no-repeat; background-position:right top; }
+ #navigation a:link { color:#16586d; text-decoration:none; }
+ #navigation a:hover { color:#16586d; text-decoration:underline; }
+ #navigation a:visited { }
+ a:link, a:hover, a:visited { }
+ #content-wrapper { background-image:url('theme/BackgroundGradient.png?120772'); background-repeat:repeat-x; width: 100%; }
+ #content { padding-top: 40px; padding-left: 80px; padding-right: 80px; padding-bottom: 30px; }
+ #mainArea { position: absolute; width:100%; left: 0px; top:115px; }
+ .animationScroll { height:412px; overflow: hidden; position: relative; clear: left; background: #FFFFFF url(theme/images/content_pane-gradient.gif?120772) repeat-x scroll left bottom; }
+ #animationSlideSelectionArea { position: absolute; right: 30px; bottom: 10px; z-index: 4; list-style-type: none; display: inline; }
+ .animationSlideSelectionCurrent { background-image:url('theme/SlideCircleSel.png?120772'); background-repeat:no-repeat; width: 13px; height: 13px; padding: 9px; display: inline; }
+ .animationSlideSelection { background-image:url('theme/SlideCircleUnsel.png?120772'); background-repeat:no-repeat; width: 13px; height: 13px; padding: 9px; display: inline; }
+ .animationArea { position: absolute; width:100%; left: 0px; top:0px; height:412px; display:block; background-image:url('theme/SlideOneBackground.png?120772'); background-repeat:repeat-x; }
+ .animationAreaSlide2 { position: absolute; width:100%; left: 0px; top:0px; height:412px; display:block; index:0; background-image:url('theme/Slide2Background.png?120772'); background-repeat:repeat-x; }
+ .animationAreaImageSlide2 { position: absolute; background-image:url('theme/Slide2PhoneAndLaptop.png?120772'); background-repeat:no-repeat; left: 70px; top: 138px; width: 617px; height: 356px; }
+ .animationAreaTextSlide2 { position: absolute; left: 580px; padding-right: 30px; top: 40px; }
+ .animationAreaTextSlide3 { position: absolute; left: 580px; padding-right: 30px; top: 40px; }
+ .animationAreaSlide3 { position: absolute; width:100%; left: 0px; top:0px; height:412px; display:block; index:0; background-image:url('theme/Slide4Background.png?120772'); background-repeat:repeat-x; }
+ .animationAreaImageSlide3 { position: absolute; background-image:url('theme/Slide4PerformanceImage.png?120772'); background-repeat:no-repeat; left: 70px; top: 10px; width: 617px; height: 100%; }
+ .animationAreaImage { position: absolute; background-image:url('theme/SlideOnePhoneImages.png?120772'); background-repeat:no-repeat; left: 110px; top: 55px; width: 617px; height: 356px; }
+ .animationAreaText { position: absolute; left: 550px; top: 40px; }
+ .animationAreaTitle { font-size: 40px; color: white; text-shadow: 2px 2px black; }
+ .animationAreaEntries { color: white; font-size: 18px; text-shadow: 2px 2px black; padding-left: 30px; padding-top: 20px; }
+ .animationAreaDownloadButton { padding-left: 150px; }
+ .animationAreaEntries li { padding-bottom: 10px; list-style-type: square; }
+ #tableTopLeft { width: 34px; background-image:url('theme/TableTopLeft.png?120772'); background-repeat:no-repeat; }
+ #tableTop { background-image:url('theme/TableTop.png?120772'); background-repeat:repeat-x; padding-bottom: 20px; }
+ #tableTopRight { width: 55px; background-image:url('theme/TableTopRight.png?120772'); background-repeat:no-repeat; }
+ #tableLeft { width: 34px; background-image:url('theme/TableLeft.png?120772'); background-repeat:repeat-y; }
+ #tableRight { background-image:url('theme/TableRight.png?120772'); background-repeat:repeat-y; }
+ #tableBottomLeft { width: 34px; background-image:url('theme/TableBottomLeft.png?120772'); background-repeat:no-repeat; }
+ #tableBottom { height: 69px; background-image:url('theme/TableBottom.png?120772'); background-repeat:repeat-x; margin-bottom: 30px; }
+ #tableBottomRight { background-image:url('theme/TableBottomRight.png?120772'); background-repeat:no-repeat; }
+ #indexContentTable { width:100%; }
+ #tableContent { }
+ #indexContentTable tr th { vertical-align: top; padding: 6px; height: 1em; font-size: 20px; color: #22667b; text-shadow: 0px 1px #aaaaaa; text-align:left; }
+ #indexContentTable tr td { padding: 6px; }
+ .indexContentTableColBody { vertical-align: top; }
+ #indexTable { margin-bottom: 30px; }
+ #downloadButton { margin: 10px; background-image:url('theme/DownloadButton.png?120772'); background-repeat:no-repeat; width: 238px; height: 105px; }
+ #findMoreButton { margin: 10px; background-image:url('theme/FindMoreButton.png?120772'); background-repeat:no-repeat; width: 133px; height: 60px; }
+ #getStartedButton { margin: 10px; background-image:url('theme/GetStartedButton.png?120772'); background-repeat:no-repeat; width: 137px; height: 52px; }
+ #number1 { background-image:url('theme/Number1Button.png?120772'); background-repeat:no-repeat; padding-left: 40px; padding-bottom:6px; }
+ #number2 { background-image:url('theme/Number2Button.png?120772'); background-repeat:no-repeat; padding-left: 40px; padding-bottom:6px; }
+ #number3 { background-image:url('theme/Number3Button.png?120772'); background-repeat:no-repeat; padding-left: 40px; padding-bottom:6px; }
+ #number4 { background-image:url('theme/Number4Button.png?120772'); background-repeat:no-repeat; padding-left: 40px; padding-bottom:6px; }
+ #number5 { background-image:url('theme/Number5Button.png?120772'); background-repeat:no-repeat; padding-left: 40px; padding-bottom:6px; }
+ #footer { background-image:url('theme/FooterTile.png?120772'); background-repeat:repeat-x; width: 100%; height: 278px; color: #acacac; font-size: 12px; }
+ #footer-content { padding-left: 80px; padding-right: 80px; }
+ #footerLine1 { position: absolute; right: 10%; width: 80%; bottom: 235px; height: 30px; }
+ #footerLine2 { color: #acacac; position: absolute; right: 10%; width: 80%; bottom: 105px; height: 120px; }
+ #footerLine3 { color: #acacac; position: absolute; right: 10%; width: 80%; bottom: 65px; height: 30px; }
+ #footerWhiteLogo { background-image:url('theme/CodenameOne_Horizontal_White.png?120772'); background-repeat:no-repeat; float: right; height: 62px; width: 190px; }
+ .tableSeparator { background-image:url('theme/TableSeparator.png?120772'); background-repeat:no-repeat; width: 2px; height: 341px; }
+
+div.paragraph ul, div.paragraph ol { padding-left: 25px !important; margin: 5px 0 !important; overflow:hidden; }
+div.paragraph li { padding-left: 5px !important; margin: 3px 0 0 !important; }
+div.paragraph ul, div.paragraph ul li { list-style: disc outside !important; }
+div.paragraph ol, div.paragraph ol li { list-style: decimal outside !important; }

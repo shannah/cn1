@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="CodenameOne" default="default" basedir=".">
+    <description>Builds, tests, and runs the project CodenameOne.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="CodenameOne-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+    <target depends="init" if="have.sources" name="-javadoc-build">
+        <mkdir dir="${dist.javadoc.dir}"/>
+        <javadoc additionalparam="${javadoc.additionalparam}" author="${javadoc.author}" charset="UTF-8" destdir="${dist.javadoc.dir}" docencoding="UTF-8" encoding="${javadoc.encoding.used}" failonerror="true" noindex="${javadoc.noindex}" nonavbar="${javadoc.nonavbar}" notree="${javadoc.notree}" private="${javadoc.private}" source="${javac.source}" splitindex="${javadoc.splitindex}" use="${javadoc.use}" useexternalfile="true" version="${javadoc.version}" windowtitle="${javadoc.windowtitle}">
+            <classpath>
+                <path path="${javac.classpath}"/>
+            </classpath>
+            <fileset dir="${src.dir}" excludes="*.java,${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>
+            <fileset dir="../../CodenameOne/CLDC11/src" excludes="*.java,${excludes}" includes="${includes}">
+                <filename name="**/*.java"/>
+            </fileset>
+            <fileset dir="${build.generated.sources.dir}" erroronmissingdir="false">
+                <include name="**/*.java"/>
+                <exclude name="*.java"/>
+            </fileset>
+        </javadoc>
+        <copy todir="${dist.javadoc.dir}">
+            <fileset dir="${src.dir}" excludes="${excludes}" includes="${includes}">
+                <filename name="**/doc-files/**"/>
+            </fileset>
+            <fileset dir="${build.generated.sources.dir}" erroronmissingdir="false">
+                <include name="**/doc-files/**"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target depends="init,-javadoc-build" description="Build Javadoc." name="javadoc">
+        <copydir src="dist/javadoc" dest="javadoc" />
+    </target>
+
+    <target name="-pre-compile" depends="stamp">
+    </target>
+
+    <target name="stamp">
+        <tstamp>
+            <format property="tstamp" pattern="yyyyMMdd" />
+        </tstamp>
+        <propertyfile file="../CodenameOneDesigner/src/version.properties"
+            comment="This file is automatically generated - DO NOT EDIT">        
+            <entry key="build" value="${tstamp}"/>
+        </propertyfile>
+        <propertyfile file="../../CodenameOne/NBPlugin/CodenameOnePlugin/src/version.properties"
+            comment="This file is automatically generated - DO NOT EDIT">        
+            <entry key="build" value="${tstamp}"/>
+        </propertyfile>
+        <propertyfile file="../../CodenameOne/BuildClient/src/version.properties"
+            comment="This file is automatically generated - DO NOT EDIT">        
+            <entry key="build" value="${tstamp}"/>
+        </propertyfile>
+    </target>
+    
+    <target name="release" depends="jar">
+        <delete dir="build/CodenameOneDist" />        
+        <mkdir dir="build/CodenameOneDist/CodenameOne" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/docs" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/docs/.css" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/docs/.css/theme" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/docs/api" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/TZoneFriends" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/NativeDemo" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/CameraDemo" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/Tipster" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/KitchenSink" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/MapsDemo" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/ZXing" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/SQLSample" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/FacebookDemo" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/Chrome" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/SocialBoo" />
+        <mkdir dir="build/CodenameOneDist/CodenameOne/demos/Mapper" />
+        <mkdir dir="../nightly_builds" />
+        
+        <ant inheritall="false" antfile="../Ports/Android/build.xml" target="clean" />
+        <ant inheritall="false" antfile="../Ports/Android/build.xml" target="jar" />
+        <ant inheritall="false" antfile="../Ports/BlackBerryOS_4_2/build.xml" target="clean" />
+        <ant inheritall="false" antfile="../Ports/BlackBerryOS_4_2/build.xml" target="jar" />
+        <ant inheritall="false" antfile="../Ports/BlackBerryOS_5/build.xml" target="clean" />
+        <ant inheritall="false" antfile="../Ports/BlackBerryOS_5/build.xml" target="jar" />
+        <ant inheritall="false" antfile="../Ports/J2ME/build.xml" target="clean" />
+        <ant inheritall="false" antfile="../Ports/J2ME/build.xml" target="jar" />
+        <ant inheritall="false" antfile="../Ports/JavaSE/build.xml" target="clean" />
+        <ant inheritall="false" antfile="../Ports/JavaSE/build.xml" target="jar" />
+        <ant inheritall="false" antfile="../../CodenameOne/CLDC11/build.xml" target="clean" />
+        <ant inheritall="false" antfile="../../CodenameOne/CLDC11/build.xml" target="jar" />
+        <ant inheritall="false" antfile="../Ports/JavaSEWithSVGSupport/build.xml" target="clean" />
+        <ant inheritall="false" antfile="../Ports/JavaSEWithSVGSupport/build.xml" target="jar" />
+
+        <copy file="../LICENSE" todir="build/CodenameOneDist/CodenameOne" />
+        <copy file="../Docs/release-notes.html" todir="build/CodenameOneDist/CodenameOne" />
+        <copy file="../Docs/CodenameOneDevelopersGuide.pdf" todir="build/CodenameOneDist/CodenameOne" />
+        <copydir src="../Docs/docs" dest="build/CodenameOneDist/CodenameOne/docs" />
+        <copydir src="../Docs/docs/.css" dest="build/CodenameOneDist/CodenameOne/docs/.css" />
+        <ant inheritall="false" antfile="build.xml" target="javadoc" />
+        <zip basedir="dist/javadoc" file="build/CodenameOneDist/CodenameOne/docs/api/docs.zip" compress="false" />
+        <copydir src="../Demos/TZoneFriends" dest="build/CodenameOneDist/CodenameOne/demos/TZoneFriends" />
+        <copydir src="../Demos/NativeDemo" dest="build/CodenameOneDist/CodenameOne/demos/NativeDemo" />
+        <copydir src="../Demos/CameraDemo" dest="build/CodenameOneDist/CodenameOne/demos/CameraDemo" />
+        <copydir src="../Demos/Tipster" dest="build/CodenameOneDist/CodenameOne/demos/Tipster" />
+        <copydir src="../Demos/KitchenSink" dest="build/CodenameOneDist/CodenameOne/demos/KitchenSink" />
+        <copydir src="../Demos/MapsDemo" dest="build/CodenameOneDist/CodenameOne/demos/MapsDemo" />
+        <copydir src="../Demos/ZXing" dest="build/CodenameOneDist/CodenameOne/demos/ZXing" />
+        <copydir src="../Demos/SQLSample" dest="build/CodenameOneDist/CodenameOne/demos/SQLSample" />
+        <copydir src="../Demos/FacebookDemo" dest="build/CodenameOneDist/CodenameOne/demos/FacebookDemo" />
+        <copydir src="../Demos/Chrome" dest="build/CodenameOneDist/CodenameOne/demos/Chrome" />
+        <copydir src="../Demos/SocialBoo" dest="build/CodenameOneDist/CodenameOne/demos/SocialBoo" />
+        <copydir src="../Demos/Mapper" dest="build/CodenameOneDist/CodenameOne/demos/Mapper" />
+        
+        <copy file="../Ports/JavaSE/dist/JavaSE.jar" todir="build/CodenameOneDist/CodenameOne/demos" />
+        <copy file="../../CodenameOne/CLDC11/dist/CLDC11.jar" todir="build/CodenameOneDist/CodenameOne/demos" />
+        <copy file="dist/CodenameOne.jar" todir="build/CodenameOneDist/CodenameOne/demos" />
+        <zip basedir="src" destfile="build/CodenameOneDist/CodenameOne/demos/CodenameOne_SRC.zip" compress="false">
+            <exclude name="**/svn/"/>
+        </zip>
+        <delete file="build/CodenameOneDist/CodenameOne/demos/TZoneFriends/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/TZoneFriends/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/TZoneFriends/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/TZoneFriends/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/TZoneFriends/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/NativeDemo/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/NativeDemo/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/NativeDemo/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/NativeDemo/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/NativeDemo/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/CameraDemo/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/CameraDemo/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/CameraDemo/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/CameraDemo/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/CameraDemo/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Tipster/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Tipster/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Tipster/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Tipster/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Tipster/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/KitchenSink/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/KitchenSink/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/KitchenSink/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/KitchenSink/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/KitchenSink/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/MapsDemo/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/MapsDemo/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/MapsDemo/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/MapsDemo/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/MapsDemo/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/ZXing/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/ZXing/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/ZXing/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/ZXing/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/ZXing/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SQLSample/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SQLSample/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SQLSample/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SQLSample/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SQLSample/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/FacebookDemo/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/FacebookDemo/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/FacebookDemo/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/FacebookDemo/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/FacebookDemo/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Chrome/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Chrome/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Chrome/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Chrome/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Chrome/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SocialBoo/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SocialBoo/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SocialBoo/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SocialBoo/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/SocialBoo/lib/CodenameOne_SRC.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Mapper/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Mapper/lib/JavaSE.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Mapper/lib/CLDC11.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Mapper/lib/CodenameOne.jar" />
+        <delete file="build/CodenameOneDist/CodenameOne/demos/Mapper/lib/CodenameOne_SRC.jar" />
+
+        <deltree dir="build/tmp"/>
+        <mkdir dir="build/tmp"/>
+        <copy file="dist/CodenameOne.jar" todir="build/tmp" />
+        <copy file="build/CodenameOneDist/CodenameOne/demos/CodenameOne_SRC.zip" todir="build/tmp" />
+        <copy file="../Ports/JavaSE/dist/JavaSE.jar" todir="build/tmp" />
+        <copy file="../../CodenameOne/CLDC11/dist/CLDC11.jar" todir="build/tmp" />        
+        <zip basedir="build/tmp" compress="true" file="/Users/user2/Dropbox/updatedLibs.zip" />
+        <copy file="/Users/user2/Dropbox/updatedLibs.zip" todir="/Users/user2/dev/cn1/CodenameOne/repo" overwrite="true"/>
+        <deltree dir="build/tmp"/>
+
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/TZoneFriends/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/TZoneFriends/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/NativeDemo/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/NativeDemo/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/CameraDemo/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/CameraDemo/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/Tipster/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/Tipster/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/KitchenSink/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/KitchenSink/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/MapsDemo/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/MapsDemo/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/ZXing/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/ZXing/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/SQLSample/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/SQLSample/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/FacebookDemo/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/FacebookDemo/dist" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/Chrome/build" />        
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/Chrome/dist" />       
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/SocialBoo/dist" />               
+        <delete dir="build/CodenameOneDist/CodenameOne/Demos/Mapper/dist" />               
+        
+        <zip basedir="build/CodenameOneDist" file="../nightly_builds/CodenameOne_Docs_Demos_${tstamp}.zip" />
+
+        <ant inheritall="false" antfile="../CodenameOneDesigner/build.xml" target="release" />
+        <!-- zip basedir="../CodenameOneDesigner/dist" includes="designer.jar" file="../nightly_builds/CodenameOneDesigner_${tstamp}.zip" / -->
+
+        <ant inheritall="false" antfile="../../CodenameOne/NBPlugin/CodenameOnePlugin/build.xml" target="buildFullNBM" />
+        <!-- ant inheritall="false" antfile="../../CodenameOne/NBPlugin/CodenameOneSuite/build.xml" target="build" / -->
+        <zip basedir="../../CodenameOne/NBPlugin/CodenameOnePlugin/build/" includes="*.nbm" file="../nightly_builds/CodenameOne_NetBeansPlugin_${tstamp}.zip" />
+                
+        <!-- Windows Version -->
+        <!-- zip basedir="../CodenameOneDesigner/" includes="designer.exe" file="../nightly_builds/CodenameOneDesignerWindows_${tstamp}.zip" / -->
+
+        <!-- Copy loses Unix permissions which are essential for this tool hence we need to use cp -->
+        <!-- copydir src="../CodenameOneDesigner/Designer.app" dest="build/CodenameOneDist/Designer.app" / -->
+        
+        <!-- deltree dir="build/designerMac" />
+        <mkdir dir="build/designerMac" />
+        <exec executable="cp">
+            <arg value="-R" />
+            <arg file="../CodenameOneDesigner/Designer.app" />
+            <arg file="build/designerMac" />
+        </exec>
+        
+        <delete file="../nightly_builds/CodenameOne_Mac_${tstamp}.dmg" />
+        <exec executable="hdiutil">
+            <arg value="create" />
+            <arg value="-srcfolder" />
+            <arg value="build/designerMac" />
+            <arg value="../nightly_builds/CodenameOneDesignerMac_${tstamp}.dmg" />
+        </exec -->
+    </target>
+</project>

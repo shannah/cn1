@@ -1,0 +1,49 @@
+<?php 
+function printLink($dir, $title, $last = false) {
+  if(strpos($_SERVER['REQUEST_URI'], $dir))
+  {
+	  echo("<b>$title</b>");
+  }
+  else
+  {
+    echo("<a href=../$dir>$title</a>");
+  }
+  if(!$last) {
+    echo(" |");
+  }
+}
+// IE6 doesn't support fancy rounded corners.
+$using_ie6 = (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.') !== FALSE);
+$using_ie7 = (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.') !== FALSE);
+?>
+
+<tr>
+  <td>
+    <div id="content_top">
+      <div style="display:inline-block">
+
+<?php if (!$using_ie6 && !$using_ie7 ) { ?>
+        <div class="roundedcornr_box_537267">
+          <div class="roundedcornr_top_537267"><div></div></div>
+            <div class="roundedcornr_content_537267">
+              <div style="height:18px">
+<?php } ?>
+                <?php printLink("toolchain","Toolchain") ?>
+                <?php printLink("frontend","Frontend") ?>
+                <?php printLink("clr2jvm","CLR to JVM") ?>
+                <?php printLink("javascript","JavaScript") ?>
+                <?php printLink("iphone","iPhone/Objective-C") ?>
+                <?php printLink("android","Android to iPhone", true) ?>
+<?php if (!$using_ie6 && !$using_ie7 ) { ?>
+              </div>
+            </div>
+          <div class="roundedcornr_bottom_537267">
+            <div></div>
+          </div>
+        </div>
+<?php } ?>
+
+      </div>
+    </div>
+  </td>
+</tr>

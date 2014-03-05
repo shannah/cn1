@@ -1,0 +1,407 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+__BUILDREFS__/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1 /* __PROJNAME__.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = __PROJNAME__.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8 /* __PROJNAME__-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "__PROJNAME__-Info.plist" ; path = "__PROJNAME__-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+__FILEREFS__/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+__BUILDFRAMS__			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		24 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+__APPSRC__			);
+			name = Application;
+			path = ../build/xcode/src/app;
+			sourceTree = "<group>";
+		};
+		25 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				26 /* iPhone */,
+				27 /* Android */,
+				30 /* BoehmGC */,
+			);
+			name = Library;
+			sourceTree = "<group>";
+		};
+		27 /* iPhone */ = {
+			isa = PBXGroup;
+			children = (
+__IPHONESRC__			);
+			name = iPhone;
+			path = ../build/xcode/src/lib/iphone;
+			sourceTree = "<group>";
+		};
+		30 /* BoehmGc */ = {
+			isa = PBXGroup;
+			children = (
+__BOEHMGC__			);
+			name = BoehmGC;
+			path = ../build/xcode/src/lib/boehmgc;
+			sourceTree = "<group>";
+		};
+		26 /* Android */ = {
+			isa = PBXGroup;
+			children = (
+__ANDROIDSRC__			);
+			name = Android;
+			path = ../build/xcode/src/lib/android;
+			sourceTree = "<group>";
+		};
+		11 /* MainGroup */ = {
+			isa = PBXGroup;
+			children = (
+				24 /* 	Application */,
+				25 /* Library */,
+				12 /* Resources */,
+				13 /* Frameworks */,
+				10 /* Products */,
+			);
+			name = MainGroup;
+			sourceTree = "<group>";
+		};
+		12 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8 /* __PROJNAME__-Info.plist */,
+			);
+			name = Resources;
+			path = ../build/xcode/sys;
+			sourceTree = "<group>";
+		};
+		13 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+__FRAMEWORKS__ 
+	);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		10 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1 /* __PROJNAME__.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		14 /* __PROJNAME__ */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 15 /* Build configuration list for PBXNativeTarget "__PROJNAME__" */;
+			buildPhases = (
+				16 /* Other Resources */,
+				17 /* Sources */,
+				9 /* Frameworks */,
+				34 /* XMLVM Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = __PROJNAME__;
+			productName = __PROJNAME__;
+			productReference = 1 /* __PROJNAME__.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		18 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 19 /* Build configuration list for PBXProject "__PROJNAME__" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 11 /* MainGroup */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				14 /* __PROJNAME__ */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		16 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+__RESOURCES_BUILD__			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		34 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "RESOURCES=\"${PROJECT_DIR}/..\"\nfor i in __RESOURCE_LIST__; do\n\tcase $i in\n\t\t/*)\tFROM=$i ;;\n\t\t*)\tFROM=${RESOURCES}/$i ;;\n\tesac\n\tif [ -e \"$FROM\" ] ; then\n\t\tcp -rf \"$FROM\" \"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}\"\n\tfi\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		17 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+__SRC_BUILD__			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		29 /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = (
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/libatomic_ops/src/**\"",
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/include/**\"",
+				);
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SEPARATE_STRIP = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				TARGETED_DEVICE_FAMILY = "__SDK_TARGET__";
+				SDKROOT = __SDK_ROOT__;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					ALL_INTERIOR_POINTERS,
+					GC_THREADS,
+					THREAD_LOCAL_ALLOC,
+					PARALLEL_MARK,
+					USE_MMAP,
+					USE_MUNMAP,
+					NO_DYLD_BIND_FULLY_IMAGE,
+					__XMLVM_NEW_IOS_API__
+				);
+			};
+			name = AppStore;
+		};
+		22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = (
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/libatomic_ops/src/**\"",
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/include/**\"",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				TARGETED_DEVICE_FAMILY = "__SDK_TARGET__";
+				SDKROOT = __SDK_ROOT__;
+			};
+			name = Debug;
+		};
+		23 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = (
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/libatomic_ops/src/**\"",
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/include/**\"",
+				);
+				SEPARATE_STRIP = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				TARGETED_DEVICE_FAMILY = "__SDK_TARGET__";
+				SDKROOT = __SDK_ROOT__;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					ALL_INTERIOR_POINTERS,
+					GC_THREADS,
+					THREAD_LOCAL_ALLOC,
+					PARALLEL_MARK,
+					USE_MMAP,
+					USE_MUNMAP,
+					NO_DYLD_BIND_FULLY_IMAGE,
+					__XMLVM_NEW_IOS_API__
+				);
+			};
+			name = Release;
+		};
+		28 /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+                GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				INFOPLIST_FILE = "../build/xcode/sys/__PROJNAME__-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../btres\"",
+				);
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = __PROJNAME__;
+				HEADER_SEARCH_PATHS = (
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/libatomic_ops/src/**\"",
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/include/**\"",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					ALL_INTERIOR_POINTERS,
+					GC_THREADS,
+					THREAD_LOCAL_ALLOC,
+					PARALLEL_MARK,
+					USE_MMAP,
+					USE_MUNMAP,
+					NO_DYLD_BIND_FULLY_IMAGE,
+					__XMLVM_NEW_IOS_API__
+				);
+			};
+			name = AppStore;
+		};
+		20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+                GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				INFOPLIST_FILE = "../build/xcode/sys/__PROJNAME__-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../btres\"",
+				);
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = __PROJNAME__;
+				HEADER_SEARCH_PATHS = (
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/libatomic_ops/src/**\"",
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/include/**\"",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					ALL_INTERIOR_POINTERS,
+					GC_THREADS,
+					THREAD_LOCAL_ALLOC,
+					PARALLEL_MARK,
+					USE_MMAP,
+					USE_MUNMAP,
+					NO_DYLD_BIND_FULLY_IMAGE,
+					__XMLVM_NEW_IOS_API__
+				);
+			};
+			name = Debug;
+		};
+		21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+                GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				INFOPLIST_FILE = "../build/xcode/sys/__PROJNAME__-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../btres\"",
+				);
+				OTHER_LDFLAGS = "-lz";
+				PRODUCT_NAME = __PROJNAME__;
+				HEADER_SEARCH_PATHS = (
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/libatomic_ops/src/**\"",
+					"\"${SOURCE_ROOT}/../build/xcode/src/lib/boehmgc/include/**\"",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					ALL_INTERIOR_POINTERS,
+					GC_THREADS,
+					THREAD_LOCAL_ALLOC,
+					PARALLEL_MARK,
+					USE_MMAP,
+					USE_MUNMAP,
+					NO_DYLD_BIND_FULLY_IMAGE,
+					__XMLVM_NEW_IOS_API__
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		19 /* Build configuration list for PBXProject "__PROJNAME__" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22 /* Debug */,
+				23 /* Release */,
+				29 /* AppStore */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		15 /* Build configuration list for PBXNativeTarget "__PROJNAME__" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20 /* Debug */,
+				21 /* Release */,
+				28 /* AppStore */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 18 /* Project object */;
+}

@@ -1,0 +1,211 @@
+/*
+ * Copyright (c) 2002-2011 by XMLVM.org
+ *
+ * Project Info:  http://www.xmlvm.org
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ */
+
+#include "xmlvm-util.h"
+#include "java_util_ArrayList.h"
+#include "java_util_HashSet.h"
+#include "java_util_HashMap.h"
+#include "java_lang_String.h"
+
+
+/**** ArrayList Utilities ********************************************************************/
+JAVA_OBJECT XMLVMUtil_NEW_ArrayList()
+{
+    JAVA_OBJECT obj = __NEW_java_util_ArrayList();
+    java_util_ArrayList___INIT___(obj);
+    return obj;
+}
+
+JAVA_INT XMLVMUtil_ArrayList_size(JAVA_OBJECT me)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_ArrayList_size__
+    return (*(JAVA_INT (*)(JAVA_OBJECT)) ((java_util_ArrayList*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_ArrayList_size__])(me);
+#else
+    return java_util_ArrayList_add___java_lang_Object(me, obj);
+#endif
+}
+
+JAVA_BOOLEAN XMLVMUtil_ArrayList_add(JAVA_OBJECT me, JAVA_OBJECT obj)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_ArrayList_add___java_lang_Object
+    return (*(JAVA_BOOLEAN (*)(JAVA_OBJECT, JAVA_OBJECT)) ((java_util_ArrayList*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_ArrayList_add___java_lang_Object])(me, obj);
+#else
+    return java_util_ArrayList_add___java_lang_Object(me, obj);
+#endif
+}
+
+void XMLVMUtil_ArrayList_addAt(JAVA_OBJECT me, JAVA_INT index, JAVA_OBJECT obj)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_ArrayList_add___int_java_lang_Object
+    (*(JAVA_BOOLEAN (*)(JAVA_OBJECT, JAVA_INT, JAVA_OBJECT)) ((java_util_ArrayList*) me)->
+     tib->vtable[XMLVM_VTABLE_IDX_java_util_ArrayList_add___int_java_lang_Object])(me, index, obj);
+#else
+    java_util_ArrayList_add___int_java_lang_Object(me, index, obj);
+#endif
+}
+
+JAVA_OBJECT XMLVMUtil_ArrayList_get(JAVA_OBJECT me, JAVA_INT idx)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_ArrayList_get___int
+    return (*(JAVA_OBJECT (*)(JAVA_OBJECT, JAVA_INT)) ((java_util_ArrayList*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_ArrayList_get___int])(me, idx);
+#else
+    return java_util_ArrayList_get___int(me, idx);
+#endif
+}
+
+JAVA_BOOLEAN XMLVMUtil_ArrayList_remove(JAVA_OBJECT me, JAVA_OBJECT obj)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_ArrayList_remove___java_lang_Object
+    return (*(JAVA_BOOLEAN (*)(JAVA_OBJECT, JAVA_OBJECT)) ((java_util_ArrayList*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_ArrayList_remove___java_lang_Object])(me, obj);
+#else
+    return java_util_ArrayList_remove___java_lang_Object(me, obj);
+#endif
+}
+
+JAVA_INT XMLVMUtil_ArrayList_indexOf(JAVA_OBJECT me, JAVA_OBJECT obj)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_ArrayList_indexOf___java_lang_Object
+    return (*(JAVA_INT (*)(JAVA_OBJECT, JAVA_OBJECT)) ((java_util_ArrayList*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_ArrayList_indexOf___java_lang_Object])(me, obj);
+#else
+    return java_util_ArrayList_indexOf___java_lang_Object(me, obj);
+#endif
+}
+
+/**** HashSet Utilities ********************************************************************/
+JAVA_OBJECT XMLVMUtil_NEW_HashSet()
+{
+    JAVA_OBJECT obj = __NEW_java_util_HashSet();
+    java_util_HashSet___INIT___(obj);
+    return obj;
+}
+
+JAVA_BOOLEAN XMLVMUtil_HashSet_add(JAVA_OBJECT me, JAVA_OBJECT obj)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_HashSet_add___java_lang_Object
+    return (*(JAVA_BOOLEAN (*)(JAVA_OBJECT, JAVA_OBJECT)) ((java_util_HashSet*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_HashSet_add___java_lang_Object])(me, obj);
+#else
+    return java_util_HashSet_add___java_lang_Object(me, obj);
+#endif
+}
+
+/**** HashMap Utilities ********************************************************************/
+JAVA_OBJECT XMLVMUtil_NEW_HashMap()
+{
+    JAVA_OBJECT obj = __NEW_java_util_HashMap();
+    java_util_HashMap___INIT___(obj);
+    return obj;
+}
+
+JAVA_OBJECT XMLVMUtil_HashMap_put(JAVA_OBJECT me, JAVA_OBJECT key, JAVA_OBJECT value)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_HashMap_put___java_lang_Object_java_lang_Object
+    return (*(JAVA_OBJECT (*)(JAVA_OBJECT, JAVA_OBJECT, JAVA_OBJECT)) ((java_util_HashMap*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_HashMap_put___java_lang_Object_java_lang_Object])(me, key, value);
+#else
+    return java_util_HashMap_put___java_lang_Object_java_lang_Object(me, key, value);
+#endif
+}
+
+JAVA_OBJECT XMLVMUtil_HashMap_get(JAVA_OBJECT me, JAVA_OBJECT key)
+{
+#ifdef XMLVM_VTABLE_IDX_java_util_HashMap_get___java_lang_Object
+    return (*(JAVA_OBJECT (*)(JAVA_OBJECT, JAVA_OBJECT)) ((java_util_HashMap*) me)->
+            tib->vtable[XMLVM_VTABLE_IDX_java_util_HashMap_get___java_lang_Object])(me, key);
+#else
+    return java_util_HashMap_get___java_lang_Object(me, key);
+#endif
+}
+
+/**** ConstantStringPool Utilities ************************************************************/
+//static JAVA_OBJECT stringPool = JAVA_NULL;
+JAVA_INT* stringPoolHashes = 0;
+JAVA_OBJECT* stringPoolValues = 0;
+JAVA_INT stringPoolSize = 0;
+JAVA_INT stringPoolOffset = 0;
+
+JAVA_OBJECT XMLVMUtil_getFromStringPool(JAVA_OBJECT str)
+{
+    if(stringPoolHashes == 0) {
+        stringPoolSize = 8096;
+        stringPoolHashes = GC_malloc(sizeof(JAVA_INT) * stringPoolSize);
+        stringPoolValues = GC_malloc(sizeof(JAVA_OBJECT) * stringPoolSize);
+        stringPoolOffset = 1;
+        stringPoolHashes[0] = java_lang_String_hashCode__(str);
+        stringPoolValues[0] = str;
+        return str;
+    }
+    int offset = 0;
+    int currentHash = java_lang_String_hashCode__(str);
+    for(; offset < stringPoolOffset ; offset++) {
+        if(stringPoolHashes[offset] == currentHash &&
+           java_lang_String_equals___java_lang_Object(stringPoolValues[offset], str)) {
+            return stringPoolValues[offset];
+        }
+    }
+    
+    // we need to increase the pool size first
+    if(stringPoolOffset == stringPoolSize) {
+        int old = stringPoolSize;
+        stringPoolSize = stringPoolSize * 2;
+        JAVA_INT* tStringPoolHashes = GC_malloc(stringPoolSize * sizeof(JAVA_INT));
+        JAVA_OBJECT* tStringPoolValues =  GC_malloc(stringPoolSize * sizeof(JAVA_OBJECT));
+        memcpy(tStringPoolHashes, stringPoolHashes, old * sizeof(JAVA_INT));
+        memcpy(tStringPoolValues, stringPoolValues, old * sizeof(JAVA_OBJECT));
+        stringPoolHashes = tStringPoolHashes;
+        stringPoolValues = tStringPoolValues;
+    } 
+    
+    stringPoolHashes[stringPoolOffset] = java_lang_String_hashCode__(str);
+    stringPoolValues[stringPoolOffset] = str;
+    stringPoolOffset++;
+    return str;
+    
+    
+    /*if (stringPool == JAVA_NULL) {
+     stringPool = XMLVMUtil_NEW_ArrayList();
+     }
+     JAVA_INT i = XMLVMUtil_ArrayList_indexOf(stringPool, str);
+     if (i == -1) {
+     XMLVMUtil_ArrayList_add(stringPool, str);
+     return str;
+     }
+     return XMLVMUtil_ArrayList_get(stringPool, i);*/
+}
+
+
+/**** Misc Utilities **********************************************************************/
+
+char* XMLVMUtil_convertFromByteArray(JAVA_OBJECT byteArray) {
+    org_xmlvm_runtime_XMLVMArray* a = byteArray;
+    char* data = (char*) a->fields.org_xmlvm_runtime_XMLVMArray.array_;
+    int length = a->fields.org_xmlvm_runtime_XMLVMArray.length_;
+    char* buf = XMLVM_ATOMIC_MALLOC(length + 1);
+    XMLVM_MEMCPY(buf, data, length);
+    buf[length] = '\0';
+    return buf;
+}
+
