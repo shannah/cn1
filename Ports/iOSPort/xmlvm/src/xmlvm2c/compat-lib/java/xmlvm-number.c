@@ -65,7 +65,7 @@ simpleShiftLeftHighPrecision (U_64 * arg1, IDATA length, IDATA arg2)
     }
 
 	if (arg2 == 0)
-		return;
+		return 0;
 	while (--length > 0)
     {
 		arg1[length] = arg1[length] << arg2 | arg1[length - 1] >> (64 - arg2);
