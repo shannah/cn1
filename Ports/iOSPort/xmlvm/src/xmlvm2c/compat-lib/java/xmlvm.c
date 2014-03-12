@@ -237,6 +237,19 @@ JAVA_OBJECT xmlvm_create_java_string_from_pool(int pool_id)
     return poolStr;
 }
 
+JAVA_OBJECT xmlvm_create_java_string_from_char_array(JAVA_OBJECT c, int len)
+{
+	
+    java_lang_String* str = __NEW_java_lang_String();
+    org_xmlvm_runtime_XMLVMArray* charArray = XMLVMArray_createSingleDimensionWithData(__CLASS_char,
+                                                                                       len,
+                                                                                       c);
+    java_lang_String___INIT____char_1ARRAY(str, charArray);
+    JAVA_OBJECT poolStr = XMLVMUtil_getFromStringPool(str);
+    
+    return poolStr;
+}
+
 
 //---------------------------------------------------------------------------------------------
 // XMLVMClass
