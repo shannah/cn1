@@ -63,7 +63,7 @@ public class AugmentedCOutputProcess extends XmlvmProcessImpl {
 
         for (OutputFile outputFile : bundle.getOutputFiles()) {
             String clazz = outputFile.getTag(COutputProcess.TAG_CLASS_NAME);
-            if (clazz != null) {
+            if (clazz != null && (clazz.startsWith("java_") || clazz.startsWith("javax_") || clazz.startsWith("com_sun_") || clazz.contains("_harmony_") )) {
                 tibBuffer.append("#include \"" + clazz + ".h\"\n");
                 tibListArrayBuffer.append("    (__TIB_DEFINITION_TEMPLATE*) &__TIB_" + clazz
                         + ",\n");
