@@ -74,6 +74,7 @@ public class Arguments {
     public static final String    ARG_PROPERTY                     = "-D";
     
     public static final String    ARG_XMLVM_NEW_IOS_API            = "--xmlvm-new-ios-api";
+    public static final String    ARG_DISABLE_VTABLE_OPTIMIZATIONS = "--disable-vtable-optimizations";
     
     // The parsed values will be stored here.
     private List<String>          option_in                        = new ArrayList<String>();
@@ -97,6 +98,7 @@ public class Arguments {
     private boolean               option_no_cache                  = true;
     private Map<String, String>   option_property                  = new HashMap<String, String>();
     private boolean               option_xmlvm_new_ios_api         = false;
+    private boolean               option_disable_vtable_optimizations = false;
 
     private static final String[] shortUsage                       = {
             "Usage: ",
@@ -329,6 +331,8 @@ public class Arguments {
                         value.substring(equal + 1));
             } else if (arg.equals(ARG_XMLVM_NEW_IOS_API)) {
                 option_xmlvm_new_ios_api = true;
+            } else if (arg.equals(ARG_DISABLE_VTABLE_OPTIMIZATIONS)){
+            	option_disable_vtable_optimizations = true;
             } else if (arg.length() == 0) {
                 // Ignore empty arguments
             } else {
@@ -545,6 +549,10 @@ public class Arguments {
 
     public boolean option_xmlvm_new_ios_api() {
         return option_xmlvm_new_ios_api;
+    }
+    
+    public boolean option_disable_vtable_optimizations(){
+    	return option_disable_vtable_optimizations;
     }
     
     private static void printText(String[] txt, PrintStream out) {

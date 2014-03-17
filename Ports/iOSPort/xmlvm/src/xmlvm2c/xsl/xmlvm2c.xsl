@@ -609,6 +609,7 @@ int main(int argc, char* argv[])
     <xsl:text>), // sizeInstance&nl;</xsl:text>
     <xsl:text>    XMLVM_TYPE_CLASS};&nl;&nl;</xsl:text>
 
+	
     <xsl:text>JAVA_OBJECT __CLASS_</xsl:text>
     <xsl:value-of select="$clname"/>
     <xsl:text>;&nl;</xsl:text>
@@ -718,18 +719,11 @@ int main(int argc, char* argv[])
       <xsl:text>.vtable[</xsl:text>
       <xsl:value-of select="@vtableIndex"/>
       <xsl:text>] = (VTABLE_PTR) &amp;</xsl:text>
-      <xsl:choose>
-        <xsl:when test="@isNative = 'true'">
-          <xsl:text>xmlvm_unimplemented_native_method</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:call-template name="emitMethodName">
-            <xsl:with-param name="name" select="@name"/>
-            <xsl:with-param name="class-type" select="concat(../@package, '.', ../@name)"/>
-          </xsl:call-template>
-          <xsl:call-template name="appendSignature"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:call-template name="emitMethodName">
+		<xsl:with-param name="name" select="@name"/>
+		<xsl:with-param name="class-type" select="concat(../@package, '.', ../@name)"/>
+	  </xsl:call-template>
+	  <xsl:call-template name="appendSignature"/>
       <xsl:text>;&nl;</xsl:text>
     </xsl:for-each>
 

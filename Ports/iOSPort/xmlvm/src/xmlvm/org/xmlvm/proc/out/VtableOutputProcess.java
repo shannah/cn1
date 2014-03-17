@@ -183,7 +183,8 @@ public class VtableOutputProcess extends XmlvmProcessImpl {
             if (idx == -1) {
                 // Add vtable index if the method is overridden, abstract or
                 // specified as vtable method in isForcedVtable
-                if (method.isAbstract()
+                if ( arguments.option_disable_vtable_optimizations()
+                        || method.isAbstract()
                         || hierarchyHelper.isOverridden(resource.getFullName(), method)
                         || isForcedVtable(resource, method)) {
                     Log.debug(TAG, "Vtable method " + resource.getFullName() + " "

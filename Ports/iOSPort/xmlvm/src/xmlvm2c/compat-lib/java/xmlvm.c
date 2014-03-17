@@ -167,6 +167,7 @@ void staticInitializerUnlock(void* tibDefinition)
     unlockOrExit(className, staticInitializerController->initMutex);
 }
 
+
 int xmlvm_java_string_cmp(JAVA_OBJECT s1, const char* s2)
 {
     java_lang_String* str = (java_lang_String*) s1;
