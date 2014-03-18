@@ -24,8 +24,14 @@ package com.codename1.impl.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.os.Bundle;
+import android.view.View;
 import com.codename1.impl.android.AndroidImplementation;
 import com.codename1.ui.Display;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This is a utility class for common native usages
@@ -33,7 +39,91 @@ import com.codename1.ui.Display;
  * @author Chen
  */
 public class AndroidNativeUtil {
+    private static ArrayList<LifecycleListener> listeners;
+    private static Bundle activationBundle;
+
+    /**
+     * Allows us to get the bundle that was used to create this activity
+     * @return the bundle instance
+     */
+    public static Bundle getActivationBundle() {
+        return activationBundle;
+    }
     
+    /**
+     * Binds a callback to lifecycle events
+     * @param l listener
+     */
+    public static void addLifecycleListener(LifecycleListener l) {
+        if(listeners == null) {
+            listeners = new ArrayList<LifecycleListener>();
+        }
+        listeners.add(l);
+    }
+    
+    /**
+     * Releases the callback to lifecycle events
+     * @param l listener
+     */
+    public static void removeLifecycleListener(LifecycleListener l) {
+        if(listeners == null) {
+            return;
+        }
+        listeners.remove(l);
+        if(listeners.isEmpty()) {
+            listeners = null;
+        }
+    }
+    
+    static void onCreate(Bundle savedInstanceState) {
+        activationBundle = savedInstanceState;
+        if(listeners != null) {
+            for(LifecycleListener l : listeners) {
+                l.onCreate(savedInstanceState);
+            }
+        }
+    }
+    
+    static void onResume() {
+        if(listeners != null) {
+            for(LifecycleListener l : listeners) {
+                l.onResume();
+            }
+        }
+    }
+    
+    static void onPause() {
+        if(listeners != null) {
+            for(LifecycleListener l : listeners) {
+                l.onPause();
+            }
+        }
+    }
+    
+    static void onDestroy() {
+        if(listeners != null) {
+            for(LifecycleListener l : listeners) {
+                l.onDestroy();
+            }
+        }
+    }
+    
+    static void onSaveInstanceState(Bundle b) {
+        if(listeners != null) {
+            for(LifecycleListener l : listeners) {
+                l.onSaveInstanceState(b);
+            }
+        }
+    }
+    
+    static void onLowMemory() {
+        if(listeners != null) {
+            for(LifecycleListener l : listeners) {
+                l.onLowMemory();
+            }
+        }
+    }
+            
     /**
      * Get the main activity
      */ 
@@ -55,7 +145,41 @@ public class AndroidNativeUtil {
                 act.restoreIntentResultListener();
             }
         });
-        
-        
+    }
+    
+    private static HashMap<Class, BitmapViewRenderer> viewRendererMap;
+    
+    public static Bitmap renderViewOnBitmap(final View v, int w, int h) {
+        if(viewRendererMap != null) {
+            BitmapViewRenderer br = viewRendererMap.get(v.getClass());
+            if(br != null) {                
+                return br.renderViewOnBitmap(v, w, h);
+            }
+        }
+        final Bitmap nativeBuffer = Bitmap.createBitmap(
+                        w, h, Bitmap.Config.ARGB_8888);
+        AndroidImplementation.runOnUiThreadAndBlock(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Canvas canvas = new Canvas(nativeBuffer);
+                    v.draw(canvas);
+                } catch(Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        });
+        return nativeBuffer;
+    }
+    
+    public static void registerViewRenderer(Class viewClass, BitmapViewRenderer b) {
+        if(viewRendererMap == null) {
+            viewRendererMap = new HashMap<Class, BitmapViewRenderer>();
+        }
+        viewRendererMap.put(viewClass, b);
+    }
+    
+    public static interface BitmapViewRenderer {
+        public Bitmap renderViewOnBitmap(View v, int w, int h);
     }
 }

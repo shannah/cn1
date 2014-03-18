@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIStatusBarHidden</key>
+	<PROPERTY_STATUSBARHIDDEN/>
+	<key>UIPrerenderedIcon</key>
+	<PROPERTY_PRERENDEREDICON/>
+	<key>UIFileSharingEnabled</key>
+	<PROPERTY_FILESHARINGENABLED/>
+	<key>UIApplicationExitsOnSuspend</key>
+	<PROPERTY_APPLICATIONEXITS/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>Icon.png</string>
+		<string>Icon@2x.png</string>
+		<string>Icon-72.png</string>
+		<string>Icon-Small-50.png</string>
+		<string>Icon-Small.png</string>
+		<string>Icon-Small@2x.png</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>PROPERTY_BUNDLEDISPLAYNAME</string>
+	<key>CFBundleExecutable</key>
+	<string>XMLVM_APP</string>
+	<key>CFBundleIdentifier</key>
+	<string>PROPERTY_BUNDLEIDENTIFIER</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>XMLVM_APP</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>PROPERTY_BUNDLEVERSION</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSMainNibFile</key>
+	<string>MainWindow</string>
+	<key>UIInterfaceOrientation</key>
+	<string>PROPERTY_INTERFACE_ORIENTATION</string>
+PROPERTY_SUPPORTED_INTERFACE_ORIENTATIONS
+PROPERTY_FONTS
+</dict>
+</plist>
