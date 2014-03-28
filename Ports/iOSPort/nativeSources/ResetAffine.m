@@ -36,17 +36,17 @@ extern float currentScaleY;
 }
 
 -(void)execute {
-    glLoadIdentity();
+    _glLoadIdentity();
     GLErrorLog;
-    glOrthof(0, Java_com_codename1_impl_ios_IOSImplementation_getDisplayWidthImpl(), 0, Java_com_codename1_impl_ios_IOSImplementation_getDisplayHeightImpl(), -1, 1);
+    _glOrthof(0, Java_com_codename1_impl_ios_IOSImplementation_getDisplayWidthImpl(), 0, Java_com_codename1_impl_ios_IOSImplementation_getDisplayHeightImpl(), -1, 1);
     GLErrorLog;
-    glMatrixMode(GL_MODELVIEW);
+    _glMatrixMode(GL_MODELVIEW);
     GLErrorLog;
-    glLoadIdentity();
+    _glLoadIdentity();
     GLErrorLog;
-    glScalef(1, -1, 1);
+    _glScalef(1, -1, 1);
     GLErrorLog;
-    glTranslatef(0, -Java_com_codename1_impl_ios_IOSImplementation_getDisplayHeightImpl(), 0);
+    _glTranslatef(0, -Java_com_codename1_impl_ios_IOSImplementation_getDisplayHeightImpl(), 0);
     GLErrorLog;
     currentScaleX = 1;
     currentScaleY = 1;

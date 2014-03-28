@@ -43,12 +43,12 @@
     int h = (int)[font lineHeight];
     int p2w = nextPowerOf2(w);
     int p2h = nextPowerOf2(h);
-    glEnableClientState(GL_VERTEX_ARRAY);
+    _glEnableClientState(GL_VERTEX_ARRAY);
     //glEnableClientState(GL_NORMAL_ARRAY);
     GLErrorLog;
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    _glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     GLErrorLog;
-    glEnable(GL_TEXTURE_2D);
+    _glEnable(GL_TEXTURE_2D);
     GLErrorLog;
     if(textureName == 0) {
         glGenTextures(1, &textureName);
@@ -75,7 +75,7 @@
         free(imageData);
         [DrawStringTextureCache cache:str f:font t:textureName c:color a:255];
     }    
-    glColor4f(((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f);
+    _glColor4f(((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f);
     glBindTexture(GL_TEXTURE_2D, textureName);
     GLErrorLog;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -96,22 +96,22 @@
             1, 0,
         };
         
-        glTexCoordPointer(2, GL_SHORT, 0, textureCoordinates);
+        _glTexCoordPointer(2, GL_SHORT, 0, textureCoordinates);
         GLErrorLog;
-        glVertexPointer(2, GL_FLOAT, 0, vertexes);
+        _glVertexPointer(2, GL_FLOAT, 0, vertexes);
         GLErrorLog;
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        _glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         GLErrorLog;
 
-    glDisableClientState(GL_VERTEX_ARRAY);
+    _glDisableClientState(GL_VERTEX_ARRAY);
     GLErrorLog;
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    _glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     GLErrorLog;
     glBindTexture(GL_TEXTURE_2D, 0);
     GLErrorLog;
     //glDisableClientState(GL_NORMAL_ARRAY);
     GLErrorLog;
-    glDisable(GL_TEXTURE_2D);
+    _glDisable(GL_TEXTURE_2D);
     GLErrorLog;
 }
 

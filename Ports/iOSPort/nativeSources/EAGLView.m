@@ -177,25 +177,25 @@ extern BOOL isRetina();
         
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         GLErrorLog;
-        glDisable(GL_DEPTH_TEST);
+        _glDisable(GL_DEPTH_TEST);
         GLErrorLog;
         
         glViewport(0, 0, framebufferWidth, framebufferHeight);
         GLErrorLog;
-        glMatrixMode(GL_PROJECTION);
+        _glMatrixMode(GL_PROJECTION);
         GLErrorLog;
-        glLoadIdentity();
+        _glLoadIdentity();
         GLErrorLog;
-        glOrthof(0, framebufferWidth, 0, framebufferHeight, -1, 1);
+        _glOrthof(0, framebufferWidth, 0, framebufferHeight, -1, 1);
         //NSLog(@"glOrtho %i, %i  bounds.size.height: %i", framebufferWidth, framebufferHeight, (int)self.bounds.size.height);
         GLErrorLog;
-        glMatrixMode(GL_MODELVIEW);
+        _glMatrixMode(GL_MODELVIEW);
         GLErrorLog;
-        glLoadIdentity();
+        _glLoadIdentity();
         GLErrorLog;
-        glEnable(GL_BLEND);
+        _glEnable(GL_BLEND);
         GLErrorLog;
-        glDisable(GL_ALPHA_TEST);
+        _glDisable(GL_ALPHA_TEST);
         GLErrorLog;
     }
 }

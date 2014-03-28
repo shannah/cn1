@@ -36,7 +36,7 @@ float currentScaleY = 1;
 }
 
 -(void)execute {
-    glScalef(x, y, 0);
+    _glScalef(x, y, 0);
     currentScaleX = x;
     currentScaleY = y;
     GLErrorLog;

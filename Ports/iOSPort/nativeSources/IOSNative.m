@@ -22,7 +22,7 @@
  */
 #include "xmlvm.h"
 #include "java_lang_String.h"
-
+#import "CN1ES2compat.h"
 #include "xmlvm-util.h"
 #import <UIKit/UIKit.h>
 #import "CodenameOne_GLViewController.h"

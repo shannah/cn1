@@ -81,7 +81,7 @@ static CGRect drawingRect;
         int scale = scaleValue;
         int displayHeight = [CodenameOne_GLViewController instance].view.bounds.size.height * scale;
         if(width == [CodenameOne_GLViewController instance].view.bounds.size.width * scale && height == displayHeight) {
-            glDisable(GL_SCISSOR_TEST);
+            _glDisable(GL_SCISSOR_TEST);
             GLErrorLog;
             return;
         }
@@ -90,12 +90,12 @@ static CGRect drawingRect;
         clipW = width;
         clipH = height;
         [ClipRect updateClipToScale];
-        glEnable(GL_SCISSOR_TEST);
+        _glEnable(GL_SCISSOR_TEST);
         GLErrorLog;
         clipApplied = YES;
     } else {
         [super clipBlock:YES];
-        glDisable(GL_SCISSOR_TEST);
+        _glDisable(GL_SCISSOR_TEST);
         GLErrorLog;
         clipApplied = NO;
     }

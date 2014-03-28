@@ -38,9 +38,9 @@ float currentRotateY = 1;
 }
 
 -(void)execute {
-    glTranslatef(x, y, 0);
-    glRotatef(angle, 0, 0, 1);
-    glTranslatef(-x, -y, 0);
+    _glTranslatef(x, y, 0);
+    _glRotatef(angle, 0, 0, 1);
+    _glTranslatef(-x, -y, 0);
     currentRotateX = x;
     currentRotateY = y;
     currentRotate = angle;

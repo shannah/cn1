@@ -1048,12 +1048,15 @@ static CodenameOne_GLViewController *sharedSingleton;
     }
     sharedSingleton = self;
     [self initVars];
+#ifdef USE_ES2
+    EAGLContext *aContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+#else
     EAGLContext *aContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
-    
+
     if (!aContext) {
         aContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
     }
-    
+#endif
     if (!aContext)
         NSLog(@"Failed to create ES context");
     else if (![EAGLContext setCurrentContext:aContext])
@@ -1067,9 +1070,10 @@ static CodenameOne_GLViewController *sharedSingleton;
     //self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     //self.view.autoresizesSubviews = YES;
     
-    if ([context API] == kEAGLRenderingAPIOpenGLES2)
-        [self loadShaders];
-    
+//    if ([context API] == kEAGLRenderingAPIOpenGLES2)
+//        [self loadShaders];
+        
+
     animating = FALSE;
     animationFrameInterval = 1;
     self.displayLink = nil;
@@ -1169,18 +1173,18 @@ static CodenameOne_GLViewController *sharedSingleton;
         
         GLErrorLog;
         
-        glScalef(xScale, -1, 1);
+        _glScalef(xScale, -1, 1);
         GLErrorLog;
-        glTranslatef(0, -he, 0);
+        _glTranslatef(0, -he, 0);
         GLErrorLog;
         
         [dr execute];
         [gl release];
         
-        glTranslatef(0, he, 0);
+        _glTranslatef(0, he, 0);
         GLErrorLog;
         
-        glScalef(xScale, -1, 1);
+        _glScalef(xScale, -1, 1);
         GLErrorLog;
         
         [(EAGLView *)self.view presentFramebuffer];
@@ -1531,9 +1535,9 @@ bool lockDrawing;
         if([currentTarget count] > 0) {
             [ClipRect setDrawRect:rect];
             //NSLog(@"Clipping rect to: %i, %i, %i %i", (int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width, (int)rect.size.height );
-            glScalef(1, -1, 1);
+            _glScalef(1, -1, 1);
             GLErrorLog;
-            glTranslatef(0, -displayHeight, 0);
+            _glTranslatef(0, -displayHeight, 0);
             GLErrorLog;
             
             /*if(((int)rect.size.width) != displayWidth || ((int)rect.size.height) != displayHeight) {
@@ -1557,9 +1561,9 @@ bool lockDrawing;
             }
             //NSLog(@"Total memory is: %i", [ExecutableOp get_free_memory]);
             [cp release];
-            glTranslatef(0, displayHeight, 0);
+            _glTranslatef(0, displayHeight, 0);
             GLErrorLog;
-            glScalef(1, -1, 1);
+            _glScalef(1, -1, 1);
             GLErrorLog;
             
             [DrawGradientTextureCache flushDeleted];
