@@ -365,10 +365,14 @@ public class AndroidImplementation extends CodenameOneImplementation implements 
                 final String t = actualType;
                 final String b = is.readUTF();
                 long s = is.readLong();
-                if (t.equals(type)) {
+                if(t != null && "3".equals(t)) {                                
+                    String[] m = b.split(";");
+                    v.add(m[0]);
+                } else if(t != null && "2".equals(t)){
+                    continue;
+                }else{
                     v.add(b);
                 }
-
             }
             String [] retVal = new String[v.size()];
             for (int j = 0; j < retVal.length; j++) {
@@ -2305,6 +2309,8 @@ public class AndroidImplementation extends CodenameOneImplementation implements 
         }
         
         protected void deinitialize() {
+            Image i = generatePeerImage();
+            setPeerImage(i);
             super.deinitialize();
             synchronized (nativePeers) {
                 nativePeers.remove(this);
@@ -2403,6 +2409,11 @@ public class AndroidImplementation extends CodenameOneImplementation implements 
                         });
                     }
                     if(AndroidImplementation.this.relativeLayout != null){
+                        // not sure why this happens but we got an exception where add view was called with
+                        // a layout that was already added...
+                        if(layoutWrapper.getParent() != null) {
+                            ((ViewGroup)layoutWrapper.getParent()).removeView(layoutWrapper);
+                        }
                         AndroidImplementation.this.relativeLayout.addView(layoutWrapper);
                     }
                 }
@@ -3263,6 +3274,10 @@ public class AndroidImplementation extends CodenameOneImplementation implements 
             act.runOnUiThread(new Runnable() {
                 public void run() {
                     WebSettings s = web.getSettings();
+                    if(key.equalsIgnoreCase("useragent")) {
+                        s.setUserAgentString((String)value);
+                        return;
+                    }
                     String methodName = "set" + key;
                     for (Method m : s.getClass().getMethods()) {
                         if (m.getName().equalsIgnoreCase(methodName) && m.getParameterTypes().length == 0) {
@@ -4119,7 +4134,7 @@ public class AndroidImplementation extends CodenameOneImplementation implements 
         if(args != null) {
             Boolean b = (Boolean)args.get("persist");
             if(b != null && b.booleanValue()) {
-                notification.defaults |= Notification.FLAG_ONGOING_EVENT;
+                notification.defaults |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
             }
             
             Integer notId = (Integer)args.get("id");
