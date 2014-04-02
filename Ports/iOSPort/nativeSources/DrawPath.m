@@ -13,7 +13,9 @@
 #import "Transformer.h"
 #import "PathConsumer.h"
 #import "AlphaConsumer.h"
-
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
+#define abs(x) ((x)>0?(x):-(x))
 
 @implementation DrawPath
 
@@ -35,22 +37,24 @@
     JAVA_INT outputBounds[4];
     
     Renderer_getOutputBounds(renderer, (JAVA_INT*)&outputBounds);
-    JAVA_INT x = outputBounds[0];
-    JAVA_INT y = outputBounds[1];
+    JAVA_INT x = min(outputBounds[0], outputBounds[2]);
+    JAVA_INT y = min(outputBounds[1], outputBounds[3]);
     JAVA_INT width = outputBounds[2]-outputBounds[0];
     JAVA_INT height = outputBounds[3]-outputBounds[1];
     
+    if ( width < 0 ) width = -width;
+    if ( height < 0 ) height = -height;
     
 
     
     GlColorFromRGB(color, alpha);
+   
     GLfloat vertexes[] = {
-        x + 1, y + 1,
-        x + width, y + 1,
-        x + width, y + height,
-        x + 1, y + height,
+        x, y,
+        x + width, y,
+        x, y + height,
+        x + width, y + height
     };
-    
     static const GLshort textureCoordinates[] = {
         0, 1,
         1, 1,
@@ -58,8 +62,8 @@
         1, 0,
     };
     
-    if ( width < 0 ) width = -width;
-    if ( height <0 ) height = -height;
+    //if ( width < 0 ) width = -width;
+    //if ( height <0 ) height = -height;
 
    
     AlphaConsumer ac = {

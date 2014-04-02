@@ -3901,7 +3901,8 @@ JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreate___int_int_in
 //native void nativePathRendererSetup(int subpixelLgPositionsX, int subpixelLgPositionsY);
 void com_codename1_impl_ios_IOSNative_nativePathRendererSetup___int_int(JAVA_OBJECT instanceObject, JAVA_INT subpixelLgPositionsX, JAVA_INT subpixelLgPositionsY)
 {
-    Renderer_setup(subpixelLgPositionsX, subpixelLgPositionsY);
+    //Renderer_setup(subpixelLgPositionsX, subpixelLgPositionsY);
+    Renderer_setup(1, 1);
 }
 //native void nativePathRendererCleanup(long ptr);
 void com_codename1_impl_ios_IOSNative_nativePathRendererCleanup___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
