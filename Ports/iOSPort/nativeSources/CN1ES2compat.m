@@ -1,60 +1,65 @@
-#include "CN1ES2compat.h"
+#import "CN1ES2compat.h"
 #ifdef USE_ES2
+#import <GLKit/GLKit.h>
 
-GLKMatrix4 CN1modelViewMatrix;
-GLKMatrix4 CN1projectionMatrix;
-BOOL CN1ClientState_GL_COLOR_ARRAY = FALSE;
-BOOL CN1ClientState_GL_EDGE_FLAG_ARRAY = FALSE;
-BOOL CN1ClientState_GL_FOG_COORD_ARRAY = FALSE;
-BOOL CN1ClientState_GL_INDEX_ARRAY = FALSE;
-BOOL CN1ClientState_GL_NORMAL_ARRAY = FALSE;
-BOOL CN1ClientState_GL_SECONDARY_COLOR_ARRAY = FALSE;
-BOOL CN1ClientState_GL_TEXTURE_COORD_ARRAY = FALSE;
-BOOL CN1ClientState_GL_VERTEX_ARRAY = FALSE;
-GLenum CN1matrixMode;
+static GLKMatrix4 CN1modelViewMatrix;
+static GLKMatrix4 CN1projectionMatrix;
+static BOOL CN1ClientState_GL_COLOR_ARRAY = FALSE;
+static BOOL CN1ClientState_GL_EDGE_FLAG_ARRAY = FALSE;
+static BOOL CN1ClientState_GL_FOG_COORD_ARRAY = FALSE;
+static BOOL CN1ClientState_GL_INDEX_ARRAY = FALSE;
+static BOOL CN1ClientState_GL_NORMAL_ARRAY = FALSE;
+static BOOL CN1ClientState_GL_SECONDARY_COLOR_ARRAY = FALSE;
+static BOOL CN1ClientState_GL_TEXTURE_COORD_ARRAY = FALSE;
+static BOOL CN1ClientState_GL_VERTEX_ARRAY = FALSE;
+static GLenum CN1matrixMode;
 
-GLuint CN1activeProgram = NULL;
+static GLuint CN1activeProgram = NULL;
 
 // Vertex buffers
-GLuint CN1TextureMaskVertexBuffer = NULL;
-GLuint CN1TextureRGBAVertexBuffer = NULL;
-GLuint CN1VertexBuffer = NULL;
-GLuint CN1VertexColorBuffer = NULL;
+static GLuint CN1TextureMaskVertexBuffer = NULL;
+static GLuint CN1TextureRGBAVertexBuffer = NULL;
+static GLuint CN1VertexBuffer = NULL;
+static GLuint CN1VertexColorBuffer = NULL;
 
 // Shader Attributes
-GLuint CN1TextureMaskCoordAtt = NULL;
-GLuint CN1TextureRGBACoordAtt = NULL;
-GLuint CN1VertexCoordAtt = NULL;
-GLuint CN1VertexColorCoordAtt = NULL;
+static GLuint CN1TextureMaskCoordAtt = NULL;
+static GLuint CN1TextureRGBACoordAtt = NULL;
+static GLuint CN1VertexCoordAtt = NULL;
+static GLuint CN1VertexColorCoordAtt = NULL;
 
 // Shader Uniforms
-GLuint CN1TextureMaskUniform = NULL;
-GLuint CN1TextureRGBAUniform = NULL;
-GLuint CN1ColorUniform = NULL;
-GLuint CN1modelViewMatrixUniform = NULL;
-GLuint CN1projectionMatrixUniform = NULL;
+static GLuint CN1TextureMaskUniform = NULL;
+static GLuint CN1TextureRGBAUniform = NULL;
+static GLuint CN1ColorUniform = NULL;
+static GLuint CN1modelViewMatrixUniform = NULL;
+static GLuint CN1projectionMatrixUniform = NULL;
 
 // Shader Uniform Flags
-GLuint CN1useVertexColorsUniform = NULL;
-GLuint CN1useAlphaMaskTextureUniform = NULL;
-GLuint CN1useRGBATextureUniform = NULL;
-BOOL CN1ProgramLoaded = NO;
+static GLuint CN1useVertexColorsUniform = NULL;
+static GLuint CN1useAlphaMaskTextureUniform = NULL;
+static GLuint CN1useRGBATextureUniform = NULL;
+static BOOL CN1ProgramLoaded = NO;
 
-GLvoid * CN1vertexPointer;
-GLenum CN1vertexPointerType;
-GLsizei CN1vertexPointerSize;
+static GLvoid * CN1vertexPointer;
+static GLenum CN1vertexPointerType;
+static GLsizei CN1vertexPointerSize;
 
-GLvoid * CN1colorPointer;
-GLenum CN1colorPointerType;
-GLsizei CN1colorPointerSize;
+static GLvoid * CN1colorPointer;
+static GLenum CN1colorPointerType;
+static GLsizei CN1colorPointerSize;
 
-GLvoid * CN1textureRGBPointer;
-GLenum CN1textureRGBPointerType;
-GLsizei CN1textureRGBPointerSize;
+static GLvoid * CN1textureRGBPointer;
+static GLenum CN1textureRGBPointerType;
+static GLsizei CN1textureRGBPointerSize;
 
-GLKVector4 CN1currentColor;
+static GLvoid * CN1textureMaskPointer;
+static GLenum CN1textureMaskPointerType;
+static GLsizei CN1textureMaskPointerSize;
 
-int _getGLSize(GLenum type){
+static GLKVector4 CN1currentColor;
+
+static int _getGLSize(GLenum type){
     int elSize = 1;
     switch ( type ){
         case GL_SHORT:
@@ -69,7 +74,7 @@ int _getGLSize(GLenum type){
     return elSize;
 }
 
-int _printGLPointer(GLenum type, GLint len, GLint size, const GLvoid * pointer){
+static int _printGLPointer(GLenum type, GLint len, GLint size, const GLvoid * pointer){
     return 0;
     if ( type == GL_FLOAT ){
         NSLog(@"It's a float");
@@ -93,11 +98,12 @@ int _printGLPointer(GLenum type, GLint len, GLint size, const GLvoid * pointer){
 
 
 
-void CN1compileBasicProgram(){
-    NSLog(@"Compiling basic program");
+static void CN1compileBasicProgram(){
     if ( CN1ProgramLoaded ){
         return;
     }
+    NSLog(@"Compiling basic program");
+    
     CN1ProgramLoaded = YES;
     CN1activeProgram = glCreateProgram();
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -279,7 +285,7 @@ void CN1compileBasicProgram(){
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void CN1updateProjectionMatrixES2(){
+static void CN1updateProjectionMatrixES2(){
     CN1compileBasicProgram();
     glUniformMatrix4fv(CN1projectionMatrixUniform, 1, 0, CN1projectionMatrix.m);
     
@@ -287,7 +293,7 @@ void CN1updateProjectionMatrixES2(){
     //NSLog(@"Projection matrix now %@", NSStringFromGLKMatrix4(CN1projectionMatrix));
 }
 
-void CN1updateModelViewMatrixES2(){
+static void CN1updateModelViewMatrixES2(){
     CN1compileBasicProgram();
     glUniformMatrix4fv(CN1modelViewMatrixUniform, 1, 0, CN1modelViewMatrix.m);
     
@@ -295,7 +301,7 @@ void CN1updateModelViewMatrixES2(){
     //NSLog(@"Model View matrix now %@", NSStringFromGLKMatrix4(CN1modelViewMatrix));
 }
 
-void CN1updateColorES2(){
+static void CN1updateColorES2(){
     //NSLog(@"Updating color to %f,%f,%f,%f", CN1currentColor.v[0], CN1currentColor.v[1], CN1currentColor.v[2], CN1currentColor.v[3]);
     glUniform4fv(CN1ColorUniform, 1, CN1currentColor.v);
 }
@@ -441,7 +447,7 @@ extern void glTranslatefES2(GLfloat x, GLfloat y, GLfloat z){
     }
 }
 
-void glRotatefES2(GLfloat angle, GLfloat x, FLfloat, y, GLfloat z){
+void glRotatefES2(GLfloat angle, GLfloat x, GLfloat y, GLfloat z){
     //NSLog(@"Rotating %f %f %f %f", angle, x, y, z);
     GLKMatrix4 rotate = GLKMatrix4MakeRotation(angle, x, y, z);
     if ( CN1matrixMode == GL_PROJECTION ){
@@ -487,9 +493,10 @@ void glEnableClientStateES2(GLenum state){
 void glDisableClientStateES2(GLenum state){
     switch (state){
         case GL_COLOR_ARRAY:
-            CN1ClientState_GL_COLOR_ARRAY = FALSE; break;
+            CN1ClientState_GL_COLOR_ARRAY = FALSE;
             glDisableVertexAttribArray(CN1VertexColorCoordAtt);
             glUniform1i(CN1useVertexColorsUniform, 0);
+            break;
         case GL_NORMAL_ARRAY:
             CN1ClientState_GL_NORMAL_ARRAY = FALSE;break;
         case GL_TEXTURE_COORD_ARRAY:
@@ -549,6 +556,49 @@ void glVertexPointerES2(	GLint size,
     //_printGLPointer(type, size, pointer);
     
     
+}
+
+void glAlphaMaskTexCoordPointerES2( GLint size, GLenum type, GLsizei stride, const GLvoid *pointer){
+    if ( !CN1TextureMaskVertexBuffer ){
+        glGenBuffers(1, &CN1TextureMaskVertexBuffer);
+    }
+    //glBindBuffer(GL_ARRAY_BUFFER, CN1TextureRGBAVertexBuffer);
+    int elSize = _getGLSize(type);
+    glVertexAttribPointer(CN1TextureMaskCoordAtt, size, type, 0, stride, pointer);
+    //glBufferData(GL_ARRAY_BUFFER, _getGLSize(type), pointer, GL_DYNAMIC_DRAW);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //NSLog(@"Texture pointer:");
+    //_printGLPointer(type, size, pointer);
+    CN1textureMaskPointer = pointer;
+    CN1textureMaskPointerType = type;
+    CN1textureMaskPointerSize = size;
+}
+
+void glEnableCN1StateES2(enum CN1GLenum state){
+    switch ( state ){
+        case CN1_GL_ALPHA_TEXTURE:
+            glEnableVertexAttribArray(CN1TextureMaskCoordAtt);
+            glUniform1i(CN1useAlphaMaskTextureUniform, 1);
+            break;
+            
+        case CN1_GL_VERTEX_COLORS:
+            break;
+    }
+}
+
+void glDisableCN1StateES2(enum CN1GLenum state){
+    switch ( state ){
+        case CN1_GL_ALPHA_TEXTURE:
+            glDisableVertexAttribArray(CN1TextureMaskCoordAtt);
+            glUniform1i(CN1useAlphaMaskTextureUniform, 0);
+            break;
+        
+            
+        case CN1_GL_VERTEX_COLORS:
+            glUniform1i(CN1useVertexColorsUniform, 0);
+            
+            break;
+    }
 }
 
 

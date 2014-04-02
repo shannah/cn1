@@ -406,4 +406,34 @@ public final class IOSNative {
     public native int getSocketAvailableInput(long socket);
     public native byte[] readFromSocketStream(long socket);
     public native void writeToSocketStream(long socket, byte[] data);
+    
+    
+    
+    // Paths
+    native long nativePathStrokerCreate(long consumerOutPtr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
+    native void nativePathStrokerCleanup(long ptr);
+    native void nativePathStrokerReset(long ptr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
+    native long nativePathStrokerGetConsumer(long ptr);
+    
+    native long nativePathRendererCreate(int pix_boundsX, int pix_boundsY,
+                           int pix_boundsWidth, int pix_boundsHeight,
+                           int windingRule);
+    native void nativePathRendererSetup(int subpixelLgPositionsX, int subpixelLgPositionsY);
+    native void nativePathRendererCleanup(long ptr);
+    native void nativePathRendererReset(long ptr, int pix_boundsX, int pix_boundsY,
+                           int pix_boundsWidth, int pix_boundsHeight,
+                           int windingRule);
+    native void nativePathRendererGetOutputBounds(long ptr, int[] bounds);
+    native long nativePathRendererGetConsumer(long ptr);
+    
+    native void nativePathConsumerMoveTo(long ptr, float x, float y);
+    native void nativePathConsumerLineTo(long ptr, float x, float y);
+    native void nativePathConsumerQuadTo(long ptr, float xc, float yc, float x1, float y1);
+    native void nativePathConsumerCurveTo(long ptr, float xc1, float yc1, float xc2, float yc2, float x1, float y1);
+    native void nativePathConsumerClose(long ptr);
+    native void nativePathConsumerDone(long ptr);
+    
+    native void nativeDrawPath(int color, int alpha, long ptr);
+    
+    // End paths
 }

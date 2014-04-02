@@ -5,18 +5,17 @@
 //  Created by Steve Hannah on 3/28/2014.
 //
 //
-#import "xmlvm.h"
 #import <Foundation/Foundation.h>
 #import "ExecutableOp.h"
+#import "Renderer.h"
 
 @interface DrawPath : ExecutableOp {
-    JAVA_OBJECT path;
-    BOOL fill;
+    Renderer* renderer;
     int color;
     int alpha;
 }
 
--(id)initWithPath:(JAVA_OBJECT)path;
+-(id)initWithRenderer:(Renderer*)renderer color:(int)c alpha:(int)a;
 -(void)execute;
 
 @end

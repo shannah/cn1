@@ -81,6 +81,7 @@ import com.codename1.io.Cookie;
 import com.codename1.media.MediaManager;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
+import com.codename1.ui.geom.PathIterator;
 import com.codename1.ui.plaf.Style;
 import java.io.ByteArrayOutputStream;
 
@@ -90,6 +91,7 @@ import java.io.ByteArrayOutputStream;
  */
 public class IOSImplementation extends CodenameOneImplementation {
     public static IOSNative nativeInstance = new IOSNative();
+    
     private static PurchaseCallback purchaseCallback;
     private int timeout = 120000;
     private static final Object CONNECTIONS_LOCK = new Object();
@@ -105,6 +107,9 @@ public class IOSImplementation extends CodenameOneImplementation {
     private static CodeScannerImpl scannerInstance;
     private static boolean minimized;
     private String userAgent;
+    
+    private NativePathRenderer globalPathRenderer;
+    private NativePathStroker globalPathStroker;
 
     public void initEDT() {
         while(!initialized) {
@@ -116,8 +121,24 @@ public class IOSImplementation extends CodenameOneImplementation {
         if(globalGraphics == null) {
             globalGraphics = new GlobalGraphics();
         }
+        
     }
 
+    private NativePathRenderer globalPathRenderer(){
+        if ( globalPathRenderer == null ){
+            NativePathRenderer.setup(1, 1);
+            globalPathRenderer = new NativePathRenderer(0, 0, 640, 640, NativePathRenderer.WIND_NON_ZERO);
+        }
+        return globalPathRenderer;
+    }
+    
+    private NativePathStroker globalPathStroker(){
+        if ( globalPathStroker == null ){
+            globalPathStroker = new NativePathStroker(globalPathRenderer(), 1f, NativePathStroker.CAP_BUTT, NativePathStroker.JOIN_BEVEL, 1f);
+        }
+        return globalPathStroker();
+    }
+    
     private static Runnable callback;
     
     public static void callback() {
@@ -1013,6 +1034,77 @@ public class IOSImplementation extends CodenameOneImplementation {
         ng.nativeDrawImage(nm.peer, ng.alpha, x, y, nm.width, nm.height);
     }
 
+    /**
+     * Draws a path on the current graphics context.
+     * @param graphics the graphics context
+     * @param path the path to draw.
+     */
+    @Override
+    public void drawPath(Object graphics, PathIterator path, float lineWidth, int capStyle, int miterStyle, float miterLimit){
+        NativeGraphics ng = (NativeGraphics)graphics;
+        ng.checkControl();
+        ng.applyClip();
+        NativePathRenderer renderer = this.globalPathRenderer();
+        NativePathStroker stroker = this.globalPathStroker();
+        renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+        stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
+        NativePathConsumer c = stroker.consumer;
+        this.fillPathConsumer(path, c);
+        this.drawPath(renderer, ng.color, ng.alpha);
+        
+        
+    }
+    
+    /**
+     * Draws a path on the current graphics context.
+     * @param graphics the graphics context
+     * @param path the path to draw.
+     */
+    @Override
+    public void fillPath(Object graphics, PathIterator path){
+        NativeGraphics ng = (NativeGraphics)graphics;
+        ng.checkControl();
+        ng.applyClip();
+        NativePathRenderer renderer = this.globalPathRenderer();
+        renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+        NativePathConsumer c = renderer.consumer;
+        this.fillPathConsumer(path, c);
+        this.drawPath(renderer, ng.color, ng.alpha);
+        
+        
+    }
+    private void drawPath(NativePathRenderer r, int color, int alpha){
+        this.nativeInstance.nativeDrawPath(color, alpha, r.ptr);
+    }
+    
+    private void fillPathConsumer(PathIterator path, NativePathConsumer c){
+        float p[] = new float[6];
+        while ( !path.isDone()){
+            int segment = path.currentSegment(p);
+            switch ( segment ){
+                case PathIterator.SEG_MOVETO:
+                    c.moveTo(p[0], p[1]);
+                    break;
+                case PathIterator.SEG_LINETO:
+                    c.lineTo(p[0], p[1]);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    c.quadTo(p[0], p[1], p[2], p[3]);
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    c.curveTo(p[0], p[1], p[2], p[3], p[4], p[5]);
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    c.close();
+                    break;
+            }
+            path.next();
+        }
+        c.done();
+        
+    }
+    
+    
     private void nativeDrawImageMutable(long peer, int alpha, int x, int y, int width, int height) {
         nativeInstance.nativeDrawImageMutable(peer, alpha, x, y, width, height);
     }
@@ -1792,6 +1884,123 @@ public class IOSImplementation extends CodenameOneImplementation {
     }
 
 
+    static class NativePathStroker {
+        
+        static final int JOIN_MITER = 0;
+        static final int JOIN_ROUND = 1;
+        static final int JOIN_BEVEL = 2;
+        static final int CAP_BUTT = 0;
+        static final int CAP_ROUND = 1;
+        static final int CAP_SQUARE = 2;
+        
+        
+        final long ptr;
+        final NativePathRenderer renderer;
+        final NativePathConsumer consumer;
+        
+        NativePathStroker(NativePathRenderer renderer, float lineWidth, int capStyle, int joinStyle, float miterLimit){
+            ptr = nativeInstance.nativePathStrokerCreate(renderer.consumer.ptr, lineWidth, capStyle, joinStyle, miterLimit);
+            this.renderer = renderer;
+            this.consumer = new NativePathConsumer(nativeInstance.nativePathStrokerGetConsumer(ptr));
+        }
+        
+        void reset(float lineWidth, int capStyle, int joinStyle, float miterLimit){
+            nativeInstance.nativePathStrokerReset(ptr, lineWidth, capStyle, joinStyle, miterLimit);
+        }
+        
+        void destroy(){
+            nativeInstance.nativePathStrokerCleanup(ptr);
+        }
+        
+        protected void finalize(){
+            destroy();
+        }
+        
+        
+    }
+    
+    static class NativePathConsumer {
+        final long ptr;
+        
+        NativePathConsumer(long ptr){
+            this.ptr = ptr;
+        }
+         public void moveTo(float x, float y){
+            nativeInstance.nativePathConsumerMoveTo(ptr, x, y);
+        }
+        
+        public void lineTo(float x, float y){
+            nativeInstance.nativePathConsumerLineTo(ptr, x, y);
+        }
+        
+        public void quadTo(float xc, float yc, float x1, float y1){
+            nativeInstance.nativePathConsumerQuadTo(ptr, xc, yc, x1, y1);
+        }
+        
+        public void curveTo(float xc1, float yc1, float xc2, float yc2, float x1, float y1){
+            nativeInstance.nativePathConsumerCurveTo(ptr, xc1, yc1, xc2, yc2, x1, y1);
+        }
+        
+        public void close(){
+            nativeInstance.nativePathConsumerClose(ptr);
+        }
+        
+        public void done(){
+            nativeInstance.nativePathConsumerDone(ptr);
+        }
+    }
+    
+    static class NativePathRenderer {
+        
+        
+        static final int WIND_EVEN_ODD = 0;
+        static final int WIND_NON_ZERO = 1;
+        final long ptr;
+        final NativePathConsumer consumer;
+        
+        
+        NativePathRenderer(int pix_boundsX, int pix_boundsY,
+                           int pix_boundsWidth, int pix_boundsHeight,
+                           int windingRule){
+            ptr = nativeInstance.nativePathRendererCreate(pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, windingRule);
+            consumer = new NativePathConsumer(nativeInstance.nativePathRendererGetConsumer(ptr));
+            
+            
+        }
+        
+        
+        static void setup(int subpixelLgPositionsX, int subpixelLgPositionsY){
+            nativeInstance.nativePathRendererSetup(subpixelLgPositionsX, subpixelLgPositionsY);
+        }
+        
+        void reset(int pix_boundsX, int pix_boundsY,
+                           int pix_boundsWidth, int pix_boundsHeight,
+                           int windingRule){
+            nativeInstance.nativePathRendererReset(ptr, pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, windingRule);
+            
+        }
+        
+        private void destroy(){
+            nativeInstance.nativePathRendererCleanup(ptr);
+        }
+        
+        void getOutputBounds(int[] bounds){
+            nativeInstance.nativePathRendererGetOutputBounds(ptr, bounds);
+        }
+        
+        
+        
+        protected void finalize(){
+            destroy();
+        }
+        
+       
+        
+       
+    }
+    
+    
+    
     class NativeGraphics {
         Rectangle reusableRect = new Rectangle();
         NativeImage associatedImage;

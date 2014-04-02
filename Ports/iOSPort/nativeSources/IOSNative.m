@@ -20,6 +20,10 @@
  * Please contact Codename One through http://www.codenameone.com/ if you 
  * need additional information or have any questions.
  */
+// Pisces imports
+#import "Renderer.h"
+#import "PathConsumer.h"
+// end Pisces imports
 #include "xmlvm.h"
 #include "java_lang_String.h"
 #import "CN1ES2compat.h"
@@ -3860,3 +3864,112 @@ void com_codename1_impl_ios_IOSNative_writeToSocketStream___long_byte_1ARRAY(JAV
     [impl writeToStream:arrayToData(data)];
     [pool release];
 }
+
+//native long nativePathStrokerCreate(long consumerOutPtr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerCreate___long_float_int_int_float(JAVA_OBJECT instanceObject, JAVA_LONG consumerOutPtr, JAVA_FLOAT lineWidth, JAVA_INT capStyle, JAVA_INT joinStyle, JAVA_FLOAT miterLimit)
+{
+    NSLog(@"nativePathStrokerCreate not implemented yet");
+
+}
+//native void nativePathStrokerCleanup(long ptr);
+void com_codename1_impl_ios_IOSNative_nativePathStrokerCleanup___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    NSLog(@"nativePathStrokerCleanup not implemented yet");
+}
+//native void nativePathStrokerReset(long ptr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
+void com_codename1_impl_ios_IOSNative_nativePathStrokerReset___long_float_int_int_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT lineWidth, JAVA_INT capStyle, JAVA_INT joinStyle, JAVA_FLOAT miterLimit)
+{
+    NSLog(@"nativePathStrokerReset not implemented yet");
+}
+//native long nativePathStrokerGetConsumer(long ptr);
+void com_codename1_impl_ios_IOSNative_nativePathStrokerGetConsumer___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    NSLog(@"nativePathStrokerGetConsumer not implemented yet");
+}
+
+//native long nativePathRendererCreate(int pix_boundsX, int pix_boundsY,
+//                                     int pix_boundsWidth, int pix_boundsHeight,
+//                                     int windingRule);
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreate___int_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_INT pix_boundsX, JAVA_INT pix_boundsY, JAVA_INT pix_boundsWidth, JAVA_INT pix_boundsHeight, JAVA_INT windingRule)
+{
+    Renderer *renderer = (Renderer*)malloc(sizeof(Renderer));
+    Renderer_init(renderer);
+    //Renderer_reset(renderer, pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, windingRule);
+    return (JAVA_LONG)renderer;
+    
+}
+//native void nativePathRendererSetup(int subpixelLgPositionsX, int subpixelLgPositionsY);
+void com_codename1_impl_ios_IOSNative_nativePathRendererSetup___int_int(JAVA_OBJECT instanceObject, JAVA_INT subpixelLgPositionsX, JAVA_INT subpixelLgPositionsY)
+{
+    Renderer_setup(subpixelLgPositionsX, subpixelLgPositionsY);
+}
+//native void nativePathRendererCleanup(long ptr);
+void com_codename1_impl_ios_IOSNative_nativePathRendererCleanup___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    Renderer_destroy((Renderer*)ptr);
+}
+//native void nativePathRendererReset(long ptr, int pix_boundsX, int pix_boundsY,
+//                                    int pix_boundsWidth, int pix_boundsHeight,
+//                                    int windingRule);
+void com_codename1_impl_ios_IOSNative_nativePathRendererReset___long_int_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_INT pix_boundsX, JAVA_INT pix_boundsY, JAVA_INT pix_boundsWidth, JAVA_INT pix_boundsHeight, JAVA_INT windingRule)
+{
+    Renderer_reset((Renderer*)ptr, pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, windingRule);
+}
+//native void nativePathRendererGetOutputBounds(long ptr, int[] bounds);
+void com_codename1_impl_ios_IOSNative_nativePathRendererGetOutputBounds___long_int_1ARRAY(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_OBJECT bounds)
+{
+    NSLog(@"nativePathRendererGetOutputBounds not implemented");
+}
+//native long nativePathRendererGetConsumer(long ptr);
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererGetConsumer___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    NSLog(@"In getConsumer()");
+    return &(((Renderer*)ptr)->consumer);
+}
+
+//native void nativePathConsumerMoveTo(long ptr, double x, double y);
+void com_codename1_impl_ios_IOSNative_nativePathConsumerMoveTo___long_float_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT x, JAVA_FLOAT y)
+{
+    NSLog(@"In moveTo %g,%g", x,y);
+    ((PathConsumer*)ptr)->moveTo((PathConsumer*)ptr,x,y);
+    NSLog(@"Finished moveTo");
+}
+//native void nativePathConsumerLineTo(long ptr, double x, double y);
+void com_codename1_impl_ios_IOSNative_nativePathConsumerLineTo___long_float_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT x, JAVA_FLOAT y)
+{
+    NSLog(@"In lineto %g,%g", x, y);
+    ((PathConsumer*)ptr)->lineTo((PathConsumer*)ptr, x,y);
+}
+//native void nativePathConsumerQuadTo(long ptr, double xc, double yc, double x1, double y1);
+void com_codename1_impl_ios_IOSNative_nativePathConsumerQuadTo___long_float_float_float_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT xc, JAVA_FLOAT yc, JAVA_FLOAT x1, JAVA_FLOAT y1)
+{
+    ((PathConsumer*)ptr)->quadTo((PathConsumer*)ptr,xc,yc,x1,y1);
+}
+//native void nativePathConsumerCurveTo(long ptr, double xc1, double yc1, double xc2, double yc2, double x1, double y1);
+void com_codename1_impl_ios_IOSNative_nativePathConsumerCurveTo___long_float_float_float_float_float_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT xc1, JAVA_FLOAT yc1, JAVA_FLOAT xc2, JAVA_FLOAT yc2, JAVA_FLOAT x1, JAVA_FLOAT y1)
+{
+    ((PathConsumer*)ptr)->curveTo((PathConsumer*)ptr,xc1,yc1,xc2,yc2,x1,y1);
+}
+
+//native void nativePathConsumerClose(long ptr);
+void com_codename1_impl_ios_IOSNative_nativePathConsumerClose___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    NSLog(@"Closing path");
+    ((PathConsumer*)ptr)->closePath((PathConsumer*)ptr);
+}
+//native void nativePathConsumerDone(long ptr);
+void com_codename1_impl_ios_IOSNative_nativePathConsumerDone___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    ((PathConsumer*)ptr)->pathDone((PathConsumer*)ptr);
+}
+
+//native void nativeDrawPath(int color, int alpha, long ptr)
+extern void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl(Renderer* renderer, int color, int alpha);
+
+void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long(JAVA_OBJECT instanceObject, JAVA_INT color, JAVA_INT alpha, JAVA_LONG ptr)
+{
+    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl((Renderer*)ptr, color, alpha);
+    
+
+}
+

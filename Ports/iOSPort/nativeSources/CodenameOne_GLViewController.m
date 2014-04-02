@@ -29,6 +29,7 @@
 #import "DrawLine.h"
 #import "DrawRect.h"
 #import "DrawString.h"
+#import "DrawPath.h"
 #import "DrawImage.h"
 #import "TileImage.h"
 #import "GLUIImage.h"
@@ -579,6 +580,15 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
     GLUIImage* glu = [[GLUIImage alloc] initWithImage:img];
     Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl(glu, 255, x, y, width, height);
     [glu release];
+}
+
+void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
+(Renderer * renderer, int color, int alpha)
+{
+    DrawPath *f = [[DrawPath alloc] initWithRenderer:renderer color:color alpha:alpha];
+    [CodenameOne_GLViewController upcoming:f];
+    [f release];
+    // add to pipeline here
 }
 
 
