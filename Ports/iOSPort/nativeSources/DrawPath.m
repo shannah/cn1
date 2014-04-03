@@ -56,10 +56,10 @@
         x + width, y + height
     };
     static const GLshort textureCoordinates[] = {
-        0, 1,
-        1, 1,
         0, 0,
         1, 0,
+        0, 1,
+        1, 1,
     };
     
     //if ( width < 0 ) width = -width;
