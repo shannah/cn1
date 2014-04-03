@@ -124,21 +124,6 @@ public class IOSImplementation extends CodenameOneImplementation {
         
     }
 
-    private NativePathRenderer globalPathRenderer(){
-        if ( globalPathRenderer == null ){
-            NativePathRenderer.setup(1, 1);
-            globalPathRenderer = new NativePathRenderer(0, 0, 640, 640, NativePathRenderer.WIND_NON_ZERO);
-        }
-        return globalPathRenderer;
-    }
-    
-    private NativePathStroker globalPathStroker(){
-        if ( globalPathStroker == null ){
-            globalPathStroker = new NativePathStroker(globalPathRenderer(), 1f, NativePathStroker.CAP_BUTT, NativePathStroker.JOIN_BEVEL, 1f);
-        }
-        return globalPathStroker();
-    }
-    
     private static Runnable callback;
     
     public static void callback() {
@@ -1044,12 +1029,17 @@ public class IOSImplementation extends CodenameOneImplementation {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
-        NativePathRenderer renderer = this.globalPathRenderer();
-        NativePathStroker stroker = this.globalPathStroker();
-        renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
-        stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
+        
+        // Notice that these will be cleaned up in the dealloc method of the DrawPath objective-c class
+        NativePathRenderer renderer = new NativePathRenderer(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+        NativePathStroker stroker = new NativePathStroker(renderer,lineWidth, capStyle, miterStyle, miterLimit);
+        //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+        //stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
         NativePathConsumer c = stroker.consumer;
         this.fillPathConsumer(path, c);
+        
+        // We don't need the stroker anymore because it has passed the strokes to the renderer.
+        stroker.destroy();
         this.drawPath(renderer, ng.color, ng.alpha);
         
         
@@ -1065,8 +1055,10 @@ public class IOSImplementation extends CodenameOneImplementation {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
-        NativePathRenderer renderer = this.globalPathRenderer();
-        renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+        
+        // Notice that this will be cleaned up in the dealloc method of the DrawPath objective-c class.
+        NativePathRenderer renderer = new NativePathRenderer(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+        //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
         NativePathConsumer c = renderer.consumer;
         this.fillPathConsumer(path, c);
         this.drawPath(renderer, ng.color, ng.alpha);
@@ -1908,13 +1900,16 @@ public class IOSImplementation extends CodenameOneImplementation {
             nativeInstance.nativePathStrokerReset(ptr, lineWidth, capStyle, joinStyle, miterLimit);
         }
         
+        /**
+         * This should be called when the stroker is not needed anymore.
+         * DON'T PUT THIS INSIDE finalize() because the stroker may need to 
+         * outlive it's java wrapper in objective-c space.
+         */
         void destroy(){
             nativeInstance.nativePathStrokerCleanup(ptr);
         }
         
-        protected void finalize(){
-            destroy();
-        }
+        
         
         
     }
@@ -1980,6 +1975,13 @@ public class IOSImplementation extends CodenameOneImplementation {
             
         }
         
+        /**
+         * This can be called to destroy the underlying Renderer C struct. 
+         * DON'T call this inside finalize() because the Renderer may need to outlive
+         * the java wrapper in objective-c space.  Specifically, it is passed to the
+         * DrawPath object for the rendering pipeline.  It will be destroyed in
+         * the DrawPath dealloc method.
+         */
         private void destroy(){
             nativeInstance.nativePathRendererCleanup(ptr);
         }
@@ -1989,10 +1991,6 @@ public class IOSImplementation extends CodenameOneImplementation {
         }
         
         
-        
-        protected void finalize(){
-            destroy();
-        }
         
        
         

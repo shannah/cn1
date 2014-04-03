@@ -23,6 +23,7 @@
 // Pisces imports
 #import "Renderer.h"
 #import "PathConsumer.h"
+#import "Stroker.h"
 // end Pisces imports
 #include "xmlvm.h"
 #include "java_lang_String.h"
@@ -3868,41 +3869,59 @@ void com_codename1_impl_ios_IOSNative_writeToSocketStream___long_byte_1ARRAY(JAV
 //native long nativePathStrokerCreate(long consumerOutPtr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerCreate___long_float_int_int_float(JAVA_OBJECT instanceObject, JAVA_LONG consumerOutPtr, JAVA_FLOAT lineWidth, JAVA_INT capStyle, JAVA_INT joinStyle, JAVA_FLOAT miterLimit)
 {
-    NSLog(@"nativePathStrokerCreate not implemented yet");
+    Stroker *stroker = (Stroker*)malloc(sizeof(Stroker));
+    Stroker_init(stroker,
+                 (PathConsumer*)consumerOutPtr,
+                 lineWidth,
+                 capStyle,
+                 joinStyle,
+                 miterLimit
+                 );
+    return (JAVA_LONG)stroker;
 
 }
 //native void nativePathStrokerCleanup(long ptr);
 void com_codename1_impl_ios_IOSNative_nativePathStrokerCleanup___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
 {
-    NSLog(@"nativePathStrokerCleanup not implemented yet");
+    Stroker_destroy((Stroker*)ptr);
 }
 //native void nativePathStrokerReset(long ptr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
 void com_codename1_impl_ios_IOSNative_nativePathStrokerReset___long_float_int_int_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT lineWidth, JAVA_INT capStyle, JAVA_INT joinStyle, JAVA_FLOAT miterLimit)
 {
-    NSLog(@"nativePathStrokerReset not implemented yet");
+    Stroker_reset((Stroker*)ptr, lineWidth, capStyle, joinStyle, miterLimit);
 }
 //native long nativePathStrokerGetConsumer(long ptr);
-void com_codename1_impl_ios_IOSNative_nativePathStrokerGetConsumer___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerGetConsumer___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
 {
-    NSLog(@"nativePathStrokerGetConsumer not implemented yet");
+    return (JAVA_LONG)&(((Stroker*)ptr)->consumer);
 }
 
 //native long nativePathRendererCreate(int pix_boundsX, int pix_boundsY,
 //                                     int pix_boundsWidth, int pix_boundsHeight,
 //                                     int windingRule);
+
+static BOOL rendererIsSetup = NO;
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreate___int_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_INT pix_boundsX, JAVA_INT pix_boundsY, JAVA_INT pix_boundsWidth, JAVA_INT pix_boundsHeight, JAVA_INT windingRule)
 {
+    if ( !rendererIsSetup ){
+        rendererIsSetup = YES;
+        Renderer_setup(1,1);
+    }
     Renderer *renderer = (Renderer*)malloc(sizeof(Renderer));
     Renderer_init(renderer);
-    //Renderer_reset(renderer, pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, windingRule);
+    Renderer_reset(renderer, pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, 1);
     return (JAVA_LONG)renderer;
     
 }
 //native void nativePathRendererSetup(int subpixelLgPositionsX, int subpixelLgPositionsY);
 void com_codename1_impl_ios_IOSNative_nativePathRendererSetup___int_int(JAVA_OBJECT instanceObject, JAVA_INT subpixelLgPositionsX, JAVA_INT subpixelLgPositionsY)
 {
-    //Renderer_setup(subpixelLgPositionsX, subpixelLgPositionsY);
-    Renderer_setup(1, 1);
+    if ( !rendererIsSetup ){
+        rendererIsSetup = YES;
+        
+        Renderer_setup(subpixelLgPositionsX, subpixelLgPositionsY);
+    }
+    //Renderer_setup(1, 1);
 }
 //native void nativePathRendererCleanup(long ptr);
 void com_codename1_impl_ios_IOSNative_nativePathRendererCleanup___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)

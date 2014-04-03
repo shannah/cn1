@@ -45,7 +45,7 @@
     if ( width < 0 ) width = -width;
     if ( height < 0 ) height = -height;
     
-
+    NSLog(@"W: %d H: %d", width, height);
     
     GlColorFromRGB(color, alpha);
    
@@ -123,6 +123,7 @@
 }
 -(void)dealloc
 {
+    Renderer_destroy(renderer);
     [super dealloc];
     
 }
