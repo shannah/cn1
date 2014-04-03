@@ -26,6 +26,7 @@ extern void glDrawArraysES2(GLenum, GLint, GLsizei);
 extern void glRotatefES2(GLfloat,GLfloat,GLfloat,GLfloat);
 extern void glEnableCN1StateES2(enum CN1GLenum);
 extern void glDisableCN1StateES2(enum CN1GLenum);
+extern void glAlphaMaskTexCoordPointerES2( GLint , GLenum , GLsizei , const GLvoid *);
 
 #define _glMatrixMode(foo) glMatrixModeES2(foo)
 #define _glLoadIdentity()  glLoadIdentityES2()
@@ -43,6 +44,7 @@ extern void glDisableCN1StateES2(enum CN1GLenum);
 #define _glRotatef(angle,x,y,z) glRotatefES2(angle,x,y,z)
 #define _glEnableCN1State(state) glEnableCN1StateES2(state)
 #define _glDisableCN1State(state) glDisableCN1StateES2(state)
+#define _glAlphaMaskTexCoordPointer(size,type,stride,pointer) glAlphaMaskTexCoordPointerES2(size,type,stride,pointer)
 #else
 #define _glMatrixMode(foo) glMatrixMode(foo)
 #define _glLoadIdentity()  glLoadIdentity()
@@ -60,4 +62,5 @@ extern void glDisableCN1StateES2(enum CN1GLenum);
 #define _glRotatef(angle,x,y,z) glRotatef(angle,x,y,z)
 #define _glEnableCN1State(state) glEnableCN1StateES1(state)
 #define _glDisableCN1State(state) glDisableCN1StateES1(state)
+#define _glAlphaMaskTexCoordPointer(size,type,stride,pointer) glAlphaMaskTexCoordPointerES1(size,type,stride,pointer)
 #endif

@@ -86,7 +86,7 @@
     
     GLuint tex;
     glGenTextures(1, &tex);
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -99,9 +99,11 @@
     
     _glEnableClientState(GL_VERTEX_ARRAY);
     GLErrorLog;
-    _glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    //_glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    _glEnableCN1State(CN1_GL_ALPHA_TEXTURE);
     GLErrorLog;
-    _glTexCoordPointer(2, GL_SHORT, 0, textureCoordinates);
+    //_glTexCoordPointer(2, GL_SHORT, 0, textureCoordinates);
+    _glAlphaMaskTexCoordPointer(2, GL_SHORT, 0, textureCoordinates);
     GLErrorLog;
     _glVertexPointer(2, GL_FLOAT, 0, vertexes);
     GLErrorLog;
@@ -109,11 +111,12 @@
     GLErrorLog;
     _glDisableClientState(GL_VERTEX_ARRAY);
     GLErrorLog;
-    _glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    //_glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    _glDisableCN1State(CN1_GL_ALPHA_TEXTURE);
     GLErrorLog;
     glBindTexture(GL_TEXTURE_2D, 0);
     GLErrorLog;
-    _glDisable(GL_TEXTURE_2D);
+    //_glDisable(GL_TEXTURE_2D);
     GLErrorLog;
 
     

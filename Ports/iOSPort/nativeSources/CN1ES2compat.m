@@ -128,16 +128,14 @@ static void CN1compileBasicProgram(){
         "   if ( uUseVertexColors ){ color = vColor;}\n"
 
         "   if ( uUseAlphaMaskTexture ){\n"
-        "       float alpha = texture2D(uTextureMask, vTextureMaskCoord).a;\n"
-        "       if ( alpha < 0.1 ){\n"
-        ""
-        "       } else {\n"
-        "           color = vec4(color.rgb, alpha);\n"
-        "       }\n"
+        "       color = vec4(color.rgb, texture2D(uTextureMask, vTextureMaskCoord).a*color.a);\n"
         "   }"
         "   gl_FragColor = color;\n"
         "}\n"
-    "}\n";
+    "}\n"
+     
+    
+     ;
     //NSLog(fragmentShaderSrc);
     
     int len = [fragmentShaderSrc length];
@@ -274,8 +272,11 @@ static void CN1compileBasicProgram(){
     GLErrorLog;
     
     glUniform1i(CN1useAlphaMaskTextureUniform, 0);
-    glUniform1i(CN1useRGBATextureUniform, 1);
+    glUniform1i(CN1useRGBATextureUniform, 0);
     glUniform1i(CN1useVertexColorsUniform, 0);
+    
+    glUniform1i(CN1TextureMaskUniform, 1);
+    glUniform1i(CN1TextureRGBAUniform, 0);
     
     glBindBuffer(GL_ARRAY_BUFFER, CN1TextureRGBAVertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, _getGLSize(CN1textureRGBPointerType)*4, CN1textureRGBPointer, GL_DYNAMIC_DRAW);
@@ -343,7 +344,7 @@ void glDrawArraysES2(GLenum mode, GLint first, GLsizei count){
     //glEnableVertexAttribArray(CN1VertexCoordAtt);
     //glUniform1i(CN1useRGBATextureUniform, 0);
     glUniform1i(CN1useVertexColorsUniform, 0);
-    glUniform1i(CN1useAlphaMaskTextureUniform, 0);
+    //glUniform1i(CN1useAlphaMaskTextureUniform, 0);
     
     
 
@@ -412,6 +413,7 @@ void glEnableES2(GLenum feature){
             //
             glEnableVertexAttribArray(CN1TextureRGBACoordAtt);
             glUniform1i(CN1useRGBATextureUniform, 1);
+            glUniform1i(CN1TextureRGBAUniform, 0);
             
             return;
     }
@@ -579,6 +581,8 @@ void glEnableCN1StateES2(enum CN1GLenum state){
         case CN1_GL_ALPHA_TEXTURE:
             glEnableVertexAttribArray(CN1TextureMaskCoordAtt);
             glUniform1i(CN1useAlphaMaskTextureUniform, 1);
+            //glUniform1i(CN1useRGBATextureUniform, 0);
+            
             break;
             
         case CN1_GL_VERTEX_COLORS:
@@ -591,6 +595,7 @@ void glDisableCN1StateES2(enum CN1GLenum state){
         case CN1_GL_ALPHA_TEXTURE:
             glDisableVertexAttribArray(CN1TextureMaskCoordAtt);
             glUniform1i(CN1useAlphaMaskTextureUniform, 0);
+            
             break;
         
             
