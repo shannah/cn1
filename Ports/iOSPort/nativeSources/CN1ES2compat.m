@@ -1,6 +1,7 @@
 #import "CN1ES2compat.h"
 #ifdef USE_ES2
 #import <GLKit/GLKit.h>
+#import <Math.h>
 
 static GLKMatrix4 CN1modelViewMatrix;
 static GLKMatrix4 CN1projectionMatrix;
@@ -451,6 +452,9 @@ extern void glTranslatefES2(GLfloat x, GLfloat y, GLfloat z){
 
 void glRotatefES2(GLfloat angle, GLfloat x, GLfloat y, GLfloat z){
     //NSLog(@"Rotating %f %f %f %f", angle, x, y, z);
+    
+    // Convert from degrees to radians
+    angle = angle * M_PI / 180.0;
     GLKMatrix4 rotate = GLKMatrix4MakeRotation(angle, x, y, z);
     if ( CN1matrixMode == GL_PROJECTION ){
         CN1projectionMatrix = GLKMatrix4Multiply(CN1projectionMatrix, rotate);
@@ -581,6 +585,9 @@ void glEnableCN1StateES2(enum CN1GLenum state){
         case CN1_GL_ALPHA_TEXTURE:
             glEnableVertexAttribArray(CN1TextureMaskCoordAtt);
             glUniform1i(CN1useAlphaMaskTextureUniform, 1);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_LINE_SMOOTH);
             //glUniform1i(CN1useRGBATextureUniform, 0);
             
             break;
@@ -595,7 +602,8 @@ void glDisableCN1StateES2(enum CN1GLenum state){
         case CN1_GL_ALPHA_TEXTURE:
             glDisableVertexAttribArray(CN1TextureMaskCoordAtt);
             glUniform1i(CN1useAlphaMaskTextureUniform, 0);
-            
+            glDisable(GL_BLEND);
+            glDisable(GL_LINE_SMOOTH);
             break;
         
             

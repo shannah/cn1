@@ -46,6 +46,10 @@ extern void glAlphaMaskTexCoordPointerES2( GLint , GLenum , GLsizei , const GLvo
 #define _glDisableCN1State(state) glDisableCN1StateES2(state)
 #define _glAlphaMaskTexCoordPointer(size,type,stride,pointer) glAlphaMaskTexCoordPointerES2(size,type,stride,pointer)
 #else
+#import <OpenGLES/ES1/gl.h>
+extern void glEnableCN1StateES1(enum CN1GLenum);
+extern void glDisableCN1StateES1(enum CN1GLenum);
+extern void glAlphaMaskTexCoordPointerES1( GLint , GLenum , GLsizei , const GLvoid *);
 #define _glMatrixMode(foo) glMatrixMode(foo)
 #define _glLoadIdentity()  glLoadIdentity()
 #define _glOrthof(p1,p2,p3,p4,p5,p6) glOrthof(p1,p2,p3,p4,p5,p6)

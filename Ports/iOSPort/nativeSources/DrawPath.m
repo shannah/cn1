@@ -29,7 +29,7 @@
 }
 -(void)execute
 {
-    
+    GlColorFromRGB(color, alpha);
     NSLog(@"In drawPath::execute()");
     //return;
     //_glEnableCN1State(CN1_GL_ALPHA_TEXTURE);
@@ -37,6 +37,9 @@
     JAVA_INT outputBounds[4];
     
     Renderer_getOutputBounds(renderer, (JAVA_INT*)&outputBounds);
+    if ( outputBounds[2] < 0 || outputBounds[3] < 0 ){
+        return;
+    }
     JAVA_INT x = min(outputBounds[0], outputBounds[2]);
     JAVA_INT y = min(outputBounds[1], outputBounds[3]);
     JAVA_INT width = outputBounds[2]-outputBounds[0];
@@ -47,7 +50,7 @@
     
     NSLog(@"W: %d H: %d", width, height);
     
-    GlColorFromRGB(color, alpha);
+    
    
     GLfloat vertexes[] = {
         x, y,
@@ -88,8 +91,8 @@
     glGenTextures(1, &tex);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
