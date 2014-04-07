@@ -49,7 +49,10 @@ import com.codename1.ui.animations.Transition;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.geom.Dimension;
+import com.codename1.ui.geom.Matrix;
+import com.codename1.ui.geom.PathIterator;
 import com.codename1.ui.geom.Rectangle;
+import com.codename1.ui.geom.Shape;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.util.ImageIO;
 import java.io.ByteArrayInputStream;
@@ -1334,6 +1337,26 @@ public abstract class CodenameOneImplementation {
      */
     public void drawImage(Object graphics, Object img, int x, int y, int w, int h) {
     }
+    
+    
+    // METHODS FOR DEALING WITH 2-D Paths
+    /**
+     * Draws a path on the current graphics context.
+     * @param graphics the graphics context
+     * @param path the path to draw.
+     */
+    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){}
+    public void fillShape(Object graphics, Shape shape, int x, int y, int w, int h){}
+    
+    
+    
+    public void setTransform(Object graphics, float[] m, boolean reset) {
+    
+    }
+    
+    
+    
+    // END METHODS FOR DEALING WITH 2-D Paths
     
     /**
      * Allows an implementation to optimize image tiling rendering logic

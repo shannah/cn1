@@ -24,6 +24,9 @@
 package com.codename1.ui;
 
 import com.codename1.impl.CodenameOneImplementation;
+import com.codename1.ui.geom.PathIterator;
+import com.codename1.ui.geom.Rectangle;
+import com.codename1.ui.geom.Shape;
 import com.codename1.ui.plaf.Style;
 
 /**
@@ -543,6 +546,28 @@ public final class Graphics {
         }
     }
 
+    public void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
+        Rectangle r = shape.getBounds();
+        drawShape(shape, lineWidth, capStyle, miterStyle, miterLimit, r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    }
+    
+    public void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
+        impl.drawShape(nativeGraphics, shape, lineWidth, capStyle, miterStyle, miterLimit, x+xTranslate, y+yTranslate, w, h);
+    }
+    
+    public void fillShape(Shape shape){
+        Rectangle r = shape.getBounds();
+        fillShape(shape, r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    }
+    
+    public void fillShape(Shape shape, int x, int y, int w, int h){
+        impl.fillShape(nativeGraphics, shape, x+xTranslate, y+yTranslate, w, h);
+    }
+    
+    public void setTransform(float[] matrix, boolean reset){
+        impl.setTransform(nativeGraphics, matrix, reset);
+    }
+    
     /**
      * Draws a filled triangle with the given coordinates
      * 

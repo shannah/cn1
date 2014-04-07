@@ -46,6 +46,7 @@
 #include "com_codename1_ui_Display.h"
 #include "com_codename1_impl_CodenameOneImplementation.h"
 #include "com_codename1_ui_Component.h"
+#import <GLKit/GLKit.h>
 
 extern void repaintUI();
 extern NSDate* currentDatePickerDate = nil;
@@ -583,14 +584,31 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
-(Renderer * renderer, int color, int alpha)
+(Renderer * renderer, int color, int alpha, int x, int y, int w, int h)
 {
-    DrawPath *f = [[DrawPath alloc] initWithRenderer:renderer color:color alpha:alpha];
+    DrawPath *f = [[DrawPath alloc] initWithArgs:renderer color:color alpha:alpha x:x y:y w:w h:h];
     [CodenameOne_GLViewController upcoming:f];
     [f release];
     // add to pipeline here
 }
 
+void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_boolean(JAVA_OBJECT instanceObject,
+                                                                                                                                                       JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
+                                                                                                                                                       JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,
+                                                                                                                                                       JAVA_FLOAT c0, JAVA_FLOAT c1, JAVA_FLOAT c2, JAVA_FLOAT c3,
+                                                                                                                                                       JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3,
+                                                                                                                                                       JAVA_BOOLEAN reset
+                                                                                                                                                                   )
+{
+    GLKMatrix4 m = GLKMatrix4Make(a0,a1,a2,a3,
+                                  b0,b1,b2,b3,
+                                  c0,c1,c2,c3,
+                                  d0,d1,d2,d3);
+    
+    //SetTransform *f = [[SetTransform alloc] initWithArgs:m reset:reset];
+    //[CodenameOne_GLViewController upcoming:f];
+    //[f release];
+}
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageMutableImpl
 (void* peer, int alpha, int x, int y, int width, int height) {

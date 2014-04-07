@@ -365,7 +365,7 @@ void glLoadIdentityES2(){
         CN1projectionMatrix =GLKMatrix4Identity;
         CN1updateProjectionMatrixES2();
     } else if ( CN1matrixMode == GL_MODELVIEW ){
-        CN1modelViewMatrix = GLKMatrix4Make(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        CN1modelViewMatrix = GLKMatrix4Identity;//GLKMatrix4Make(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
         CN1updateModelViewMatrixES2();
     } else {
          NSLog(@"Setting orthof on undefined matrix mode %d", CN1matrixMode);
@@ -424,7 +424,7 @@ void glEnableES2(GLenum feature){
 
 
 
-extern void glScalefES2(GLfloat xScale, GLfloat yScale, GLfloat zScale){
+void glScalefES2(GLfloat xScale, GLfloat yScale, GLfloat zScale){
     //NSLog(@"Scaling %f %f %f", xScale, yScale, zScale);
     GLKMatrix4 scale = GLKMatrix4MakeScale(xScale, yScale, zScale);
     if ( CN1matrixMode == GL_PROJECTION ){
@@ -437,7 +437,7 @@ extern void glScalefES2(GLfloat xScale, GLfloat yScale, GLfloat zScale){
     }
     
 }
-extern void glTranslatefES2(GLfloat x, GLfloat y, GLfloat z){
+void glTranslatefES2(GLfloat x, GLfloat y, GLfloat z){
     //NSLog(@"Translating %f %f %f", x, y, z);
     GLKMatrix4 translate = GLKMatrix4MakeTranslation(x, y, z);
     //NSLog(@"Translation matrix is %@", NSStringFromGLKMatrix4(translate));
@@ -584,10 +584,14 @@ void glEnableCN1StateES2(enum CN1GLenum state){
     switch ( state ){
         case CN1_GL_ALPHA_TEXTURE:
             glEnableVertexAttribArray(CN1TextureMaskCoordAtt);
+            GLErrorLog;
             glUniform1i(CN1useAlphaMaskTextureUniform, 1);
+            GLErrorLog;
             glEnable(GL_BLEND);
+            GLErrorLog;
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glEnable(GL_LINE_SMOOTH);
+            GLErrorLog;
+            //glEnable(GL_LINE_SMOOTH);
             //glUniform1i(CN1useRGBATextureUniform, 0);
             
             break;
@@ -601,9 +605,12 @@ void glDisableCN1StateES2(enum CN1GLenum state){
     switch ( state ){
         case CN1_GL_ALPHA_TEXTURE:
             glDisableVertexAttribArray(CN1TextureMaskCoordAtt);
+            GLErrorLog;
             glUniform1i(CN1useAlphaMaskTextureUniform, 0);
+            GLErrorLog;
             glDisable(GL_BLEND);
-            glDisable(GL_LINE_SMOOTH);
+            GLErrorLog;
+            //glDisable(GL_LINE_SMOOTH);
             break;
         
             

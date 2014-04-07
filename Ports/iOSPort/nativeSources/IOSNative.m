@@ -3984,12 +3984,43 @@ void com_codename1_impl_ios_IOSNative_nativePathConsumerDone___long(JAVA_OBJECT 
 }
 
 //native void nativeDrawPath(int color, int alpha, long ptr)
-extern void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl(Renderer* renderer, int color, int alpha);
+extern void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl(Renderer* renderer, int color, int alpha, int x, int y, int w, int h);
 
-void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long(JAVA_OBJECT instanceObject, JAVA_INT color, JAVA_INT alpha, JAVA_LONG ptr)
+void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_INT color, JAVA_INT alpha, JAVA_LONG ptr, JAVA_INT x, JAVA_INT y, JAVA_INT w, JAVA_INT h)
 {
-    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl((Renderer*)ptr, color, alpha);
+    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl((Renderer*)ptr, color, alpha, x, y, w, h);
     
 
+}
+//native void nativeSetTransform(
+//                               float a0, float a1, float a2, float a3,
+//                               float b0, float b1, float b2, float b3,
+//                               float c0, float c1, float c2, float c3,
+//                               float d0, float d1, float d2, float d3,
+//                               boolean reset
+//
+extern void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_boolean(
+                                                                                                                                                                               JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
+                                                                                                                                                                               JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,
+                                                                                                                                                                               JAVA_FLOAT c0, JAVA_FLOAT c1, JAVA_FLOAT c2, JAVA_FLOAT c3,
+                                                                                                                                                                               JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3,
+                                                                                                                                                                               JAVA_BOOLEAN reset
+                                                                                                                                                                               );
+void com_codename1_impl_ios_IOSNative_nativeSetTransform___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_boolean(JAVA_OBJECT instanceObject,
+                                JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
+                                JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,
+                                JAVA_FLOAT c0, JAVA_FLOAT c1, JAVA_FLOAT c2, JAVA_FLOAT c3,
+                                JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3,
+                                JAVA_BOOLEAN reset
+)
+{
+    com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_boolean
+    (
+        a0, a1, a2, a3,
+        b0, b1, b2, b3,
+        c0, c1, c2, c3,
+        d0, d1, d2, d3,
+        reset
+     );
 }
 

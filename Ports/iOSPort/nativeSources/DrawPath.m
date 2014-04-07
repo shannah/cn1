@@ -20,15 +20,20 @@
 @implementation DrawPath
 
 
--(id)initWithRenderer:(Renderer*)r color:(int)c alpha:(int)a
+-(id)initWithArgs:(Renderer*)r color:(int)c alpha:(int)a x:(int)xx y:(int)yy w:(int)ww h:(int)hh
 {
     color = c;
     alpha = a;
     renderer = r;
+    boundsX = xx;
+    boundsY = yy;
+    boundsW = ww;
+    boundsH = hh;
     return self;
 }
 -(void)execute
 {
+    
     GlColorFromRGB(color, alpha);
     NSLog(@"In drawPath::execute()");
     //return;
@@ -52,11 +57,17 @@
     
     
    
+    //GLfloat vertexes[] = {
+    //    x, y,
+    //    x + width, y,
+    //    x, y + height,
+    //    x + width, y + height
+    //};
     GLfloat vertexes[] = {
-        x, y,
-        x + width, y,
-        x, y + height,
-        x + width, y + height
+          (GLfloat)boundsX, (GLfloat)boundsY,
+          (GLfloat)(boundsX+boundsW), (GLfloat)boundsY,
+          (GLfloat)boundsX, (GLfloat)(boundsY+boundsH),
+          (GLfloat)(boundsX+boundsW), (GLfloat)(boundsY+boundsH)
     };
     static const GLshort textureCoordinates[] = {
         0, 0,

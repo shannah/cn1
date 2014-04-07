@@ -82,6 +82,7 @@ import com.codename1.media.MediaManager;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.geom.PathIterator;
+import com.codename1.ui.geom.Shape;
 import com.codename1.ui.plaf.Style;
 import java.io.ByteArrayOutputStream;
 
@@ -1025,7 +1026,8 @@ public class IOSImplementation extends CodenameOneImplementation {
      * @param path the path to draw.
      */
     @Override
-    public void drawPath(Object graphics, PathIterator path, float lineWidth, int capStyle, int miterStyle, float miterLimit){
+    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
+        PathIterator path = shape.getPathIterator();
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
@@ -1040,7 +1042,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         
         // We don't need the stroker anymore because it has passed the strokes to the renderer.
         stroker.destroy();
-        this.drawPath(renderer, ng.color, ng.alpha);
+        this.drawPath(renderer, ng.color, ng.alpha, x, y, w, h);
         
         
     }
@@ -1051,7 +1053,8 @@ public class IOSImplementation extends CodenameOneImplementation {
      * @param path the path to draw.
      */
     @Override
-    public void fillPath(Object graphics, PathIterator path){
+    public void fillShape(Object graphics, Shape shape, int x, int y, int w, int h){
+        PathIterator path = shape.getPathIterator();
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
@@ -1061,12 +1064,12 @@ public class IOSImplementation extends CodenameOneImplementation {
         //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
         NativePathConsumer c = renderer.consumer;
         this.fillPathConsumer(path, c);
-        this.drawPath(renderer, ng.color, ng.alpha);
+        this.drawPath(renderer, ng.color, ng.alpha, x, y, w, h);
         
         
     }
-    private void drawPath(NativePathRenderer r, int color, int alpha){
-        this.nativeInstance.nativeDrawPath(color, alpha, r.ptr);
+    private void drawPath(NativePathRenderer r, int color, int alpha, int x, int y, int w, int h){
+        this.nativeInstance.nativeDrawPath(color, alpha, r.ptr, x, y, w, h);
     }
     
     private void fillPathConsumer(PathIterator path, NativePathConsumer c){
@@ -1095,6 +1098,98 @@ public class IOSImplementation extends CodenameOneImplementation {
         c.done();
         
     }
+
+    @Override
+    public void setTransform(Object graphics, float[] m, boolean reset) {
+        switch ( m.length ){
+            case 1:
+                nativeSetTransform( 
+                    m[0], 0, 0, 0,
+                    0, m[0], 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 1, 0,
+                    reset
+                );
+                break;
+                
+            case 2:
+                nativeSetTransform(
+                    m[0], 0, 0, 0,
+                    0, m[1], 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 1, 0,
+                    reset
+                );
+                break;
+            case 4:
+                // This is just a 2D transformation
+                nativeSetTransform(
+                    m[0], m[1], 0, 0,
+                    m[2], m[3], 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 1, 0,
+                    reset
+                );
+                break;
+            case 6:
+                nativeSetTransform(
+                    m[0], m[1], m[2], 0,
+                    m[3], m[4], m[5], 0,
+                    0, 0, 1, 0,
+                    0, 0, 1, 0,
+                    reset
+                );
+                break;
+            case 9:
+                nativeSetTransform(
+                    m[0], m[1], m[2], 0,
+                    m[3], m[4], m[5], 0,
+                    m[6], m[6], m[7], 0,
+                    0, 0, 1, 0,
+                    reset
+                );
+                break;
+            case 12:
+                nativeSetTransform(
+                    m[0], m[1], m[2], m[3],
+                    m[4], m[5], m[6], m[7],
+                    m[8], m[9], m[10], m[11],
+                    0,0,1,0,
+                    reset
+                );
+                break;
+            case 16:
+                nativeSetTransform(
+                    m[0], m[1], m[2], m[3],
+                    m[4], m[5], m[6], m[7],
+                    m[8], m[9], m[10], m[11],
+                    m[12], m[13], m[14], m[15],
+                    reset
+                );
+                break;
+            default:
+                throw new IllegalArgumentException("Transforms must be array of length 1, 2, 4, 6, 9, 12, or 16");
+        }
+    }
+    
+    
+    
+    private void nativeSetTransform( 
+            float a0, float a1, float a2, float a3, 
+            float b0, float b1, float b2, float b3,
+            float c0, float c1, float c2, float c3,
+            float d0, float d1, float d2, float d3,
+            boolean reset
+    )
+    {
+        nativeInstance.nativeSetTransform(
+                a0, a1, a2, a3,
+                b0, b1, b2, b3,
+                c0, c1, c2, c3,
+                d0, d1, d2, d3,
+                reset);
+    }
+    
     
     
     private void nativeDrawImageMutable(long peer, int alpha, int x, int y, int width, int height) {
