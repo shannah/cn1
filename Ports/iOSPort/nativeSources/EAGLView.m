@@ -111,6 +111,7 @@ extern BOOL isRetina();
         GLErrorLog;
         glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
         GLErrorLog;
+
         [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
         GLErrorLog;
         glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &framebufferWidth);
@@ -125,7 +126,42 @@ extern BOOL isRetina();
             NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
         //NSLog(@"Created framebuffer: %i %i", (int)framebufferWidth, (int)framebufferHeight);
         glClearColor(0, 0, 0, 1.0f);
+#if USE_ES2
+        
+        
+        GLuint stencil;
+        glGenRenderbuffersOES(1, &stencil);
+        GLErrorLog;
+        glBindRenderbuffer(GL_RENDERBUFFER_OES, stencil);
+        GLErrorLog;
+        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_STENCIL_INDEX8_OES, framebufferWidth, framebufferHeight);
+        GLErrorLog;
+        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES,
+                                     GL_RENDERBUFFER_OES, stencil);
+        GLErrorLog;
+        /*
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, framebufferWidth, framebufferHeight);
+        GLErrorLog;
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, defaultDepthBuffer);
+        GLErrorLog;
+
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, defaultDepthBuffer);
+        */
+         glClearStencil(0x0);
+        GLErrorLog;
+        glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+        GLErrorLog;
+        //glClearStencil(0x1);
+        //GLErrorLog;
+         
+        
+        
+        
+#else
+        
         glClear(GL_COLOR_BUFFER_BIT);
+#endif
+        
     }
 }
 

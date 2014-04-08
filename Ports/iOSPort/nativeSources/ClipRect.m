@@ -22,6 +22,7 @@
  */
 #import "ClipRect.h"
 #import "CodenameOne_GLViewController.h"
+#import "FillRect.h"
 
 static int clipX, clipY, clipW, clipH;
 static BOOL clipApplied = NO;
@@ -57,6 +58,29 @@ static CGRect drawingRect;
 }
 
 -(void)execute {
+#ifdef USE_ES2
+    NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
+    glClearStencil(0x0);
+    
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_NEVER, 1, 0xff);
+    
+    glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glStencilMask(0xff);
+    glClear(GL_STENCIL_BUFFER_BIT);
+    FillRect* f = [[FillRect alloc] initWithArgs:0xffffff a:0xff xpos:x ypos:y w:width h:height];
+    [f execute];
+    [f release];
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glStencilMask(0x0);
+    glStencilFunc(GL_EQUAL, 1, 0xff);
+    
+    //glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    
+    
+    
+#else
     int x2 = x + width;
     int y2 = y + height;
     int orX = drawingRect.origin.x;
@@ -99,14 +123,20 @@ static CGRect drawingRect;
         GLErrorLog;
         clipApplied = NO;
     }
+#endif
 }
 
 
 +(void)updateClipToScale {
+#ifdef USE_ES2
+    NSLog(@"Using ES2 clipping scale");
+    
+#else
     int displayHeight = [CodenameOne_GLViewController instance].view.bounds.size.height * scaleValue;
     if(currentScaleX == 1 && currentScaleY == 1) {
         glScissor(clipX, displayHeight - clipY - clipH, clipW, clipH);
     }
+#endif
 }
 
 -(void)dealloc {

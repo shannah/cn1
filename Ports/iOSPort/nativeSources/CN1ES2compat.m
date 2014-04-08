@@ -33,6 +33,7 @@ static GLuint CN1VertexColorCoordAtt = NULL;
 static GLuint CN1TextureMaskUniform = NULL;
 static GLuint CN1TextureRGBAUniform = NULL;
 static GLuint CN1ColorUniform = NULL;
+
 static GLuint CN1modelViewMatrixUniform = NULL;
 static GLuint CN1projectionMatrixUniform = NULL;
 
@@ -41,6 +42,8 @@ static GLuint CN1useVertexColorsUniform = NULL;
 static GLuint CN1useAlphaMaskTextureUniform = NULL;
 static GLuint CN1useRGBATextureUniform = NULL;
 static BOOL CN1ProgramLoaded = NO;
+
+
 
 static GLvoid * CN1vertexPointer;
 static GLenum CN1vertexPointerType;
@@ -134,7 +137,7 @@ static void CN1compileBasicProgram(){
         "   gl_FragColor = color;\n"
         "}\n"
     "}\n"
-     
+    
     
      ;
     //NSLog(fragmentShaderSrc);
