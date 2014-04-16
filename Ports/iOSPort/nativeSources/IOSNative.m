@@ -3943,21 +3943,21 @@ void com_codename1_impl_ios_IOSNative_nativePathRendererGetOutputBounds___long_i
 //native long nativePathRendererGetConsumer(long ptr);
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererGetConsumer___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
 {
-    NSLog(@"In getConsumer()");
+    //NSLog(@"In getConsumer()");
     return &(((Renderer*)ptr)->consumer);
 }
 
 //native void nativePathConsumerMoveTo(long ptr, double x, double y);
 void com_codename1_impl_ios_IOSNative_nativePathConsumerMoveTo___long_float_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT x, JAVA_FLOAT y)
 {
-    NSLog(@"In moveTo %g,%g", x,y);
+    //NSLog(@"In moveTo %g,%g", x,y);
     ((PathConsumer*)ptr)->moveTo((PathConsumer*)ptr,x,y);
-    NSLog(@"Finished moveTo");
+    //NSLog(@"Finished moveTo");
 }
 //native void nativePathConsumerLineTo(long ptr, double x, double y);
 void com_codename1_impl_ios_IOSNative_nativePathConsumerLineTo___long_float_float(JAVA_OBJECT instanceObject, JAVA_LONG ptr, JAVA_FLOAT x, JAVA_FLOAT y)
 {
-    NSLog(@"In lineto %g,%g", x, y);
+    //NSLog(@"In lineto %g,%g", x, y);
     ((PathConsumer*)ptr)->lineTo((PathConsumer*)ptr, x,y);
 }
 //native void nativePathConsumerQuadTo(long ptr, double xc, double yc, double x1, double y1);
@@ -3974,7 +3974,7 @@ void com_codename1_impl_ios_IOSNative_nativePathConsumerCurveTo___long_float_flo
 //native void nativePathConsumerClose(long ptr);
 void com_codename1_impl_ios_IOSNative_nativePathConsumerClose___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
 {
-    NSLog(@"Closing path");
+    //NSLog(@"Closing path");
     ((PathConsumer*)ptr)->closePath((PathConsumer*)ptr);
 }
 //native void nativePathConsumerDone(long ptr);

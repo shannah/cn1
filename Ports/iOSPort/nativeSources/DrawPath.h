@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "ExecutableOp.h"
 #import "Renderer.h"
+#import <OpenGLES/ES2/gl.h>
 
 @interface DrawPath : ExecutableOp {
     Renderer* renderer;
@@ -17,6 +18,7 @@
     int boundsY;
     int boundsW;
     int boundsH;
+    GLuint tex;
 }
 
 -(id)initWithArgs:(Renderer*)renderer color:(int)c alpha:(int)a x:(int)xx y:(int)yy w:(int)ww h:(int)hh;

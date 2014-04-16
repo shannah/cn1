@@ -590,7 +590,7 @@ void glEnableCN1StateES2(enum CN1GLenum state){
             GLErrorLog;
             glUniform1i(CN1useAlphaMaskTextureUniform, 1);
             GLErrorLog;
-            glEnable(GL_BLEND);
+            //glEnable(GL_BLEND);
             GLErrorLog;
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             GLErrorLog;
@@ -611,7 +611,7 @@ void glDisableCN1StateES2(enum CN1GLenum state){
             GLErrorLog;
             glUniform1i(CN1useAlphaMaskTextureUniform, 0);
             GLErrorLog;
-            glDisable(GL_BLEND);
+            //glDisable(GL_BLEND);
             GLErrorLog;
             //glDisable(GL_LINE_SMOOTH);
             break;

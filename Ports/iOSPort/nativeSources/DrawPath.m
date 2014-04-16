@@ -35,7 +35,7 @@
 {
     
     GlColorFromRGB(color, alpha);
-    NSLog(@"In drawPath::execute()");
+    //NSLog(@"In drawPath::execute()");
     //return;
     //_glEnableCN1State(CN1_GL_ALPHA_TEXTURE);
     
@@ -53,7 +53,7 @@
     if ( width < 0 ) width = -width;
     if ( height < 0 ) height = -height;
     
-    NSLog(@"W: %d H: %d", width, height);
+    //NSLog(@"W: %d H: %d", width, height);
     
     
    
@@ -87,18 +87,18 @@
         height,
     };
     
-    NSLog(@"AC Width %d", ac.width);
+    //NSLog(@"AC Width %d", ac.width);
     
     jbyte maskArray[ac.width*ac.height];
     
-    NSLog(@"Mask width %d height %d",
-          ac.width,
-          ac.height
-          );
+    //NSLog(@"Mask width %d height %d",
+    //      ac.width,
+    //      ac.height
+    //      );
     ac.alphas = (JAVA_BYTE*)&maskArray;
     Renderer_produceAlphas(renderer, &ac);
     
-    GLuint tex;
+    
     glGenTextures(1, &tex);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -137,6 +137,7 @@
 }
 -(void)dealloc
 {
+    glDeleteTextures(1, &tex);
     Renderer_destroy(renderer);
     [super dealloc];
     

@@ -49,6 +49,7 @@
     _glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     GLErrorLog;
     _glEnable(GL_TEXTURE_2D);
+    glActiveTexture(GL_TEXTURE0);
     GLErrorLog;
     if(textureName == 0) {
         glGenTextures(1, &textureName);
