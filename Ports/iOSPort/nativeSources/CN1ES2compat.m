@@ -5,6 +5,7 @@
 
 static GLKMatrix4 CN1modelViewMatrix;
 static GLKMatrix4 CN1projectionMatrix;
+static GLKMatrix4 CN1transformMatrix;
 static BOOL CN1ClientState_GL_COLOR_ARRAY = FALSE;
 static BOOL CN1ClientState_GL_EDGE_FLAG_ARRAY = FALSE;
 static BOOL CN1ClientState_GL_FOG_COORD_ARRAY = FALSE;
@@ -36,6 +37,7 @@ static GLuint CN1ColorUniform = NULL;
 
 static GLuint CN1modelViewMatrixUniform = NULL;
 static GLuint CN1projectionMatrixUniform = NULL;
+static GLuint CN1transformMatrixUniform = NULL;
 
 // Shader Uniform Flags
 static GLuint CN1useVertexColorsUniform = NULL;
@@ -100,14 +102,16 @@ static int _printGLPointer(GLenum type, GLint len, GLint size, const GLvoid * po
 }
 
 
-
+static void CN1updateTransformMatrixES2();
 
 static void CN1compileBasicProgram(){
     if ( CN1ProgramLoaded ){
         return;
     }
-    NSLog(@"Compiling basic program");
+    CN1transformMatrix = GLKMatrix4Identity;
+    //CN1transformMatrix = GLKMatrix4MakeIdentity();
     
+    NSLog(@"Compiling basic program");
     CN1ProgramLoaded = YES;
     CN1activeProgram = glCreateProgram();
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -171,6 +175,7 @@ static void CN1compileBasicProgram(){
     
     "uniform mat4 uModelViewMatrix;\n"
     "uniform mat4 uProjectionMatrix;\n"
+    "uniform mat4 uTransformMatrix;\n"
     "uniform bool uUseAlphaMaskTexture;\n"
     "uniform bool uUseRGBATexture;\n"
     "uniform bool uUseVertexColors;\n"
@@ -180,7 +185,7 @@ static void CN1compileBasicProgram(){
     "varying lowp vec4 vColor;\n"
     
     "void main(){\n"
-    "   gl_Position = uProjectionMatrix * uModelViewMatrix *  aVertexCoord;\n"
+    "   gl_Position = uProjectionMatrix *  uModelViewMatrix * uTransformMatrix * aVertexCoord;\n"
     //"   gl_Position = vec4(aVertexCoord.x * 2.0 / 640.0 - 1.0,\n"
    // "   aVertexCoord.y * -2.0 / 960.0 + 1.0,\n"
     //"   aVertexCoord.z,\n"
@@ -243,6 +248,8 @@ static void CN1compileBasicProgram(){
     GLErrorLog;
     CN1projectionMatrixUniform = glGetUniformLocation(CN1activeProgram, "uProjectionMatrix");
     GLErrorLog;
+    CN1transformMatrixUniform = glGetUniformLocation(CN1activeProgram, "uTransformMatrix");
+    GLErrorLog;
     CN1useVertexColorsUniform = glGetUniformLocation(CN1activeProgram, "uUseVertexColors");
     GLErrorLog;
     CN1useAlphaMaskTextureUniform = glGetUniformLocation(CN1activeProgram, "uUseAlphaMaskTexture");
@@ -278,6 +285,7 @@ static void CN1compileBasicProgram(){
     glUniform1i(CN1useAlphaMaskTextureUniform, 0);
     glUniform1i(CN1useRGBATextureUniform, 0);
     glUniform1i(CN1useVertexColorsUniform, 0);
+    CN1updateTransformMatrixES2();
     
     glUniform1i(CN1TextureMaskUniform, 1);
     glUniform1i(CN1TextureRGBAUniform, 0);
@@ -296,6 +304,12 @@ static void CN1updateProjectionMatrixES2(){
     
     GLErrorLog;
     //NSLog(@"Projection matrix now %@", NSStringFromGLKMatrix4(CN1projectionMatrix));
+}
+
+static void CN1updateTransformMatrixES2(){
+    CN1compileBasicProgram();
+    glUniformMatrix4fv(CN1transformMatrixUniform, 1, 0, CN1transformMatrix.m);
+    GLErrorLog;
 }
 
 static void CN1updateModelViewMatrixES2(){
@@ -466,6 +480,15 @@ void glRotatefES2(GLfloat angle, GLfloat x, GLfloat y, GLfloat z){
         CN1modelViewMatrix = GLKMatrix4Multiply(CN1modelViewMatrix, rotate);
         CN1updateModelViewMatrixES2();
     }
+}
+
+void glSetTransformES2(GLKMatrix4 t){
+    CN1transformMatrix = t;
+    CN1updateTransformMatrixES2();
+}
+
+GLKMatrix4 glGetTransformES2(){
+    return CN1transformMatrix;
 }
 
 void glColor4fES2(GLfloat r, GLfloat g, GLfloat b, GLfloat a){

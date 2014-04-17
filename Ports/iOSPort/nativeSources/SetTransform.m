@@ -9,12 +9,13 @@
 -(id)initWithArgs:(GLKMatrix4)matrix
 {
     m = matrix;
+    return self;
     
 }
 
 -(void)execute
 {
-
+    glSetTransformES2(m);
 }
 
 @end

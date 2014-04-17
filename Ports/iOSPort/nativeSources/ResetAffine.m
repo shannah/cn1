@@ -20,6 +20,7 @@
  * Please contact Codename One through http://www.codenameone.com/ if you 
  * need additional information or have any questions.
  */
+#import "CN1ES2compat.h"
 #import "ResetAffine.h"
 #import "CodenameOne_GLViewController.h"
 
@@ -36,6 +37,11 @@ extern float currentScaleY;
 }
 
 -(void)execute {
+    //_glMatrixMode(GL_PROJECTION);
+    //GLErrorLog;
+#ifdef USE_ES2
+    glSetTransformES2(GLKMatrix4Identity);
+#endif
     _glLoadIdentity();
     GLErrorLog;
     _glOrthof(0, Java_com_codename1_impl_ios_IOSImplementation_getDisplayWidthImpl(), 0, Java_com_codename1_impl_ios_IOSImplementation_getDisplayHeightImpl(), -1, 1);

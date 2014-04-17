@@ -3999,7 +3999,7 @@ void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long_int_int_int_
 //                               float d0, float d1, float d2, float d3,
 //                               boolean reset
 //
-extern void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float(
+extern void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float( JAVA_OBJECT instanceObject,
                                                                                                                                                                                JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
                                                                                                                                                                                JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,
                                                                                                                                                                                JAVA_FLOAT c0, JAVA_FLOAT c1, JAVA_FLOAT c2, JAVA_FLOAT c3,
@@ -4014,7 +4014,7 @@ void com_codename1_impl_ios_IOSNative_nativeSetTransform___float_float_float_flo
 {
     com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float
     (
-        a0, a1, a2, a3,
+        instanceObject, a0, a1, a2, a3,
         b0, b1, b2, b3,
         c0, c1, c2, c3,
         d0, d1, d2, d3

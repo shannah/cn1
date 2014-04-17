@@ -27,6 +27,8 @@ extern void glRotatefES2(GLfloat,GLfloat,GLfloat,GLfloat);
 extern void glEnableCN1StateES2(enum CN1GLenum);
 extern void glDisableCN1StateES2(enum CN1GLenum);
 extern void glAlphaMaskTexCoordPointerES2( GLint , GLenum , GLsizei , const GLvoid *);
+extern void glSetTransformES2(GLKMatrix4);
+extern GLKMatrix4 glGetTransformES2();
 
 #define _glMatrixMode(foo) glMatrixModeES2(foo)
 #define _glLoadIdentity()  glLoadIdentityES2()
