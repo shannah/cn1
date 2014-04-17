@@ -24,6 +24,7 @@
 package com.codename1.ui;
 
 import com.codename1.impl.CodenameOneImplementation;
+import com.codename1.ui.geom.Matrix;
 import com.codename1.ui.geom.PathIterator;
 import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.geom.Shape;
@@ -564,8 +565,12 @@ public final class Graphics {
         impl.fillShape(nativeGraphics, shape, x+xTranslate, y+yTranslate, w, h);
     }
     
-    public void setTransform(float[] matrix, boolean reset){
-        impl.setTransform(nativeGraphics, matrix, reset);
+    public void setTransform(Matrix matrix){
+        impl.setTransform(nativeGraphics, matrix);
+    }
+    
+    public void getTransform(Matrix matrix){
+        impl.getTransform(nativeGraphics, matrix);
     }
     
     /**

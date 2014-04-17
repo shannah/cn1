@@ -20,6 +20,8 @@
  * Please contact Codename One through http://www.codenameone.com/ if you
  * need additional information or have any questions.
  */
+#import "CN1ES2compat.h"
+#ifdef USE_ES2
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "ExecutableOp.h"
@@ -30,7 +32,8 @@
     BOOL reset;
     
 }
--(id)initWithArgs:(GLKMatrix4)matrix reset:(BOOL)r;
+-(id)initWithArgs:(GLKMatrix4)matrix;
 -(void)execute;
 
 @end
+#endif

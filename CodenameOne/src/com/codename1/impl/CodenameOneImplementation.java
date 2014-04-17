@@ -1350,8 +1350,12 @@ public abstract class CodenameOneImplementation {
     
     
     
-    public void setTransform(Object graphics, float[] m, boolean reset) {
+    public void setTransform(Object graphics, Matrix m) {
     
+    }
+    
+    public void getTransform(Object graphics, Matrix m){
+        
     }
     
     

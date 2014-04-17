@@ -1,19 +1,21 @@
 #import "SetTransform.h"
+#ifdef USE_ES2
+
 #import "CodenameOne_GLViewController.h"
 
 
 @implementation SetTransform
 
--(id)initWithArgs:(GLKMatrix4)matrix reset:(BOOL)r
+-(id)initWithArgs:(GLKMatrix4)matrix
 {
     m = matrix;
-    reset = r;
     
 }
 
 -(void)execute
 {
-    
+
 }
 
 @end
+#endif
