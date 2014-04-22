@@ -85,4 +85,5 @@ public class Matrix {
     public void setData(float[] data){
         this.data = data;
     }
+    
 }

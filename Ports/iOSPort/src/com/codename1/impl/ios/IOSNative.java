@@ -96,6 +96,9 @@ public final class IOSNative {
 
     native void rotateGlobal(float angle);
     native void rotateGlobal(float angle, int x, int y);
+    native void translateGlobal(int x, int y);
+    native int getTranslateXGlobal();
+    native int getTranslateYGlobal();
 
     native void shearGlobal(float x, float y);
 
@@ -439,7 +442,10 @@ public final class IOSNative {
             float b0, float b1, float b2, float b3,
             float c0, float c1, float c2, float c3,
             float d0, float d1, float d2, float d3,
-            boolean reset
+            int originX, int originY
+    );
+    native void nativeGetTransform(
+            float[] data
     );
     
     // End paths

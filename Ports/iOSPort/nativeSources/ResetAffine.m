@@ -23,12 +23,17 @@
 #import "CN1ES2compat.h"
 #import "ResetAffine.h"
 #import "CodenameOne_GLViewController.h"
+//#import "Translate.h"
 
 extern int Java_com_codename1_impl_ios_IOSImplementation_getDisplayWidthImpl();
 
 extern int Java_com_codename1_impl_ios_IOSImplementation_getDisplayHeightImpl();
 extern float currentScaleX;
 extern float currentScaleY;
+//extern int effectiveTranslationX;
+//extern int effectiveTranslationY;
+//extern int currentTranslationX;
+//extern int currentTranslationY;
 
 @implementation ResetAffine
 
@@ -40,6 +45,8 @@ extern float currentScaleY;
     //_glMatrixMode(GL_PROJECTION);
     //GLErrorLog;
 #ifdef USE_ES2
+    
+    //glSetTransformES2(GLKMatrix4Translate(GLKMatrix4Identity, currentTranslationX, currentTranslationY, 0));
     glSetTransformES2(GLKMatrix4Identity);
 #endif
     _glLoadIdentity();

@@ -61,6 +61,7 @@
 #import "ZooZ.h"
 #endif
 #import "Rotate.h"
+#import "Translate.h"
 
 #define INCLUDE_CN1_PUSH2
 
@@ -747,6 +748,24 @@ void com_codename1_impl_ios_IOSNative_rotateGlobal___float_int_int(JAVA_OBJECT i
     Rotate* f = [[Rotate alloc] initWithArgs:angle xx:x yy:y];
     [CodenameOne_GLViewController upcoming:f];
     [f release];
+}
+extern int currentTranslationX;
+extern int currentTranslationY;
+void com_codename1_impl_ios_IOSNative_translateGlobal___int_int(JAVA_OBJECT instanceObject, JAVA_INT x, JAVA_INT y) {
+    NSLog(@"Inside translateGlobal");
+    currentTranslationX += x;
+    currentTranslationY += y;
+    Translate* f = [[Translate alloc] initWithArgs:x y:y];
+    [CodenameOne_GLViewController upcoming:f];
+    [f release];
+}
+
+
+int com_codename1_impl_ios_IOSNative_getTranslateXGlobal__(JAVA_OBJECT instanceObject){
+    return currentTranslationX;
+}
+int com_codename1_impl_ios_IOSNative_getTranslateYGlobal__(JAVA_OBJECT instanceObject){
+    return currentTranslationY;
 }
 
 void com_codename1_impl_ios_IOSNative_shearGlobal___float_float(JAVA_OBJECT instanceObject, JAVA_FLOAT x, JAVA_FLOAT y) {
@@ -3999,25 +4018,28 @@ void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long_int_int_int_
 //                               float d0, float d1, float d2, float d3,
 //                               boolean reset
 //
-extern void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float( JAVA_OBJECT instanceObject,
+extern void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_int_int( JAVA_OBJECT instanceObject,
                                                                                                                                                                                JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
                                                                                                                                                                                JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,
                                                                                                                                                                                JAVA_FLOAT c0, JAVA_FLOAT c1, JAVA_FLOAT c2, JAVA_FLOAT c3,
-                                                                                                                                                                               JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3
+                                                                                                                                                                               JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3,
+                                                                                                                                                                                      JAVA_INT originX, JAVA_INT originY
                                                                                                                                                                                );
-void com_codename1_impl_ios_IOSNative_nativeSetTransform___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float(JAVA_OBJECT instanceObject,
+void com_codename1_impl_ios_IOSNative_nativeSetTransform___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_int_int(JAVA_OBJECT instanceObject,
                                 JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
                                 JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,
                                 JAVA_FLOAT c0, JAVA_FLOAT c1, JAVA_FLOAT c2, JAVA_FLOAT c3,
-                                JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3
+                                JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3,
+                                JAVA_INT originX, JAVA_INT originY
 )
 {
-    com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float
+    com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_int_int
     (
         instanceObject, a0, a1, a2, a3,
         b0, b1, b2, b3,
         c0, c1, c2, c3,
-        d0, d1, d2, d3
+        d0, d1, d2, d3,
+        originX, originY
      );
 }
 

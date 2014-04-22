@@ -29,10 +29,11 @@
 
 @interface SetTransform : ExecutableOp {
     GLKMatrix4 m;
-    BOOL reset;
+    int originX;
+    int originY;
     
 }
--(id)initWithArgs:(GLKMatrix4)matrix;
+-(id)initWithArgs:(GLKMatrix4)matrix originX:(int)x originY:(int)y;
 -(void)execute;
 
 @end

@@ -566,7 +566,11 @@ public final class Graphics {
     }
     
     public void setTransform(Matrix matrix){
-        impl.setTransform(nativeGraphics, matrix);
+        setTransform(matrix, 0, 0);
+    }
+    
+    public void setTransform(Matrix matrix, int originX, int originY){
+        impl.setTransform(nativeGraphics, matrix, originX, originY);
     }
     
     public void getTransform(Matrix matrix){

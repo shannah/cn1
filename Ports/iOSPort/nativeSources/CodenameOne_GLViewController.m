@@ -595,11 +595,12 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
     // add to pipeline here
 }
 
-void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float(JAVA_OBJECT instanceObject,
+void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_int_int(JAVA_OBJECT instanceObject,
                                                                                                                                                        JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
                                                                                                                                                        JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,
                                                                                                                                                        JAVA_FLOAT c0, JAVA_FLOAT c1, JAVA_FLOAT c2, JAVA_FLOAT c3,
-                                                                                                                                                       JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3
+                                                                                                                                                       JAVA_FLOAT d0, JAVA_FLOAT d1, JAVA_FLOAT d2, JAVA_FLOAT d3,
+                                                                                     JAVA_INT originX, JAVA_INT originY
                                                                                                                                                                    )
 {
 #ifdef USE_ES2
@@ -608,7 +609,7 @@ void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_flo
                                   c0,c1,c2,c3,
                                   d0,d1,d2,d3);
     
-    SetTransform *f = [[SetTransform alloc] initWithArgs:m];
+    SetTransform *f = [[SetTransform alloc] initWithArgs:m originX:originX originY:originY];
     [CodenameOne_GLViewController upcoming:f];
     [f release];
 #endif
