@@ -1021,32 +1021,24 @@ public class IOSImplementation extends CodenameOneImplementation {
         ng.nativeDrawImage(nm.peer, ng.alpha, x, y, nm.width, nm.height);
     }
 
+    // -------------------------------------------------------------------------
+    // METHODS FOR DRAWING SHAPES AND TRANSFORMATIONS
+    // -------------------------------------------------------------------------
+    
     /**
-     * Draws a path on the current graphics context.
+     * Draws the outline of a shape in the given graphics context.
      * @param graphics the graphics context
+     * @param shape The shape to be drawn.
+     * @param lineWidth The width of the line.
+     * @param capStyle The cap style to use for the line.
      * @param path the path to draw.
      */
     @Override
     public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
-        PathIterator path = shape.getPathIterator();
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
-        
-        Rectangle rb = shape.getBounds();
-        // Notice that these will be cleaned up in the dealloc method of the DrawPath objective-c class
-        NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
-        NativePathStroker stroker = new NativePathStroker(renderer,lineWidth, capStyle, miterStyle, miterLimit);
-        //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
-        //stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
-        NativePathConsumer c = stroker.consumer;
-        this.fillPathConsumer(path, c);
-        
-        // We don't need the stroker anymore because it has passed the strokes to the renderer.
-        stroker.destroy();
-        this.drawPath(renderer, ng.color, ng.alpha, x, y, w, h);
-        
-        
+        ng.nativeDrawShape(shape, lineWidth, capStyle, miterStyle, miterLimit, x, y, w, h);
     }
     
     /**
@@ -1056,17 +1048,10 @@ public class IOSImplementation extends CodenameOneImplementation {
      */
     @Override
     public void fillShape(Object graphics, Shape shape, int x, int y, int w, int h){
-        PathIterator path = shape.getPathIterator();
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
-        Rectangle rb = shape.getBounds();
-        // Notice that this will be cleaned up in the dealloc method of the DrawPath objective-c class.
-        NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
-        //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
-        NativePathConsumer c = renderer.consumer;
-        this.fillPathConsumer(path, c);
-        this.drawPath(renderer, ng.color, ng.alpha, x, y, w, h);
+        ng.nativeFillShape(shape, x, y, w, h);
         
         
     }
@@ -1103,98 +1088,48 @@ public class IOSImplementation extends CodenameOneImplementation {
 
     @Override
     public void getTransform(Object graphics, Matrix m) {
-        nativeInstance.nativeGetTransform(m.getData());
+        ((NativeGraphics)graphics).nativeGetTransform(m);
     }
 
     
     
     @Override
     public void setTransform(Object graphics, Matrix t, int originX, int originY) {
-        float[] m = t.getData();/*
-        switch ( m.length ){
-            case 1:
-                nativeSetTransform( 
-                    m[0], 0, 0, 0,
-                    0, m[0], 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 1, 0
-                );
-                break;
-                
-            case 2:
-                nativeSetTransform(
-                    m[0], 0, 0, 0,
-                    0, m[1], 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 1, 0
-                );
-                break;
-            case 4:
-                // This is just a 2D transformation
-                nativeSetTransform(
-                    m[0], m[1], 0, 0,
-                    m[2], m[3], 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 1, 0
-                );
-                break;
-            case 6:
-                nativeSetTransform(
-                    m[0], m[1], m[2], 0,
-                    m[3], m[4], m[5], 0,
-                    0, 0, 1, 0,
-                    0, 0, 1, 0
-                );
-                break;
-            case 9:
-                nativeSetTransform(
-                    m[0], m[1], m[2], 0,
-                    m[3], m[4], m[5], 0,
-                    m[6], m[6], m[7], 0,
-                    0, 0, 1, 0
-                );
-                break;
-            case 12:
-                nativeSetTransform(
-                    m[0], m[1], m[2], m[3],
-                    m[4], m[5], m[6], m[7],
-                    m[8], m[9], m[10], m[11],
-                    0,0,1,0
-                );
-                break;
-            case 16:*/
-                nativeInstance.nativeSetTransform(
-                    m[0], m[1], m[2], m[3],
-                    m[4], m[5], m[6], m[7],
-                    m[8], m[9], m[10], m[11],
-                    m[12], m[13], m[14], m[15],
-                    originX, originY
-                );/*
-                break;
-            default:
-                throw new IllegalArgumentException("Transforms must be array of length 1, 2, 4, 6, 9, 12, or 16");
-                
-        }
-                */
-    }
-    
-    
-    /*
-    private void nativeSetTransform( 
-            float a0, float a1, float a2, float a3, 
-            float b0, float b1, float b2, float b3,
-            float c0, float c1, float c2, float c3,
-            float d0, float d1, float d2, float d3
-    )
-    {
+        float[] m = t.getData();
+        
         nativeInstance.nativeSetTransform(
-                a0, a1, a2, a3,
-                b0, b1, b2, b3,
-                c0, c1, c2, c3,
-                d0, d1, d2, d3);
+            m[0], m[1], m[2], m[3],
+            m[4], m[5], m[6], m[7],
+            m[8], m[9], m[10], m[11],
+            m[12], m[13], m[14], m[15],
+            originX, originY
+        );
+    }
+
+    @Override
+    public boolean isTransformSupported(Object graphics) {
+        return ((NativeGraphics)graphics).isTransformSupported();
+    }
+
+    @Override
+    public boolean isPerspectiveTransformSupported(Object graphics) {
+        return ((NativeGraphics)graphics).isPerspectiveTransformSupported();
+    }
+
+    @Override
+    public boolean isShapeSupported(Object graphics) {
+        return ((NativeGraphics)graphics).isShapeSupported();
     }
     
-    */
+    
+    
+    
+    
+    
+    
+    
+    
+   
     
     private void nativeDrawImageMutable(long peer, int alpha, int x, int y, int width, int height) {
         nativeInstance.nativeDrawImageMutable(peer, alpha, x, y, width, height);
@@ -2009,6 +1944,10 @@ public class IOSImplementation extends CodenameOneImplementation {
     }
 
 
+    /**
+     * A utility class to encapsulate the Pisces Stroker.
+     * @see Stroker.h and Stroker.c in nativeSources
+     */
     static class NativePathStroker {
         
         static final int JOIN_MITER = 0;
@@ -2018,17 +1957,34 @@ public class IOSImplementation extends CodenameOneImplementation {
         static final int CAP_ROUND = 1;
         static final int CAP_SQUARE = 2;
         
-        
+        /**
+         * Pointer to the native Stroker struct.
+         */
         final long ptr;
         final NativePathRenderer renderer;
         final NativePathConsumer consumer;
         
+        /**
+         * Creates a stroker with the given settings and renderer.
+         * @param renderer
+         * @param lineWidth
+         * @param capStyle
+         * @param joinStyle
+         * @param miterLimit 
+         */
         NativePathStroker(NativePathRenderer renderer, float lineWidth, int capStyle, int joinStyle, float miterLimit){
             ptr = nativeInstance.nativePathStrokerCreate(renderer.consumer.ptr, lineWidth, capStyle, joinStyle, miterLimit);
             this.renderer = renderer;
             this.consumer = new NativePathConsumer(nativeInstance.nativePathStrokerGetConsumer(ptr));
         }
         
+        /**
+         * Resets the stroker with the specified settings.
+         * @param lineWidth
+         * @param capStyle
+         * @param joinStyle
+         * @param miterLimit 
+         */
         void reset(float lineWidth, int capStyle, int joinStyle, float miterLimit){
             nativeInstance.nativePathStrokerReset(ptr, lineWidth, capStyle, joinStyle, miterLimit);
         }
@@ -2047,6 +2003,10 @@ public class IOSImplementation extends CodenameOneImplementation {
         
     }
     
+    /**
+     * Encapsulates the pisces native path consumer for consuming paths.
+     * See PathConsumer.h, Renderer.h, Renderer.c
+     */
     static class NativePathConsumer {
         final long ptr;
         
@@ -2078,6 +2038,10 @@ public class IOSImplementation extends CodenameOneImplementation {
         }
     }
     
+    /**
+     * Encapsulation of a native pisces path renderer.
+     * See Renderer.h, Renderer.c
+     */
     static class NativePathRenderer {
         
         
@@ -2205,7 +2169,73 @@ public class IOSImplementation extends CodenameOneImplementation {
         void nativeDrawImage(long peer, int alpha, int x, int y, int width, int height) {
             nativeDrawImageMutable(peer, alpha, x, y, width, height);
         }
+        
+        //----------------------------------------------------------------------
+        // BEGIN DRAW SHAPE METHODS
+        
+        /**
+         * Draws a shape in the graphics context
+         * @param shape
+         * @param lineWidth
+         * @param capStyle
+         * @param miterStyle
+         * @param miterLimit
+         * @param x
+         * @param y
+         * @param w
+         * @param h 
+         */
+        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
+      
+        }
+        
+        
+        /**
+         * Fills a shape in the graphics context.
+         * @param shape
+         * @param x
+         * @param y
+         * @param w
+         * @param h 
+         */
+        void nativeFillShape(Shape shape, int x, int y, int w, int h) {
 
+        }
+        
+        /**
+         * Gets the transform for the graphics context.
+         * @param m 
+         */
+        void nativeGetTransform(Matrix m) {
+            
+        }
+        
+        /**
+         * Sets the transform for the graphics context.
+         * @param t
+         * @param originX
+         * @param originY 
+         */
+        void nativeSetTransform(Matrix t, int originX, int originY) {
+            
+        }
+        
+        
+        boolean isTransformSupported(){
+            return false;
+        }
+        
+        boolean isPerspectiveTransformSupported(){
+            return false;
+        }
+        
+        boolean isShapeSupported(){
+            return false;
+        }
+
+        // END DRAW SHAPE METHODS
+        //----------------------------------------------------------------------
+        
         public void resetAffine() {
         }
 
@@ -2323,6 +2353,71 @@ public class IOSImplementation extends CodenameOneImplementation {
         void nativeDrawImage(long peer, int alpha, int x, int y, int width, int height) {
             nativeDrawImageGlobal(peer, alpha, x, y, width, height);
         }
+     
+        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h) {
+            PathIterator path = shape.getPathIterator();
+            Rectangle rb = shape.getBounds();
+            // Notice that these will be cleaned up in the dealloc method of the DrawPath objective-c class
+            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
+            NativePathStroker stroker = new NativePathStroker(renderer, lineWidth, capStyle, miterStyle, miterLimit);
+            //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+            //stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
+            NativePathConsumer c = stroker.consumer;
+            fillPathConsumer(path, c);
+
+            // We don't need the stroker anymore because it has passed the strokes to the renderer.
+            stroker.destroy();
+            drawPath(renderer, this.color, this.alpha, x, y, w, h);
+        }
+
+        /**
+         * Draws a path on the current graphics context.
+         *
+         * @param graphics the graphics context
+         * @param path the path to draw.
+         */
+        void nativeFillShape(Shape shape, int x, int y, int w, int h) {
+            PathIterator path = shape.getPathIterator();
+
+            Rectangle rb = shape.getBounds();
+            // Notice that this will be cleaned up in the dealloc method of the DrawPath objective-c class.
+            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
+            //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+            NativePathConsumer c = renderer.consumer;
+            fillPathConsumer(path, c);
+            drawPath(renderer, this.color, this.alpha, x, y, w, h);
+
+        }
+        
+        void nativeGetTransform(Matrix m){
+            nativeInstance.nativeGetTransform(m.getData());
+        }
+        
+        void nativeSetTransform(Matrix t, int originX, int originY) {
+            float[] m = t.getData();
+
+            nativeInstance.nativeSetTransform(
+                m[0], m[1], m[2], m[3],
+                m[4], m[5], m[6], m[7],
+                m[8], m[9], m[10], m[11],
+                m[12], m[13], m[14], m[15],
+                originX, originY
+            );
+        }
+        
+        boolean isTransformSupported(){
+            return true;
+        }
+        
+        boolean isPerspectiveTransformSupported(){
+            return true;
+        }
+        
+        boolean isShapeSupported(){
+            return true;
+        }
+        
+        
 
         public void fillRectRadialGradient(int startColor, int endColor, int x, int y, int width, int height, float relativeX, float relativeY, float relativeSize) {
             nativeInstance.fillRectRadialGradientGlobal(startColor, endColor, x, y, width, height, relativeX, relativeY, relativeSize);

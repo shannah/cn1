@@ -50,8 +50,7 @@ public final class Graphics {
 
     private Object[] nativeGraphicsState;
     private float scaleX = 1, scaleY = 1;
-    
-    
+    private Stroke stroke = new Stroke();
     /**
      * Constructing new graphics with a given javax.microedition.lcdui.Graphics 
      * @param g an implementation dependent native graphics instance
@@ -546,37 +545,187 @@ public final class Graphics {
             drawImage(img, x, y);
         }
     }
-
-    public void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
+    
+    
+    //--------------------------------------------------------------------------
+    // START SHAPE DRAWING STUFF
+    //--------------------------------------------------------------------------
+    /**
+     * Sets the stroke that will be used to draw shapes.
+     * @param stroke 
+     */
+    public void setStroke(Stroke stroke){
+        this.stroke = stroke;
+    }
+    
+    /**
+     * Gets the stroke that will be used to draw shapes
+     * @return 
+     */
+    public Stroke getStroke(){
+        return this.stroke;
+    }
+    
+    
+    /**
+     * Draws the outline of the provided shape in the current graphics context.  This is not supported on
+     * all platforms and contexts currently.  Use the isShapeSupported() method to check if the current 
+     * context supports drawing shapes.
+     * @param shape 
+     * 
+     * @see setStroke() for setting the stroke properties to use for drawing the shape.
+     * @see isShapeSupported() To see if the current context supports the drawing of shapes.
+     */
+    public void drawShape(Shape shape){
+        this.drawShapeImpl(shape, this.stroke.getLineWidth(), this.stroke.getCapStyle(), this.stroke.getJoinStyle(), this.stroke.getMiterLimit());
+    }
+    
+    private void drawShapeImpl(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
         Rectangle r = shape.getBounds();
         drawShape(shape, lineWidth, capStyle, miterStyle, miterLimit, r.getX(), r.getY(), r.getWidth(), r.getHeight());
     }
     
-    public void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
-        impl.drawShape(nativeGraphics, shape, lineWidth, capStyle, miterStyle, miterLimit, x+xTranslate, y+yTranslate, w, h);
+    
+    /**
+     * Draws a outline shape inside the specified bounding box.  The bounding box will resize the shape to fit in its dimensions.
+     * @param shape
+     * @param x 
+     * @param y
+     * @param w
+     * @param h 
+     * 
+     * @see setStroke() To set the stroke used to stroke the shape.
+     * @see isShapeSupported() to see if this graphics context supports drawing shapes.
+     */
+    public void drawShape(Shape shape, int x, int y, int w, int h){
+        this.drawShape(shape,  this.stroke.getLineWidth(), this.stroke.getCapStyle(), this.stroke.getJoinStyle(), this.stroke.getMiterLimit(), x, y, w, h);
+    }
+    private void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
+        if ( isShapeSupported()){
+            impl.drawShape(nativeGraphics, shape, lineWidth, capStyle, miterStyle, miterLimit, x+xTranslate, y+yTranslate, w, h);
+        }
     }
     
+    /**
+     * Fills the given shape using the current alpha and color settings.
+     * @param shape The shape to be filled.
+     * 
+     * @see isShapeSupported() To check if this graphics context supports drawing shapes.
+     */
     public void fillShape(Shape shape){
         Rectangle r = shape.getBounds();
         fillShape(shape, r.getX(), r.getY(), r.getWidth(), r.getHeight());
     }
     
+    /**
+     * Fills the given shape inside the specified bounding box.  The shape will be stretched
+     * or shrunk to fit these bounds exactly.
+     * @param shape The shape to be filled.
+     * @param x 
+     * @param y
+     * @param w
+     * @param h 
+     * 
+     * @see isShapeSupported() to check if the graphics context supports drawing shapes.
+     */
     public void fillShape(Shape shape, int x, int y, int w, int h){
-        impl.fillShape(nativeGraphics, shape, x+xTranslate, y+yTranslate, w, h);
+        if ( isShapeSupported() ){
+            impl.fillShape(nativeGraphics, shape, x+xTranslate, y+yTranslate, w, h);
+        }
     }
     
+    /**
+     * Checks to see if matrix transforms are supported by this graphics context.
+     * @return True if this graphics context supports matrix transforms. 
+     */
+    public boolean isTransformSupported(){
+        return impl.isTransformSupported(nativeGraphics);
+    }
+    
+    /**
+     * Checks to see if perspective (3D) matrix transforms are supported by this graphics
+     * context.  If 3D transforms are supported, you can use a 4x4 transformation matrix
+     * in your setTransform() method to perform 3d transforms.
+     * 
+     * <p>Note: It is possible for 3D transforms to not be supported but Affine (2D) 
+     * transforms to be supported.  In this case you would be limited to a 3x3 transformation
+     * matrix in the setTransform() method.</p>
+     * @return True if Perspective (3D) transforms are supported.  False otherwise.
+     * @see isTransformSupported() Checks if at least 2D transforms are supported.
+     * @see setTransform() To set the current transform.
+     * @see getTransform() to get the current transform.
+     */
+    public boolean isPerspectiveTransformSupported(){
+        return impl.isPerspectiveTransformSupported(nativeGraphics);
+    }
+    
+    /**
+     * Checks to see if this graphics context supports drawing shapes (i.e. the drawShape()
+     * and fillShape() methods.
+     * @return 
+     * @see drawShape()
+     * @see fillShape()
+     */
+    public boolean isShapeSupported(){
+        return impl.isShapeSupported(nativeGraphics);
+    }
+    
+    /**
+     * Sets the transformation matrix to apply to drawing in this graphics context.
+     * In order to use this for 2D/Affine transformations you should first check to 
+     * make sure that transforms are supported by calling the isTransformSupported()
+     * method.  For 3D/Perspective transformations, you should first check to
+     * make sure that 3D/Perspective transformations are supported by calling the 
+     * isPerspectiveTransformSupported().
+     * 
+     * <p>Transformations are applied with (0,0) as the origin.  So rotations and
+     * scales are anchored at this point on the screen.  You can use a different
+     * anchor point by either embedding it in the transformation matrix (i.e. pre-transform the matrix to anchor at a different point)
+     * or use the setTransform(Matrix,int,int) variation that allows you to explicitly set the 
+     * anchor point.</p>
+     * @param matrix The transformation matrix to use for drawing.  2D/Affine transformations
+     * can be achieved using a 3x3 transformation matrix.  3D/Perspective transformations
+     * can be achieved using a 4x3 transformation matrix.
+     * 
+     * @see isTransformSupported()
+     * @see isPerspectiveTransformSupported()
+     * @see setTransform(Matrix,int,int)
+     */
     public void setTransform(Matrix matrix){
         setTransform(matrix, 0, 0);
     }
     
+    /**
+     * Sets the transformation matrix to apply to drawing in this graphics context, using the 
+     * specified origin for transformations (e.g. for rotation and scaling).
+     * @param matrix The transformation matrix.  Can be a 3x3 matrix of a 4x4 matrix depending on whether you want a 2D transformation
+     * or a 3D transformation.
+     * @param originX The x coordinate of the anchor point for rotations.
+     * @param originY The y coordinate of the anchor point for rotations.
+     */
     public void setTransform(Matrix matrix, int originX, int originY){
-        impl.setTransform(nativeGraphics, matrix, originX, originY);
+        if ( isTransformSupported()){
+            impl.setTransform(nativeGraphics, matrix, originX, originY);
+        }
     }
     
+    /**
+     * Gets the transformation matrix that is currently applied to this graphics context.  This method
+     * will populate the passed matrix data with the values that are currently set.
+     * @param matrix 
+     */
     public void getTransform(Matrix matrix){
-        impl.getTransform(nativeGraphics, matrix);
+        if ( isTransformSupported()){
+            impl.getTransform(nativeGraphics, matrix);
+        } else {
+            
+        }
     }
     
+    
+    //--------------------------------------------------------------------------
+    // END SHAPE DRAWING METHODS
+    //--------------------------------------------------------------------------
     /**
      * Draws a filled triangle with the given coordinates
      * 
