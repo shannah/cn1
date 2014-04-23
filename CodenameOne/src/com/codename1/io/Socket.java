@@ -24,6 +24,7 @@
 package com.codename1.io;
 
 import com.codename1.ui.Display;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,7 +69,11 @@ public class Socket {
                     sc.connectionEstablished(new SocketInputStream(connection, sc), new SocketOutputStream(connection, sc));
                 } else {
                     sc.setConnected(false);
-                    sc.connectionError(Util.getImplementation().getSocketErrorCode(connection), Util.getImplementation().getSocketErrorMessage(connection));
+                    if(connection == null) {
+                        sc.connectionError(-1, "Failed to connect");
+                    } else {
+                        sc.connectionError(Util.getImplementation().getSocketErrorCode(connection), Util.getImplementation().getSocketErrorMessage(connection));
+                    }
                 }
             }
         }, "Connection to " + host).start();
@@ -130,6 +135,7 @@ public class Socket {
         private byte[] buffer;
         private int bufferOffset;
         private SocketConnection con;
+        private boolean closed;
         SocketInputStream(Object impl, SocketConnection con) {
             this.impl = impl;
             this.con = con;
@@ -146,6 +152,7 @@ public class Socket {
 
         @Override
         public void close() throws IOException {
+            closed = true;
             if(Util.getImplementation().isSocketConnected(impl)) {
                 Util.getImplementation().disconnectSocket(impl);
                 con.setConnected(false);
@@ -157,8 +164,15 @@ public class Socket {
             return Util.getImplementation().getSocketAvailableInput(impl);
         }
 
+        private void throwEOF() throws IOException {
+            if(closed) {
+                throw new EOFException();
+            }
+        }
+        
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
+            throwEOF();
             // eventually a read should timeout and return what it has
             int timeout = 10;
             while(buffer == null) {
@@ -203,17 +217,19 @@ public class Socket {
 
         @Override
         public int read(byte[] b) throws IOException {
+            throwEOF();
             return read(b, 0, b.length); 
         }
 
         @Override
         public int read() throws IOException {
+            throwEOF();
             byte[] b = new byte[1];
             int v = read(b);
             if(v == -1) {
                 return -1;
             }
-            return b[0];
+            return b[0] & 0xff;
         }
         
     }

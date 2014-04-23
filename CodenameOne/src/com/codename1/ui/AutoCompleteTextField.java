@@ -59,6 +59,7 @@ public class AutoCompleteTextField extends TextField {
         popup = new Container(new BoxLayout(BoxLayout.Y_AXIS));
         filter = new FilterProxyListModel<String>(listModel);
         popup.setScrollable(false);
+        setConstraint(TextArea.NON_PREDICTIVE);
     }
 
     /**
@@ -69,6 +70,7 @@ public class AutoCompleteTextField extends TextField {
         filter = new FilterProxyListModel<String>(new DefaultListModel(new String[]{""}));
         popup = new Container(new BoxLayout(BoxLayout.Y_AXIS));
         popup.setScrollable(false);
+        setConstraint(TextArea.NON_PREDICTIVE);
     }
     
     /**
@@ -99,7 +101,7 @@ public class AutoCompleteTextField extends TextField {
     @Override
     public void setText(String text) {
         super.setText(text);
-        if (text == null || pickedText == text) {
+        if (text == null || (pickedText != null && pickedText.equals(text))) {
             return;
         }
         pickedText = null;

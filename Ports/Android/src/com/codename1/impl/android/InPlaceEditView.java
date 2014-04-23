@@ -36,6 +36,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.SparseArray;
@@ -95,6 +96,8 @@ public class InPlaceEditView extends FrameLayout {
     private static InPlaceEditView sInstance = null;
     private static TextArea nextTextArea = null;
     private AndroidImplementation impl;
+    private static long closedTime;
+    private static boolean showVKB = false;
 
     /**
      * Private constructor
@@ -192,11 +195,24 @@ public class InPlaceEditView extends FrameLayout {
             result = mInputManager.showSoftInput(mEditText, showFlags, mResultReceiver);
         } else {
             result = mInputManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0, mResultReceiver);
+            closedTime = System.currentTimeMillis();
         }
+        showVKB = show;
 
         Log.d(TAG, "InputMethodManager returned " + Boolean.toString(result).toUpperCase());
     }
 
+    /**
+     * Returns true if the keyboard is currently on screen.
+     */ 
+    public static boolean isKeyboardShowing(){
+        //There is no android API to know if the keyboard is currently showing
+        //This method will return false after 2 seconds since the keyboard was 
+        //requested to be closed
+        return showVKB || (System.currentTimeMillis() - closedTime) < 2000;
+    }
+    
+    
     /**
      * Start editing the given text-area
      * This method is executed on the UI thread, so UI manipulation is safe here.
@@ -301,6 +317,10 @@ public class InPlaceEditView extends FrameLayout {
         
         if (textArea.isSingleLineTextArea()) {
             mEditText.setInputType(getAndroidInputType(codenameOneInputType));
+            if(Display.getInstance().getProperty("andAddComma", "false").equals("true") && 
+                    (codenameOneInputType & TextArea.DECIMAL) == TextArea.DECIMAL) {
+                mEditText.setKeyListener(DigitsKeyListener.getInstance("0123456789.,"));
+            }
         }
         if (password) {
             int type = mInputTypeMap.get(codenameOneInputType, InputType.TYPE_CLASS_TEXT);

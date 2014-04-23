@@ -202,6 +202,18 @@ public class JavaSEPort extends CodenameOneImplementation {
         designMode = aDesignMode;
     }
 
+    public int getDeviceDensity() {
+        if(defaultPixelMilliRatio != null) {
+            if(defaultPixelMilliRatio.doubleValue() == 10) {
+                return Display.DENSITY_MEDIUM;
+            }
+            if(defaultPixelMilliRatio.doubleValue() == 20) {
+                return Display.DENSITY_VERY_HIGH;
+            }
+        }
+        return super.getDeviceDensity();
+    }
+    
     /**
      * @return the defaultPixelMilliRatio
      */
@@ -304,6 +316,7 @@ public class JavaSEPort extends CodenameOneImplementation {
     private String[] platformOverrides = new String[0];
     private static NetworkMonitor netMonitor;
     private static PerformanceMonitor perfMonitor;
+    static LocationSimulation locSimulation;
     private static boolean blockMonitors;
     private static boolean fxExists = false;
     private JFrame window;
@@ -1567,6 +1580,22 @@ public class JavaSEPort extends CodenameOneImplementation {
                     new ComponentTreeInspector();
                 }
             });
+            
+            JMenuItem locactionSim = new JMenuItem("Location Simulation");
+            locactionSim.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    if(!fxExists){
+                        System.err.println("This simulation requires jdk 7");
+                        return;
+                    }
+                    locSimulation = new LocationSimulation();
+
+                }
+            });
+            simulatorMenu.add(locactionSim);
+            
             simulatorMenu.add(componentTreeInspector);
             
             JMenuItem cloudObjects = new JMenuItem("Cloud Objects Viewer");
@@ -4063,7 +4092,7 @@ public class JavaSEPort extends CodenameOneImplementation {
     public void execute(String url) {
         try {
             if(url.startsWith("file:")) {
-                url = "file://" + unfile(url);
+                url = "file://" + unfile(url).replace('\\', '/');
             }
             Desktop.getDesktop().browse(new URI(url));
         } catch (Exception ex) {
@@ -4781,7 +4810,7 @@ public class JavaSEPort extends CodenameOneImplementation {
 
     private String unfile(String file) {
         if(file.startsWith("file://home")) {
-            return System.getProperty("user.home") + File.separator + appHomeDir + file.substring(11).replace('/', File.separatorChar);
+            return System.getProperty("user.home").replace('\\', '/') + File.separator + appHomeDir + file.substring(11).replace('/', File.separatorChar);
         }
         if (file.startsWith("file://")) {
             return file.substring(7);
@@ -4823,7 +4852,7 @@ public class JavaSEPort extends CodenameOneImplementation {
      * @inheritDoc
      */
     public long getFileLastModified(String file) {
-        return new File(file).lastModified();
+        return new File(unfile(file)).lastModified();
     }
     
     /**
@@ -4868,7 +4897,8 @@ public class JavaSEPort extends CodenameOneImplementation {
      * @inheritDoc
      */
     public void rename(String file, String newName) {
-        new File(unfile(file)).renameTo(new File(new File(file).getParentFile(), newName));
+        File f = new File(unfile(file));
+        f.renameTo(new File(f.getParentFile(), newName));
     }
 
     /**
@@ -6365,9 +6395,7 @@ public class JavaSEPort extends CodenameOneImplementation {
             if(is == null) {
                 if(socketInstance != null) {
                     is = socketInstance.getInputStream();
-                } else {
-
-                }
+                } 
             }
             return is;
         }
@@ -6419,6 +6447,9 @@ public class JavaSEPort extends CodenameOneImplementation {
                 if(size == arr.length) {
                     return arr;
                 }
+                if(size < 0) {
+                    return null;
+                }
                 return shrink(arr, size);
             } catch(IOException err) {
                 err.printStackTrace();
@@ -6428,6 +6459,9 @@ public class JavaSEPort extends CodenameOneImplementation {
         }
 
         private byte[] shrink(byte[] arr, int size) {
+            if(size == -1) {
+                return null;
+            }
             byte[] n = new byte[size];
             System.arraycopy(arr, 0, n, 0, size);
             return n;
