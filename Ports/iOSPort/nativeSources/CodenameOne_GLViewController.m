@@ -52,11 +52,13 @@
 #import <GLKit/GLKit.h>
 #endif
 extern void repaintUI();
-extern NSDate* currentDatePickerDate = nil;
+extern NSDate* currentDatePickerDate;
 extern bool datepickerPopover;
 //int lastWindowSize = -1;
 extern void stringEdit(int finished, int cursorPos, NSString* text);
 BOOL vkbAlwaysOpen = NO;
+BOOL viewDidAppearRepaint = YES;
+NSMutableArray* touchesArray = nil;
 
 int nextPowerOf2(int val) {
     int i;
@@ -79,14 +81,20 @@ int orientationLock = 0;
 int upsideDownMultiplier = -1;
 int currentlyEditingMaxLength;
 
+#ifndef CN1_USE_ARC
 NSAutoreleasePool *globalCodenameOnePool;
+#endif
 void initVMImpl() {
+#ifndef CN1_USE_ARC
     // initialize an auto release pool for the CodenameOne main thread
-	globalCodenameOnePool = [[NSAutoreleasePool alloc] init];
+    globalCodenameOnePool = [[NSAutoreleasePool alloc] init];
+#endif
 }
 
 void deinitVMImpl() {
+#ifndef CN1_USE_ARC
     [globalCodenameOnePool release];
+#endif
 }
 
 extern void pointerPressed(int* x, int* y, int length);
@@ -125,14 +133,26 @@ void* Java_com_codename1_impl_ios_IOSImplementation_createImageImpl
     widthAndHeightReturnValue[1] = (int)img.size.height;
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_createImageImpl finished width %i, height %i", (int)widthAndHeightReturnValue[0], (int)widthAndHeightReturnValue[1]);
     
+#ifndef CN1_USE_ARC
     return [[GLUIImage alloc] initWithImage:img];
+#else 
+    return (__bridge void*)[[GLUIImage alloc] initWithImage:img];
+#endif
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_setImageName(void* nativeImage, const char* name) {
+#ifndef CN1_USE_ARC
     GLUIImage* img = (GLUIImage*)nativeImage;
+#else 
+    GLUIImage* img = (__bridge GLUIImage*)nativeImage;
+#endif
     if(name != nil) {
         [img setName:[NSString stringWithUTF8String:name]];
     }
+}
+
+int isIPad() {
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
@@ -145,7 +165,9 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
         if(editingComponent != nil) {
             [editingComponent resignFirstResponder];
             [editingComponent removeFromSuperview];
+#ifndef CN1_USE_ARC
             [editingComponent release];
+#endif
             editingComponent = nil;
             if(vkbAlwaysOpen) {
                 repaintUI();
@@ -211,16 +233,20 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
                 }
             }
             if(scale != 1) {
-                float s = ((UIFont*)font).pointSize / scale;
-                utf.font = [((UIFont*)font) fontWithSize:s];
+                float s = ((BRIDGE_CAST UIFont*)font).pointSize / scale;
+                utf.font = [((BRIDGE_CAST UIFont*)font) fontWithSize:s];
             } else {
-                utf.font = (UIFont*)font;
+                utf.font = (BRIDGE_CAST UIFont*)font;
             }
             utf.text = [NSString stringWithUTF8String:str];
             utf.delegate = (EAGLView*)[CodenameOne_GLViewController instance].view;
             [utf setBackgroundColor:[UIColor clearColor]];
             
+#ifndef NEW_CODENAME_ONE_VM
             JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent__();
+#else
+            JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent___R_boolean();
+#endif
             if (isLastEdit) {
                 utf.returnKeyType = UIReturnKeyDone;
             } else {
@@ -247,7 +273,11 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
                 || (utf.returnKeyType == UIReturnKeyNext && vkbAlwaysOpen)) && !isIPad()) {
                 //add navigation toolbar to the top of the keyboard
                 if(showToolbar) {
+#ifndef CN1_USE_ARC
                     UIToolbar *toolbar = [[[UIToolbar alloc] init] autorelease];
+#else
+                    UIToolbar *toolbar = [[UIToolbar alloc] init];
+#endif
                     [toolbar setBarStyle:UIBarStyleBlackTranslucent];
                     [toolbar sizeToFit];
                     
@@ -257,27 +287,45 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
                     
                     NSString* buttonTitle;
                     
+#ifndef NEW_CODENAME_ONE_VM
                     JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance__();
+#else
+                    JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance___R_com_codename1_ui_plaf_UIManager();
+#endif
                     JAVA_OBJECT str;
                     UIBarButtonItem *doneButton;
                     NSArray *itemsArray = nil;
                     if (isLastEdit) {
+#ifndef NEW_CODENAME_ONE_VM
                         str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+#else
+                        str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+#endif
                         buttonTitle = toNSString(str);
                         doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utf.delegate action:@selector(keyboardDoneClicked)];
                     } else {
+#ifndef NEW_CODENAME_ONE_VM
                         str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
+#else
+                        str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
+#endif
                         buttonTitle = toNSString(str);
                         doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utf.delegate action:@selector(keyboardNextClicked)];
                         if(vkbAlwaysOpen && (utf.keyboardType == UIKeyboardTypeDecimalPad
                                              || utf.keyboardType == UIKeyboardTypePhonePad
                                              || utf.keyboardType == UIKeyboardTypeNumberPad)) {
                             // we need both done and next
+#ifndef NEW_CODENAME_ONE_VM
                             str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+#else
+                            str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+#endif
                             buttonTitle = toNSString(str);
                             UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utf.delegate action:@selector(keyboardDoneClicked)];
                             itemsArray = [NSArray arrayWithObjects: flexButton, anotherButton, doneButton, nil];
+#ifndef CN1_USE_ARC
                             [anotherButton release];
+#endif
                         }
                     }
                     
@@ -285,8 +333,10 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
                         itemsArray = [NSArray arrayWithObjects: flexButton, doneButton, nil];
                     }
                     
+#ifndef CN1_USE_ARC
                     [flexButton release];
                     [doneButton release];
+#endif
                     [toolbar setItems:itemsArray];
                     [utf setInputAccessoryView:toolbar];
                 }
@@ -298,17 +348,21 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
             [utv.layer setBorderWidth:0];
             editingComponent = utv;
             if(scale != 1) {
-                float s = ((UIFont*)font).pointSize / scale;
-                utv.font = [((UIFont*)font) fontWithSize:s];
+                float s = ((BRIDGE_CAST UIFont*)font).pointSize / scale;
+                utv.font = [((BRIDGE_CAST UIFont*)font) fontWithSize:s];
             } else {
-                utv.font = (UIFont*)font;
+                utv.font = (BRIDGE_CAST UIFont*)font;
             }
             utv.text = [NSString stringWithUTF8String:str];
             utv.delegate = (EAGLView*)[CodenameOne_GLViewController instance].view;
 
             if(showToolbar) {
                 //add navigation toolbar to the top of the keyboard
+#ifndef CN1_USE_ARC
                 UIToolbar *toolbar = [[[UIToolbar alloc] init] autorelease];
+#else
+                UIToolbar *toolbar = [[UIToolbar alloc] init];
+#endif
                 [toolbar setBarStyle:UIBarStyleBlackTranslucent];
                 [toolbar sizeToFit];
                 
@@ -318,23 +372,38 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
                 
                 NSString* buttonTitle;
                 
+#ifndef NEW_CODENAME_ONE_VM
                 JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent__();
                 JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance__();
+#else
+                JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent___R_boolean();
+                JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance___R_com_codename1_ui_plaf_UIManager();
+#endif
                 JAVA_OBJECT str;
                 UIBarButtonItem *doneButton;
                 if (isLastEdit) {
+#ifndef NEW_CODENAME_ONE_VM
                     str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+#else 
+                    str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+#endif
                     buttonTitle = toNSString(str);
                     doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utv.delegate action:@selector(keyboardDoneClicked)];
                 } else {
+#ifndef NEW_CODENAME_ONE_VM
                     str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
+#else 
+                    str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
+#endif
                     buttonTitle = toNSString(str);
                     doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utv.delegate action:@selector(keyboardNextClicked)];
                 }
                 NSArray *itemsArray = [NSArray arrayWithObjects: flexButton, doneButton, nil];
                 
+#ifndef CN1_USE_ARC
                 [flexButton release];
                 [doneButton release];
+#endif
                 [toolbar setItems:itemsArray];
                 [utv setInputAccessoryView:toolbar];
             }
@@ -347,10 +416,6 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
         
     });
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl finished");
-}
-
-int isIPad() {
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
 }
 
 
@@ -450,7 +515,7 @@ void* Java_com_codename1_impl_ios_IOSImplementation_createImageFromARGBImpl
         free(pixels);
     }
     
-    return [[GLUIImage alloc] initWithImage:image];
+    return (BRIDGE_CAST void*) [[GLUIImage alloc] initWithImage:image];
 }
 
 
@@ -493,13 +558,17 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawRoundRectMutableImp
 void Java_com_codename1_impl_ios_IOSImplementation_resetAffineGlobal() {
     ResetAffine* f = [[ResetAffine alloc] init];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_scale(float x, float y) {
     Scale* f = [[Scale alloc] initWithArgs:x yy:y];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
 }
 
 extern void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl
@@ -515,8 +584,10 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawRoundRectGlobalImpl
     UIGraphicsEndImageContext();
     
     GLUIImage* glu = [[GLUIImage alloc] initWithImage:img];
-    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl(glu, 255, x, y, width, height);
+    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl((BRIDGE_CAST void*) glu, 255, x, y, width, height);
+#ifndef CN1_USE_ARC
     [glu release];
+#endif
 }
 
 
@@ -534,8 +605,10 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillRoundRectGlobalImpl
     UIGraphicsEndImageContext();
     
     GLUIImage* glu = [[GLUIImage alloc] initWithImage:img];
-    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl(glu, 255, x, y, width, height);
+    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl((BRIDGE_CAST void*)glu, 255, x, y, width, height);
+#ifndef CN1_USE_ARC
     [glu release];
+#endif
 }
 
 #define PI 3.14159265358979323846
@@ -570,8 +643,10 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawArcGlobalImpl
     UIGraphicsEndImageContext();
     
     GLUIImage* glu = [[GLUIImage alloc] initWithImage:img];
-    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl(glu, 255, x, y, width, height);
+    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl((BRIDGE_CAST void*)glu, 255, x, y, width, height);
+#ifndef CN1_USE_ARC
     [glu release];
+#endif
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
@@ -582,8 +657,10 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
     UIGraphicsEndImageContext();
     
     GLUIImage* glu = [[GLUIImage alloc] initWithImage:img];
-    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl(glu, 255, x, y, width, height);
+    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl((BRIDGE_CAST void*)glu, 255, x, y, width, height);
+#ifndef CN1_USE_ARC
     [glu release];
+#endif
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
@@ -631,7 +708,7 @@ void com_codename1_impl_ios_IOSImplementation_nativeGetTransformImpl___float_1AR
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageMutableImpl
 (void* peer, int alpha, int x, int y, int width, int height) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageMutableImpl %i started at %i, %i", (int)peer, x, y);
-    UIImage* i = [(GLUIImage*)peer getImage];
+    UIImage* i = [(BRIDGE_CAST GLUIImage*)peer getImage];
     [i drawInRect:CGRectMake(x, y, width, height)];
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageMutableImpl finished");
 }
@@ -642,7 +719,7 @@ int Java_com_codename1_impl_ios_IOSImplementation_stringWidthNativeImpl
     if(len == 0 || str == NULL) {
         return 0;
     }
-    UIFont* f = (UIFont*)peer;
+    UIFont* f = (BRIDGE_CAST UIFont*)peer;
 	NSString* s = [NSString stringWithUTF8String:str];
     //NSLog(@"String is %@", s);
     //NSLog(@"Font is %i", (int)f);
@@ -653,14 +730,14 @@ int Java_com_codename1_impl_ios_IOSImplementation_stringWidthNativeImpl
 
 int Java_com_codename1_impl_ios_IOSImplementation_charWidthNativeImpl
 (void* peer, int chr) {
-    UIFont* f = (UIFont*)peer;
-    return [[NSString stringWithCharacters:&chr length:1] sizeWithFont:f].width;
+    UIFont* f = (BRIDGE_CAST UIFont*)peer;
+    return [[NSString stringWithCharacters:((const unichar *)&chr) length:1] sizeWithFont:f].width;
 }
 
 
 int Java_com_codename1_impl_ios_IOSImplementation_getFontHeightNativeImpl
 (void* peer) {
-    UIFont* f = (UIFont*)peer;
+    UIFont* f = (BRIDGE_CAST UIFont*)peer;
     return (int)[f lineHeight];
 }
 
@@ -670,7 +747,7 @@ void vibrateDevice() {
 
 void* Java_com_codename1_impl_ios_IOSImplementation_createSystemFontImpl
 (int face, int style, int size) {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_createSystemFontImpl started");
     int pSize = 14;
     
@@ -704,10 +781,12 @@ void* Java_com_codename1_impl_ios_IOSImplementation_createSystemFontImpl
             }
         }
     }
+#ifndef CN1_USE_ARC
     [fnt retain];
-    [pool release];
+#endif
+    POOL_END();
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_createSystemFontImpl finished %i", (int)fnt);
-    return fnt;
+    return (BRIDGE_CAST void*)fnt;
 }
 
 
@@ -743,7 +822,7 @@ Java_com_codename1_impl_ios_IOSImplementation_getDisplayHeightImpl() {
 void Java_com_codename1_impl_ios_IOSImplementation_flushBufferImpl
 (void* peer, int x, int y, int width, int height) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_flushBufferImpl started");
-    [[CodenameOne_GLViewController instance] flushBuffer:peer x:x y:y width:width height:height];
+    [[CodenameOne_GLViewController instance] flushBuffer:(BRIDGE_CAST UIImage *)peer x:x y:y width:width height:height];
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_flushBufferImpl finished");
 }
 
@@ -765,7 +844,9 @@ void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingGlobalImpl
     //    NSLog(@"Native global clipping applied: %i x: %i y: %i width: %i height: %i", clipApplied, x, y, width, height);
     ClipRect* f = [[ClipRect alloc] initWithArgs:x ypos:y w:width h:height f:clipApplied];
     [[CodenameOne_GLViewController instance] upcomingAddClip:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingGlobalImpl finished");
 }
 
@@ -785,7 +866,9 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineGlobalImpl
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineGlobalImpl started");
     DrawLine* f = [[DrawLine alloc] initWithArgs:color a:alpha xpos1:x1 ypos1:y1 xpos2:x2 ypos2:y2];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineGlobalImpl finished");
 }
 
@@ -794,7 +877,9 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeRotateGlobalImpl
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineGlobalImpl started");
     Rotate* f = [[Rotate alloc] initWithArgs:angle xx:x yy:y];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineGlobalImpl finished");
 }
 
@@ -812,7 +897,9 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillRectGlobalImpl
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeFillRectGlobalImpl started");
     FillRect* f = [[FillRect alloc] initWithArgs:color a:alpha xpos:x ypos:y w:width h:height];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeFillRectGlobalImpl finished");
 }
 
@@ -830,23 +917,27 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawRectGlobalImpl
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawRectImpl started");
     DrawRect* f = [[DrawRect alloc] initWithArgs:color a:alpha xpos:x ypos:y w:width h:height];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawRectImpl finished");
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawStringMutableImpl
 (int color, int alpha, void* fontPeer, NSString* str, int x, int y) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawStringMutableImpl started");
-    [[CodenameOne_GLViewController instance] drawString:color alpha:alpha font:(UIFont*)fontPeer str:str x:x y:y];
+    [[CodenameOne_GLViewController instance] drawString:color alpha:alpha font:(BRIDGE_CAST UIFont*)fontPeer str:str x:x y:y];
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawStringMutableImpl finished");
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawStringGlobalImpl
 (int color, int alpha, void* fontPeer, NSString* str, int x, int y) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawStringImpl started");
-    DrawString* f = [[DrawString alloc] initWithArgs:color a:alpha xpos:x ypos:y s:str f:(UIFont*)fontPeer];
+    DrawString* f = [[DrawString alloc] initWithArgs:color a:alpha xpos:x ypos:y s:str f:(BRIDGE_CAST UIFont*)fontPeer];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawStringImpl finished");
 }
 
@@ -862,13 +953,13 @@ void* Java_com_codename1_impl_ios_IOSImplementation_createNativeMutableImageImpl
     //[img retain];
     //NSLog(@"createNativeMutableImageImpl finished %i ", (int)img);
     GLUIImage* gl = [[GLUIImage alloc] initWithImage:img];
-    return gl;
+    return (BRIDGE_CAST void*)gl;
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_startDrawingOnImageImpl
 (int width, int height, void *peer) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_startDrawingOnImageImpl");
-    UIImage* original = [(GLUIImage*)peer getImage];
+    UIImage* original = [(BRIDGE_CAST GLUIImage*)peer getImage];
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
     if(original != NULL) {
         [original drawAtPoint:CGPointZero];
@@ -876,7 +967,7 @@ void Java_com_codename1_impl_ios_IOSImplementation_startDrawingOnImageImpl
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSaveGState(context);
-    [CodenameOne_GLViewController instance].currentMutableImage = (GLUIImage*)peer;
+    [CodenameOne_GLViewController instance].currentMutableImage = (BRIDGE_CAST GLUIImage*)peer;
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_startDrawingOnImageImpl finished");
 }
 
@@ -887,19 +978,19 @@ void* Java_com_codename1_impl_ios_IOSImplementation_finishDrawingOnImageImpl() {
     GLUIImage *gl = [CodenameOne_GLViewController instance].currentMutableImage;
     [gl setImage:img];
     [CodenameOne_GLViewController instance].currentMutableImage = nil;
-    return gl;
+    return (BRIDGE_CAST void*)gl;
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_imageRgbToIntArrayImpl
 (void* peer, int* arr, int x, int y, int width, int height) {
-    if([CodenameOne_GLViewController instance].currentMutableImage == peer) {
+    if(((BRIDGE_CAST void*)[CodenameOne_GLViewController instance].currentMutableImage) == peer) {
         Java_com_codename1_impl_ios_IOSImplementation_finishDrawingOnImageImpl();
     }
     // set all pixels to transparent white to solve http://code.google.com/p/codenameone/issues/detail?id=923
     for(int iter = 0 ; iter < width * height ; iter++) {
         arr[iter] = 0xffffff;
     }
-    UIImage* img = [(GLUIImage*)peer getImage];
+    UIImage* img = [(BRIDGE_CAST GLUIImage*)peer getImage];
     CGColorSpaceRef coloSpaceRgb = CGColorSpaceCreateDeviceRGB();
     CGContextRef context = CGBitmapContextCreate(arr, width, height, 8, width * 4,
                                                  coloSpaceRgb,
@@ -915,37 +1006,45 @@ void Java_com_codename1_impl_ios_IOSImplementation_imageRgbToIntArrayImpl
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl
 (void* peer, int alpha, int x, int y, int width, int height) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl %i started at %i, %i", (int)peer, x, y);
-    if([CodenameOne_GLViewController instance].currentMutableImage == peer) {
+    if(((BRIDGE_CAST void*)[CodenameOne_GLViewController instance].currentMutableImage) == peer) {
         Java_com_codename1_impl_ios_IOSImplementation_finishDrawingOnImageImpl();
     }
-    DrawImage* f = [[DrawImage alloc] initWithArgs:alpha xpos:x ypos:y i:(GLUIImage*)peer w:width h:height];
+    DrawImage* f = [[DrawImage alloc] initWithArgs:alpha xpos:x ypos:y i:(BRIDGE_CAST GLUIImage*)peer w:width h:height];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeDrawImageGlobalImpl finished");
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeTileImageGlobalImpl
 (void* peer, int alpha, int x, int y, int width, int height) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeTileImageGlobalImpl %i started at %i, %i", (int)peer, x, y);
-    if([CodenameOne_GLViewController instance].currentMutableImage == peer) {
+    if(((BRIDGE_CAST void*)[CodenameOne_GLViewController instance].currentMutableImage) == peer) {
         Java_com_codename1_impl_ios_IOSImplementation_finishDrawingOnImageImpl();
     }
-    TileImage* f = [[TileImage alloc] initWithArgs:alpha xpos:x ypos:y i:(GLUIImage*)peer w:width h:height];
+    TileImage* f = [[TileImage alloc] initWithArgs:alpha xpos:x ypos:y i:(BRIDGE_CAST GLUIImage*)peer w:width h:height];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_nativeTileImageGlobalImpl finished");
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_deleteNativePeerImpl(void* peer) {
-    GLUIImage* original = (GLUIImage*)peer;
+    GLUIImage* original = (BRIDGE_CAST GLUIImage*)peer;
     //NSLog(@"deleteNativePeerImpl retainCount: %i", [original retainCount]);
+#ifndef CN1_USE_ARC
     [original release];
+#endif
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_deleteNativeFontPeerImpl(void* peer) {
-    UIFont* original = (UIFont*)peer;
+    UIFont* original = (BRIDGE_CAST UIFont*)peer;
     //NSLog(@"deleteNativeFontPeerImpl retainCount: %i", [original retainCount]);
+#ifndef CN1_USE_ARC
     [original release];
+#endif
 }
 
 void loadResourceFile
@@ -1013,6 +1112,7 @@ static CodenameOne_GLViewController *sharedSingleton;
 #ifdef INCLUDE_MOPUB
 @synthesize adView;
 - (void)viewDidLoad {
+#ifndef CN1_USE_ARC
     if(isIPad()) {
         self.adView = [[[MPAdView alloc] initWithAdUnitId:MOPUB_TABLET_AD_UNIT
                                                      size:MOPUB_TABLET_AD_SIZE] autorelease];
@@ -1020,6 +1120,15 @@ static CodenameOne_GLViewController *sharedSingleton;
         self.adView = [[[MPAdView alloc] initWithAdUnitId:MOPUB_AD_UNIT
                        size:MOPUB_AD_SIZE] autorelease];
     }
+#else
+    if(isIPad()) {
+        self.adView = [[MPAdView alloc] initWithAdUnitId:MOPUB_TABLET_AD_UNIT
+                                                     size:MOPUB_TABLET_AD_SIZE];
+    } else {
+        self.adView = [[MPAdView alloc] initWithAdUnitId:MOPUB_AD_UNIT
+                       size:MOPUB_AD_SIZE];
+    }
+#endif
     self.adView.delegate = self;
     CGRect frame = self.adView.frame;
     CGSize size = [self.adView adContentViewSize];
@@ -1042,9 +1151,29 @@ static CodenameOne_GLViewController *sharedSingleton;
 }
 #endif
 
+bool lockDrawing;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self becomeFirstResponder];
+    if(viewDidAppearRepaint) {
+        if(animated) {
+            // postpone this to the next edt cycle to prevent a black screen
+            dispatch_async(dispatch_get_main_queue(), ^{
+                repaintUI();
+            });
+        }
+    }
+    if(touchesArray != nil) {
+        [touchesArray removeAllObjects];
+    }
+    int currentWidth = (int)self.view.bounds.size.width * scaleValue;
+    if(currentWidth != displayWidth) {
+    [(EAGLView *)self.view updateFrameBufferSize:(int)self.view.bounds.size.width h:(int)self.view.bounds.size.height];
+        displayWidth = currentWidth;
+        displayHeight = (int)self.view.bounds.size.height * scaleValue;
+        screenSizeChanged(displayWidth, displayHeight);
+    }
+
     //replaceViewDidAppear
 }
 
@@ -1055,7 +1184,11 @@ static CodenameOne_GLViewController *sharedSingleton;
 - (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
     if (receivedEvent.type == UIEventTypeRemoteControl) {
         JAVA_OBJECT o = com_codename1_ui_Display_getInstance__();
+#ifndef NEW_CODENAME_ONE_VM
         o = com_codename1_ui_Display_getImplementation__(o);
+#else
+        o = com_codename1_ui_Display_getImplementation___R_com_codename1_impl_CodenameOneImplementation(o);
+#endif
         switch (receivedEvent.subtype) {
             case UIEventSubtypeRemoteControlPlay:
             case UIEventSubtypeRemoteControlPause:
@@ -1109,7 +1242,9 @@ static CodenameOne_GLViewController *sharedSingleton;
         NSLog(@"Failed to set ES context current");
     
 	self.context = aContext;
-	[aContext release];
+#ifndef CN1_USE_ARC
+        [aContext release];
+#endif
 	
     [(EAGLView *)self.view setContext:context];
     [(EAGLView *)self.view setFramebuffer];
@@ -1225,7 +1360,9 @@ static CodenameOne_GLViewController *sharedSingleton;
         GLErrorLog;
         
         [dr execute];
+#ifndef CN1_USE_ARC
         [gl release];
+#endif
         
         _glTranslatef(0, he, 0);
         GLErrorLog;
@@ -1365,13 +1502,17 @@ int keyboardHeight;
     if ([EAGLContext currentContext] == context)
         [EAGLContext setCurrentContext:nil];
     
-    [context release];
+#ifndef CN1_USE_ARC
+        [context release];
+#endif
  
 #ifdef INCLUDE_MOPUB
      self.adView = nil;
 #endif
     
+#ifndef CN1_USE_ARC
     [super dealloc];
+#endif
 }
 
 - (void)didReceiveMemoryWarning
@@ -1379,7 +1520,11 @@ int keyboardHeight;
     // Releases the view if it doesn't have a superview.
     //[super didReceiveMemoryWarning];
     com_codename1_impl_ios_IOSImplementation_flushSoftRefMap__();
+#ifndef NEW_CODENAME_ONE_VM
     GC_gcollect_and_unmap();
+#else
+#endif
+
     // Release any cached data, images, etc. that aren't in use.
 }
 
@@ -1453,7 +1598,6 @@ int keyboardHeight;
     [self drawFrame:[CodenameOne_GLViewController instance].view.bounds];
 }
 
-bool lockDrawing;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     if(firstTime) {
         return;
@@ -1469,7 +1613,9 @@ bool lockDrawing;
         }
         [editingComponent resignFirstResponder];
         [editingComponent removeFromSuperview];
+#ifndef CN1_USE_ARC
         [editingComponent release];
+#endif
         editingComponent = nil;
         displayWidth = (int)self.view.bounds.size.width * scaleValue;
         displayHeight = (int)self.view.bounds.size.height * scaleValue;
@@ -1606,8 +1752,10 @@ bool lockDrawing;
                 GLErrorLog;
             }
             //NSLog(@"Total memory is: %i", [ExecutableOp get_free_memory]);
+#ifndef CN1_USE_ARC
             [cp release];
-            _glTranslatef(0, displayHeight, 0);
+#endif
+            glTranslatef(0, displayHeight, 0);
             GLErrorLog;
             _glScalef(1, -1, 1);
             GLErrorLog;
@@ -1615,7 +1763,9 @@ bool lockDrawing;
             [DrawGradientTextureCache flushDeleted];
             [DrawStringTextureCache flushDeleted];
             if(firstTime) {
+#ifndef NEW_CODENAME_ONE_VM
                 GC_enable();
+#endif
                 firstTime = NO;
             }
         }
@@ -1623,11 +1773,21 @@ bool lockDrawing;
         // update the position of the edit component during drag events, we have to do this here
         // since the animation might run for a while
         if(vkbAlwaysOpen && editingComponent != nil && !editingComponent.hidden) {
+#ifndef NEW_CODENAME_ONE_VM
             com_codename1_impl_ios_IOSImplementation* impl = (com_codename1_impl_ios_IOSImplementation*)com_codename1_impl_ios_IOSImplementation_GET_instance();
             com_codename1_ui_Component* comp = (com_codename1_ui_Component*)impl->fields.com_codename1_impl_ios_IOSImplementation.currentEditing_;
+#else
+            struct obj__com_codename1_impl_ios_IOSImplementation* impl = (struct obj__com_codename1_impl_ios_IOSImplementation*)get_static_com_codename1_impl_ios_IOSImplementation_instance();
+            JAVA_OBJECT comp = impl->com_codename1_impl_ios_IOSImplementation_currentEditing;
+#endif
             if(comp != NULL) {
+#ifndef NEW_CODENAME_ONE_VM
                 float newEditCompoentX = (com_codename1_ui_Component_getAbsoluteX__(comp) + editComponentPadLeft) / scaleValue;
                 float newEditCompoentY = (com_codename1_ui_Component_getAbsoluteY__(comp) + editComponentPadTop) / scaleValue;
+#else
+                float newEditCompoentX = (com_codename1_ui_Component_getAbsoluteX___R_int((JAVA_OBJECT)comp) + editComponentPadLeft) / scaleValue;
+                float newEditCompoentY = (com_codename1_ui_Component_getAbsoluteY___R_int((JAVA_OBJECT)comp) + editComponentPadTop) / scaleValue;
+#endif
                 if(newEditCompoentX != editCompoentX || newEditCompoentY != editCompoentY) {
                     for (UIWindow *window in [[UIApplication sharedApplication] windows])
                     {
@@ -1868,12 +2028,12 @@ bool lockDrawing;
 }
 
 -(void)drawString:(int)color alpha:(int)alpha font:(UIFont*)font str:(NSString*)str x:(int)x y:(int)y {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
     UIColor* col = UIColorFromRGB(color,alpha);
     [col set];
 	[str drawAtPoint:CGPointMake(x, y) withFont:font];
     //NSLog(@"Drawing the string %@ at %i, %i", str, x, y);
-	[pool release];
+	POOL_END();
 }
 
 
@@ -1919,14 +2079,19 @@ bool lockDrawing;
 }
 
 static BOOL skipNextTouch = NO;
+
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
+    if(touchesArray == nil) {
+        touchesArray = [[NSMutableArray alloc] init];
+    }
     UITouch* touch = [touches anyObject];
+    NSArray *ts = [touches allObjects];
+    [touchesArray addObjectsFromArray:ts];
     int xArray[[touches count]];
     int yArray[[touches count]];
     CGPoint point = [touch locationInView:self.view];
     if([touches count] > 1) {
-        NSArray *ts = [touches allObjects];
         for(int iter = 0 ; iter < [ts count] ; iter++) {
             UITouch* currentTouch = [ts objectAtIndex:iter];
             CGPoint currentPoint = [currentTouch locationInView:self.view];
@@ -1938,7 +2103,7 @@ static BOOL skipNextTouch = NO;
         yArray[0] = (int)point.y * scaleValue;
     }
     pointerPressedC(xArray, yArray, [touches count]);
-    [pool release];
+    POOL_END();
 }
 
 -(void)foldKeyboard:(CGPoint) point {
@@ -1949,12 +2114,14 @@ static BOOL skipNextTouch = NO;
                 UITextView* v = (UITextView*)editingComponent;
                 stringEdit(YES, -1, v.text);
             } else {
-                UITextField* v = (UITextView*)editingComponent;
+                UITextField* v = (UITextField*)editingComponent;
                 stringEdit(YES, -1, v.text);
             }
             [editingComponent resignFirstResponder];
             [editingComponent removeFromSuperview];
+#ifndef CN1_USE_ARC
             [editingComponent release];
+#endif
             editingComponent = nil;
             displayWidth = (int)self.view.bounds.size.width * scaleValue;
             displayHeight = (int)self.view.bounds.size.height * scaleValue;
@@ -1972,13 +2139,14 @@ static BOOL skipNextTouch = NO;
         skipNextTouch = NO;
         return;
     }
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
+    NSArray *ts = [touches allObjects];
+    [touchesArray removeObjectsInArray:ts];
     UITouch* touch = [touches anyObject];
     int xArray[[touches count]];
     int yArray[[touches count]];
     CGPoint point = [touch locationInView:self.view];
     if([touches count] > 1) {
-        NSArray *ts = [touches allObjects];
         for(int iter = 0 ; iter < [ts count] ; iter++) {
             UITouch* currentTouch = [ts objectAtIndex:iter];
             CGPoint currentPoint = [currentTouch locationInView:self.view];
@@ -1993,7 +2161,7 @@ static BOOL skipNextTouch = NO;
         [self foldKeyboard:point];
     }
     pointerReleasedC(xArray, yArray, [touches count]);
-    [pool release];
+    POOL_END();
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -2001,13 +2169,19 @@ static BOOL skipNextTouch = NO;
         skipNextTouch = NO;
         return;
     }
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
+    NSArray *ts = [touches allObjects];
+    [touchesArray removeObjectsInArray:ts];
+    if([touchesArray count] > 0) {
+        POOL_END();
+        return;
+    }
     UITouch* touch = [touches anyObject];
     int xArray[[touches count]];
     int yArray[[touches count]];
     CGPoint point = [touch locationInView:self.view];
+    NSLog(@"Released %i fingers", [touches count]);
     if([touches count] > 1) {
-        NSArray *ts = [touches allObjects];
         for(int iter = 0 ; iter < [ts count] ; iter++) {
             UITouch* currentTouch = [ts objectAtIndex:iter];
             CGPoint currentPoint = [currentTouch locationInView:self.view];
@@ -2022,32 +2196,33 @@ static BOOL skipNextTouch = NO;
         [self foldKeyboard:point];
     }
     pointerReleasedC(xArray, yArray, [touches count]);
-    [pool release];
+    POOL_END();
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     if(skipNextTouch || (editingComponent != nil && !vkbAlwaysOpen)) {
         return;
     }
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
     UITouch* touch = [touches anyObject];
-    int xArray[[touches count]];
-    int yArray[[touches count]];
+    int xArray[[touchesArray count]];
+    int yArray[[touchesArray count]];
     CGPoint point = [touch locationInView:self.view];
-    if([touches count] > 1) {
-        NSArray *ts = [touches allObjects];
-        for(int iter = 0 ; iter < [ts count] ; iter++) {
-            UITouch* currentTouch = [ts objectAtIndex:iter];
+    if([touchesArray count] > 1) {
+        for(int iter = 0 ; iter < [touchesArray count] ; iter++) {
+            UITouch* currentTouch = [touchesArray objectAtIndex:iter];
             CGPoint currentPoint = [currentTouch locationInView:self.view];
             xArray[iter] = (int)currentPoint.x * scaleValue;
             yArray[iter] = (int)currentPoint.y * scaleValue;
+            //NSLog(@"Dragging x: %i y: %i id: %i", xArray[iter], yArray[iter], currentTouch);
         }
+        pointerDraggedC(xArray, yArray, [touchesArray count]);
     } else {
         xArray[0] = (int)point.x * scaleValue;
         yArray[0] = (int)point.y * scaleValue;
+        pointerDraggedC(xArray, yArray, [touches count]);
     }
-    pointerDraggedC(xArray, yArray, [touches count]);
-    [pool release];
+    POOL_END();
 }
 
 - (void) locationManager:(CLLocationManager *)manager
@@ -2068,14 +2243,16 @@ extern int popoverSupported();
 
 //#define LOW_MEM_CAMERA
 - (void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary*)info {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
 	NSString* mediaType = [info objectForKey:UIImagePickerControllerMediaType];
 	if ([mediaType isEqualToString:@"public.image"]) {
 		// get the image
 		UIImage* originalImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+#ifndef CN1_USE_ARC
         [originalImage retain];
+#endif
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+            POOL_BEGIN();
             UIImage* image = originalImage;
             BOOL releaseImage = YES;
 #ifndef LOW_MEM_CAMERA
@@ -2083,7 +2260,9 @@ extern int popoverSupported();
                 UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
                 [image drawInRect:(CGRect){0, 0, image.size}];
                 releaseImage = NO;
+#ifndef CN1_USE_ARC
                 [originalImage release];
+#endif
                 image = UIGraphicsGetImageFromCurrentImageContext();
                 UIGraphicsEndImageContext();
             }
@@ -2096,10 +2275,12 @@ extern int popoverSupported();
             NSString *path = [documentsDirectory stringByAppendingPathComponent:@"temp_image.jpg"];
             [data writeToFile:path atomically:YES];
             if(releaseImage) {
+#ifndef CN1_USE_ARC
                 [originalImage release];
+#endif
             }
             com_codename1_impl_ios_IOSImplementation_capturePictureResult___java_lang_String(fromNSString(path));
-            [pool release];
+            POOL_END();
         });
         
 	} else {
@@ -2122,7 +2303,7 @@ extern int popoverSupported();
     
 	//picker.delegate = nil;
     //picker = nil;
-    [pool release];
+    POOL_END();
 }
 
 -(void) mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
@@ -2136,10 +2317,15 @@ extern int popoverSupported();
 extern JAVA_OBJECT productsArrayPending;
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	POOL_BEGIN();
     if(productsArrayPending != nil) {
+#ifndef NEW_CODENAME_ONE_VM
         org_xmlvm_runtime_XMLVMArray* pArray = productsArrayPending;
         JAVA_ARRAY_OBJECT* data = (JAVA_ARRAY_OBJECT*)pArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
+#else
+        JAVA_ARRAY pArray = (JAVA_ARRAY)productsArrayPending;
+        JAVA_OBJECT* data = pArray->data;
+#endif
         NSArray* arr = response.products;
         int count = arr.count;
         for(int iter = 0 ; iter < count ; iter++) {
@@ -2160,7 +2346,7 @@ extern JAVA_OBJECT productsArrayPending;
         }
     }
     productsArrayPending = nil;
-    [pool release];
+    POOL_END();
 }
 
 extern SKPayment *paymentInstance;
@@ -2248,7 +2434,9 @@ extern SKPayment *paymentInstance;
 - (void) popoverControllerDidDismissPopover:(UIPopoverController *) popoverController {
     if(datepickerPopover) {
         if(currentDatePickerDate != nil) {
+#ifndef CN1_USE_ARC
             [currentDatePickerDate release];
+#endif
             currentDatePickerDate = nil;
         }
         com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
@@ -2258,39 +2446,58 @@ extern SKPayment *paymentInstance;
 
 - (void)datePickerChangeDate:(UIDatePicker *)sender {
     if(currentDatePickerDate != nil) {
+#ifndef CN1_USE_ARC
         [currentDatePickerDate release];
+#endif
     }
     currentDatePickerDate = sender.date;
+#ifndef CN1_USE_ARC
     [currentDatePickerDate retain];
+#endif
 }
 
 extern int stringPickerSelection;
+#ifndef NEW_CODENAME_ONE_VM
 extern org_xmlvm_runtime_XMLVMArray* pickerStringArray;
+#else 
+extern JAVA_OBJECT pickerStringArray;
+#endif
+extern JAVA_LONG defaultDatePickerDate;
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if(currentDatePickerDate == nil) {
         if(pickerStringArray == nil) {
             com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
         } else {
             com_codename1_impl_ios_IOSImplementation_datePickerResult___long(stringPickerSelection);
+#ifndef NEW_CODENAME_ONE_VM
             pickerStringArray = nil;
+#else 
+            pickerStringArray = JAVA_NULL;
+#endif
         }
     } else {
         com_codename1_impl_ios_IOSImplementation_datePickerResult___long([currentDatePickerDate timeIntervalSince1970] * 1000);
+#ifndef CN1_USE_ARC
         [currentDatePickerDate release];
+#endif
         currentDatePickerDate = nil;
     }
 }
 
 - (void)datePickerDismissActionSheet:(id)sender {
     UISegmentedControl* s = sender;
-    UIActionSheet* sheet = [s superview];
+    UIActionSheet* sheet = (UIActionSheet*)[s superview];
     [sheet dismissWithClickedButtonIndex:0 animated:YES];
     if(currentDatePickerDate == nil) {
         if(pickerStringArray == nil) {
             com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
         } else {
             com_codename1_impl_ios_IOSImplementation_datePickerResult___long(stringPickerSelection);
+#ifndef NEW_CODENAME_ONE_VM
             pickerStringArray = nil;
+#else 
+            pickerStringArray = JAVA_NULL;
+#endif
         }
     } else {
         com_codename1_impl_ios_IOSImplementation_datePickerResult___long([currentDatePickerDate timeIntervalSince1970] * 1000);
@@ -2305,13 +2512,25 @@ UIPopoverController* popoverControllerInstance;
         popoverControllerInstance = nil;
         if(currentDatePickerDate == nil) {
             if(pickerStringArray == nil) {
-                com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
+                if(defaultDatePickerDate != 0) {
+                    com_codename1_impl_ios_IOSImplementation_datePickerResult___long(defaultDatePickerDate);
+                    defaultDatePickerDate = 0;
+                    currentDatePickerDate = nil;
+                } else {
+                    com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
+                }
             } else {
                 com_codename1_impl_ios_IOSImplementation_datePickerResult___long(stringPickerSelection);
+                defaultDatePickerDate = nil;
+#ifndef NEW_CODENAME_ONE_VM
                 pickerStringArray = nil;
+#else 
+                pickerStringArray = JAVA_NULL;
+#endif
             }
         } else {
             com_codename1_impl_ios_IOSImplementation_datePickerResult___long([currentDatePickerDate timeIntervalSince1970] * 1000);
+            defaultDatePickerDate = nil;
             currentDatePickerDate = nil;
         }
     }
@@ -2327,8 +2546,13 @@ UIPopoverController* popoverControllerInstance;
  
 // tell the picker how many rows are available for a given component
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+#ifndef NEW_CODENAME_ONE_VM
     JAVA_ARRAY_OBJECT* data = (JAVA_ARRAY_OBJECT*)pickerStringArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
     return pickerStringArray->fields.org_xmlvm_runtime_XMLVMArray.length_;
+#else 
+    JAVA_ARRAY arr = (JAVA_ARRAY)pickerStringArray;
+    return arr->length;
+#endif
 }
  
 // tell the picker how many components it will have
@@ -2338,8 +2562,14 @@ UIPopoverController* popoverControllerInstance;
  
 // tell the picker the title for a given component
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+#ifndef NEW_CODENAME_ONE_VM
     JAVA_ARRAY_OBJECT* data = (JAVA_ARRAY_OBJECT*)pickerStringArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
     return toNSString(data[row]);
+#else 
+    JAVA_ARRAY arr = (JAVA_ARRAY)pickerStringArray;
+    JAVA_OBJECT* o = (JAVA_OBJECT*)arr->data;
+    return toNSString(o[row]);
+#endif
 }
  
 // tell the picker the width of each row for a given component

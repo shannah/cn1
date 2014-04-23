@@ -52,6 +52,7 @@ class MMAPIPlayer implements PlayerListener, Media{
     private static Vector playing;
     private InputStream sourceStream;
     private Runnable onComplete;
+    private boolean disposeOnComplete = true;
 
     MMAPIPlayer(Player p) {
         this.nativePlayer = p;
@@ -199,7 +200,9 @@ class MMAPIPlayer implements PlayerListener, Media{
                 playing = new Vector();
             }
             synchronized(MMAPIPlayer.class) {
-                playing.addElement(this);
+                if(!playing.contains(this)){
+                    playing.addElement(this);
+                }
             }
             nativePlayer.start();
         } catch (MediaException ex) {
@@ -257,13 +260,19 @@ class MMAPIPlayer implements PlayerListener, Media{
         if(deleted) {
             return;
         }
-        if(PlayerListener.END_OF_MEDIA.equals(event) || PlayerListener.ERROR.equals(event)) {
+        if(PlayerListener.ERROR.equals(event)) {
             lastTime = (int)(nativePlayer.getMediaTime() / 1000);
             cleanup();
-            if(sourceStream != null) {
-                try {
-                    sourceStream.close();
-                } catch(Throwable t) {}
+        }
+        if(PlayerListener.END_OF_MEDIA.equals(event)) {            
+            lastTime = (int)(nativePlayer.getMediaTime() / 1000);
+            if(disposeOnComplete){
+                cleanup();
+                if(sourceStream != null) {
+                    try {
+                        sourceStream.close();
+                    } catch(Throwable t) {}
+                }
             }
             if(onComplete != null) {
                 onComplete.run();
@@ -298,9 +307,22 @@ class MMAPIPlayer implements PlayerListener, Media{
     }
 
     public void setVariable(String key, Object value) {
+        if(key != null){
+            if(key.equals("disposeOnComplete")){
+                if(value != null){
+                    String v= value.toString();
+                    disposeOnComplete = v.equalsIgnoreCase("true");
+                }
+            }
+        }
     }
 
     public Object getVariable(String key) {
+        if(key != null){
+            if(key.equals("disposeOnComplete")){
+                return "" + disposeOnComplete;
+            }
+        }
         return null;
     }
 }

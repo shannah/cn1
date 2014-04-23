@@ -4191,6 +4191,7 @@ public class AndroidImplementation extends CodenameOneImplementation implements 
         }else{
             shareIntent.setType(mimeType);
             shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(fixAttachmentPath(image)));
+            shareIntent.putExtra(Intent.EXTRA_TEXT, text);
         }
         activity.startActivity(Intent.createChooser(shareIntent, "Share with..."));
     }
@@ -5570,6 +5571,9 @@ public class AndroidImplementation extends CodenameOneImplementation implements 
         }
 
         private byte[] shrink(byte[] arr, int size) {
+            if(size == -1) {
+                return null;
+            }
             byte[] n = new byte[size];
             System.arraycopy(arr, 0, n, 0, size);
             return n;
