@@ -56,6 +56,7 @@ GLfloat* createVertexArray(int x, int y, int imageWidth, int imageHeight) {
 
 -(void)execute {
     _glColor4f(((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f);
+    glActiveTexture(GL_TEXTURE0);
     _glEnable(GL_TEXTURE_2D);
     GLErrorLog;
     int imageWidth = (int)[[img getImage] size].width;
