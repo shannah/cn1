@@ -1755,7 +1755,7 @@ int keyboardHeight;
 #ifndef CN1_USE_ARC
             [cp release];
 #endif
-            glTranslatef(0, displayHeight, 0);
+        	_glTranslatef(0, displayHeight, 0);
             GLErrorLog;
             _glScalef(1, -1, 1);
             GLErrorLog;
