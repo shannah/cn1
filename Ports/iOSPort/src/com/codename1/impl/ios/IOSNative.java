@@ -448,5 +448,9 @@ public final class IOSNative {
             float[] data
     );
     
+    native boolean nativeIsTransformSupportedGlobal();
+    native boolean nativeIsShapeSupportedGlobal();
+    native boolean nativeIsPerspectiveTransformSupportedGlobal();
+    
     // End paths
 }

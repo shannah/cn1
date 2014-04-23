@@ -2406,15 +2406,15 @@ public class IOSImplementation extends CodenameOneImplementation {
         }
         
         boolean isTransformSupported(){
-            return true;
+            return nativeInstance.nativeIsTransformSupportedGlobal();
         }
         
         boolean isPerspectiveTransformSupported(){
-            return true;
+            return nativeInstance.nativeIsPerspectiveTransformSupportedGlobal();
         }
         
         boolean isShapeSupported(){
-            return true;
+            return nativeInstance.nativeIsShapeSupportedGlobal();
         }
         
         

@@ -4553,6 +4553,30 @@ void com_codename1_impl_ios_IOSNative_nativeGetTransform___float_1ARRAY(JAVA_OBJ
     com_codename1_impl_ios_IOSImplementation_nativeGetTransformImpl___float_1ARRAY(instanceObject, n1);
 }
 
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsTransformSupportedGlobal__(JAVA_OBJECT instanceObject){
+#ifdef USE_ES2
+    return YES;
+#else
+    return NO;
+#endif
+}
+
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsPerspectiveTransformSupportedGlobal__(JAVA_OBJECT instanceObject){
+#ifdef USE_ES2
+    return YES;
+#else
+    return NO;
+#endif
+}
+
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsShapeSupportedGlobal__(JAVA_OBJECT instanceObject){
+#ifdef USE_ES2
+    return YES;
+#else
+    return NO;
+#endif
+}
+
 
 #ifdef NEW_CODENAME_ONE_VM
 JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_isPainted___R_boolean(JAVA_OBJECT instanceObject) {
