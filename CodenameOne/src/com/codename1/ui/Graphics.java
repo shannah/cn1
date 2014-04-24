@@ -558,53 +558,27 @@ public final class Graphics {
     // START SHAPE DRAWING STUFF
     //--------------------------------------------------------------------------
     
-    
-    
-    /**
-     * Draws the outline of the provided shape in the current graphics context.  This is not supported on
-     * all platforms and contexts currently.  Use {@link #isShapeSupported} to check if the current 
-     * context supports drawing shapes.
-     * 
-     * <p>Use {@link #setStroke} to set the stroke properties for stroking the shape (e.g. line thickness, etc...).</p>
-     * @param shape The shape to draw.
-     * 
-     * @see #setStroke
-     * @see #isShapeSupported
-     */
-    public void drawShape(Shape shape, Stroke stroke){
-        this.drawShapeImpl(shape, stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
-    }
-    
-    
-    private void drawShapeImpl(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
-        Rectangle r = shape.getBounds();
-        drawShape(shape, lineWidth, capStyle, miterStyle, miterLimit, r.getX(), r.getY(), r.getWidth(), r.getHeight());
-    }
-    
-    
+ 
     /**
      * Draws a outline shape inside the specified bounding box.  The bounding box will resize the shape to fit in its dimensions.
      * <p>This is not supported on
      * all platforms and contexts currently.  Use {@link #isShapeSupported} to check if the current 
      * context supports drawing shapes.</p>
-     * <p>Use {@link #setStroke} to set the stroke properties for stroking the shape (e.g. line thickness, etc...).</p>
      * @param shape The shape to be drawn.
-     * @param x 
-     * @param y
-     * @param w
-     * @param h 
      * 
      * @see #setStroke
      * @see #isShapeSupported
      */
-    public void drawShape(Shape shape, Stroke stroke, int x, int y, int w, int h){
-        this.drawShape(shape,  stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit(), x, y, w, h);
+    public void drawShape(Shape shape, Stroke stroke){
+        this.drawShape(shape,  stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
     }
-    private void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
+    private void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
         if ( isShapeSupported()){
-            impl.drawShape(nativeGraphics, shape, lineWidth, capStyle, miterStyle, miterLimit, x+xTranslate, y+yTranslate, w, h);
+            impl.drawShape(nativeGraphics, shape, lineWidth, capStyle, miterStyle, miterLimit);
         }
     }
+    
+    
     
     /**
      * Fills the given shape using the current alpha and color settings.
@@ -616,24 +590,8 @@ public final class Graphics {
      * @see #isShapeSupported
      */
     public void fillShape(Shape shape){
-        Rectangle r = shape.getBounds();
-        fillShape(shape, r.getX(), r.getY(), r.getWidth(), r.getHeight());
-    }
-    
-    /**
-     * Fills the given shape inside the specified bounding box.  The shape will be stretched
-     * or shrunk to fit these bounds exactly.
-     * @param shape The shape to be filled.
-     * @param x 
-     * @param y
-     * @param w
-     * @param h 
-     * 
-     * @see #isShapeSupported
-     */
-    public void fillShape(Shape shape, int x, int y, int w, int h){
         if ( isShapeSupported() ){
-            impl.fillShape(nativeGraphics, shape, x+xTranslate, y+yTranslate, w, h);
+            impl.fillShape(nativeGraphics, shape);
         }
     }
     

@@ -1358,7 +1358,7 @@ public abstract class CodenameOneImplementation {
      * @see isShapeSupported() to determine of the graphics context supports drawing
      * shapes.
      */
-    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){}
+    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){}
     
     /**
      * Fills the given shape in the specified graphics context using the graphics context's 
@@ -1371,7 +1371,7 @@ public abstract class CodenameOneImplementation {
      * @param h 
      * @see drawShape To learn what x, y, w, and h do.
      */
-    public void fillShape(Object graphics, Shape shape, int x, int y, int w, int h){}
+    public void fillShape(Object graphics, Shape shape){}
     
     /**
      * Sets the transformation matrix to be applied to all drawing operations. If 

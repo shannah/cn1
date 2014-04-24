@@ -1034,11 +1034,11 @@ public class IOSImplementation extends CodenameOneImplementation {
      * @param path the path to draw.
      */
     @Override
-    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
+    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
-        ng.nativeDrawShape(shape, lineWidth, capStyle, miterStyle, miterLimit, x, y, w, h);
+        ng.nativeDrawShape(shape, lineWidth, capStyle, miterStyle, miterLimit);
     }
     
     /**
@@ -1047,16 +1047,16 @@ public class IOSImplementation extends CodenameOneImplementation {
      * @param path the path to draw.
      */
     @Override
-    public void fillShape(Object graphics, Shape shape, int x, int y, int w, int h){
+    public void fillShape(Object graphics, Shape shape){
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
         ng.applyClip();
-        ng.nativeFillShape(shape, x, y, w, h);
+        ng.nativeFillShape(shape);
         
         
     }
-    private void drawPath(NativePathRenderer r, int color, int alpha, int x, int y, int w, int h){
-        this.nativeInstance.nativeDrawPath(color, alpha, r.ptr, x, y, w, h);
+    private void drawPath(NativePathRenderer r, int color, int alpha){
+        this.nativeInstance.nativeDrawPath(color, alpha, r.ptr);
     }
     
     private void fillPathConsumer(PathIterator path, NativePathConsumer c){
@@ -2185,7 +2185,7 @@ public class IOSImplementation extends CodenameOneImplementation {
          * @param w
          * @param h 
          */
-        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
+        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
       
         }
         
@@ -2198,7 +2198,7 @@ public class IOSImplementation extends CodenameOneImplementation {
          * @param w
          * @param h 
          */
-        void nativeFillShape(Shape shape, int x, int y, int w, int h) {
+        void nativeFillShape(Shape shape) {
 
         }
         
@@ -2354,7 +2354,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             nativeDrawImageGlobal(peer, alpha, x, y, width, height);
         }
      
-        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h) {
+        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit) {
             PathIterator path = shape.getPathIterator();
             Rectangle rb = shape.getBounds();
             // Notice that these will be cleaned up in the dealloc method of the DrawPath objective-c class
@@ -2367,7 +2367,7 @@ public class IOSImplementation extends CodenameOneImplementation {
 
             // We don't need the stroker anymore because it has passed the strokes to the renderer.
             stroker.destroy();
-            drawPath(renderer, this.color, this.alpha, x, y, w, h);
+            drawPath(renderer, this.color, this.alpha);
         }
 
         /**
@@ -2376,7 +2376,7 @@ public class IOSImplementation extends CodenameOneImplementation {
          * @param graphics the graphics context
          * @param path the path to draw.
          */
-        void nativeFillShape(Shape shape, int x, int y, int w, int h) {
+        void nativeFillShape(Shape shape) {
             PathIterator path = shape.getPathIterator();
 
             Rectangle rb = shape.getBounds();
@@ -2385,7 +2385,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
             NativePathConsumer c = renderer.consumer;
             fillPathConsumer(path, c);
-            drawPath(renderer, this.color, this.alpha, x, y, w, h);
+            drawPath(renderer, this.color, this.alpha);
 
         }
         

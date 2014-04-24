@@ -436,7 +436,7 @@ public final class IOSNative {
     native void nativePathConsumerClose(long ptr);
     native void nativePathConsumerDone(long ptr);
     
-    native void nativeDrawPath(int color, int alpha, long ptr, int x, int y, int w, int h);
+    native void nativeDrawPath(int color, int alpha, long ptr);
     native void nativeSetTransform( 
             float a0, float a1, float a2, float a3, 
             float b0, float b1, float b2, float b3,

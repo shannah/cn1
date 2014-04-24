@@ -666,7 +666,7 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
 (Renderer * renderer, int color, int alpha, int x, int y, int w, int h)
 {
-    DrawPath *f = [[DrawPath alloc] initWithArgs:renderer color:color alpha:alpha x:x y:y w:w h:h];
+    DrawPath *f = [[DrawPath alloc] initWithArgs:renderer color:color alpha:alpha];
     [CodenameOne_GLViewController upcoming:f];
     [f release];
     // add to pipeline here

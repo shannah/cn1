@@ -4506,11 +4506,11 @@ void com_codename1_impl_ios_IOSNative_nativePathConsumerDone___long(JAVA_OBJECT 
 }
 
 //native void nativeDrawPath(int color, int alpha, long ptr)
-extern void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl(Renderer* renderer, int color, int alpha, int x, int y, int w, int h);
+extern void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl(Renderer* renderer, int color, int alpha);
 
-void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_INT color, JAVA_INT alpha, JAVA_LONG ptr, JAVA_INT x, JAVA_INT y, JAVA_INT w, JAVA_INT h)
+void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long(JAVA_OBJECT instanceObject, JAVA_INT color, JAVA_INT alpha, JAVA_LONG ptr)
 {
-    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl((Renderer*)ptr, color, alpha, x, y, w, h);
+    Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl((Renderer*)ptr, color, alpha);
     
     
 }

@@ -35,15 +35,15 @@
 @implementation DrawPath
 
 
--(id)initWithArgs:(Renderer*)r color:(int)c alpha:(int)a x:(int)xx y:(int)yy w:(int)ww h:(int)hh
+-(id)initWithArgs:(Renderer*)r color:(int)c alpha:(int)a //x:(int)xx y:(int)yy w:(int)ww h:(int)hh
 {
     color = c;
     alpha = a;
     renderer = r;
-    boundsX = xx;
-    boundsY = yy;
-    boundsW = ww;
-    boundsH = hh;
+    //boundsX = xx;
+    //boundsY = yy;
+    //boundsW = ww;
+    //boundsH = hh;
     return self;
 }
 -(void)execute
@@ -79,10 +79,10 @@
     //    x + width, y + height
     //};
     GLfloat vertexes[] = {
-          (GLfloat)boundsX, (GLfloat)boundsY,
-          (GLfloat)(boundsX+boundsW), (GLfloat)boundsY,
-          (GLfloat)boundsX, (GLfloat)(boundsY+boundsH),
-          (GLfloat)(boundsX+boundsW), (GLfloat)(boundsY+boundsH)
+          (GLfloat)x, (GLfloat)y,
+          (GLfloat)(x+width), (GLfloat)y,
+          (GLfloat)x, (GLfloat)(y+height),
+          (GLfloat)(x+width), (GLfloat)(y+height)
     };
     static const GLshort textureCoordinates[] = {
         0, 0,
