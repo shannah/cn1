@@ -50,7 +50,14 @@ public final class Graphics {
 
     private Object[] nativeGraphicsState;
     private float scaleX = 1, scaleY = 1;
-    private Stroke stroke = new Stroke();
+    /**
+     * Note that this transform is just a placeholder for the current transform
+     * and may contain out of date information since the "actual" transform
+     * will be maintained in native code.  Basically this transform
+     * will always contain the transform as it was the last time getTransform
+     * was called.
+     */
+    private Matrix transform;
     /**
      * Constructing new graphics with a given javax.microedition.lcdui.Graphics 
      * @param g an implementation dependent native graphics instance
@@ -550,25 +557,7 @@ public final class Graphics {
     //--------------------------------------------------------------------------
     // START SHAPE DRAWING STUFF
     //--------------------------------------------------------------------------
-    /**
-     * Sets the stroke that will be used to draw shapes.  This only affects {@link #drawShape} and not
-     * any of the other drawing methods.  (Should this be changed to affect all drawing methods??)
-     * @param stroke The stroke settings to be used for drawing shapes.
-     * @see #getStroke
-     */
-    public void setStroke(Stroke stroke){
-        this.stroke = stroke;
-    }
     
-    /**
-     * Gets the stroke that will be used to draw shapes.  This stroke setting only affects {@link #drawShape}
-     * and not any of the other drawing methods.  (Should this be changed to affect all drawing methods??)
-     * @return The current stroke settings.
-     * @see #setStroke
-     */
-    public Stroke getStroke(){
-        return this.stroke;
-    }
     
     
     /**
@@ -582,8 +571,8 @@ public final class Graphics {
      * @see #setStroke
      * @see #isShapeSupported
      */
-    public void drawShape(Shape shape){
-        this.drawShapeImpl(shape, this.stroke.getLineWidth(), this.stroke.getCapStyle(), this.stroke.getJoinStyle(), this.stroke.getMiterLimit());
+    public void drawShape(Shape shape, Stroke stroke){
+        this.drawShapeImpl(shape, stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
     }
     
     
@@ -608,8 +597,8 @@ public final class Graphics {
      * @see #setStroke
      * @see #isShapeSupported
      */
-    public void drawShape(Shape shape, int x, int y, int w, int h){
-        this.drawShape(shape,  this.stroke.getLineWidth(), this.stroke.getCapStyle(), this.stroke.getJoinStyle(), this.stroke.getMiterLimit(), x, y, w, h);
+    public void drawShape(Shape shape, Stroke stroke, int x, int y, int w, int h){
+        this.drawShape(shape,  stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit(), x, y, w, h);
     }
     private void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit, int x, int y, int w, int h){
         if ( isShapeSupported()){
@@ -738,17 +727,20 @@ public final class Graphics {
     }
     
     /**
-     * Gets the transformation matrix that is currently applied to this graphics context.  This method
-     * will populate the passed matrix data with the values that are currently set.
-     * @param matrix 
+     * Gets the transformation matrix that is currently applied to this graphics context.
+     * @return The current transformation matrix.
      * @see #setTransform
      */
-    public void getTransform(Matrix matrix){
+    public Matrix getTransform(){
+        if ( transform == null ){
+            transform = new Matrix(new float[]{1f});
+        }
         if ( isTransformSupported()){
-            impl.getTransform(nativeGraphics, matrix);
-        } else {
+            
+            impl.getTransform(nativeGraphics, transform);
             
         }
+        return transform;
     }
     
     
