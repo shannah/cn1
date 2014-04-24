@@ -23,10 +23,26 @@
 package com.codename1.ui.geom;
 
 /**
- *
- * @author shannah
+ * An interface that can be implemented by any class that wants to be drawable
+ * as a shape. 
+ * @author Steve Hannah
+ * @see GeneralPath for a concrete implementation of Shape.
+ * @see com.codename1.ui.Graphics#drawShape
+ * @see com.codename1.ui.Graphics#fillShape
  */
 public interface Shape {
+    
+    /**
+     * Gets an iterator to walk all of the path segments of the shape.
+     * @return A PathIterator that can iterate over the path segments of the shape.
+     * 
+     */
     public PathIterator getPathIterator();
+    
+    /**
+     * Returns the bounding rectangle for the shape.  This should be the smallest rectangle
+     * such that the all path segments in the shape are contained within it.
+     * @return A {@link Rectangle} that comprises the bounds of the shape.
+     */
     public Rectangle getBounds();
 }

@@ -23,12 +23,44 @@
 package com.codename1.ui.geom;
 
 /**
+ * A general geometric path, consisting of any number of subpaths constructed
+ * out of straight lines and cubic or quadratic Bezier curves. The inside of the
+ * curve is defined for drawing purposes by a winding rule. Either the
+ * {@link #WIND_EVEN_ODD} or {@link #WIND_NON_ZERO} winding rule can be chosen.
+ *
+ * <h4>A drawing of a GeneralPath</h4>
+ * 
+ * <img src="http://developer.classpath.org/doc/java/awt/geom/doc-files/GeneralPath-1.png"/>
+ *
+ * <p>The {@link #WIND_EVEN_ODD} winding rule defines a point as inside a path if: A ray from the
+ * point towards infinity in an arbitrary direction intersects the path an odd
+ * number of times. Points {@literal A} and {@literal C} in the image are considered to be outside the
+ * path. (both intersect twice) Point {@literal B} intersects once, and is inside.</p>
+ *
+ * <p>The {@link #WIND_NON_ZERO} winding rule defines a point as inside a path if: The path
+ * intersects the ray in an equal number of opposite directions. Point {@link A} in the
+ * image is outside (one intersection in the ’up’ direction, one in the ’down’
+ * direction) Point {@literal B} in the image is inside (one intersection ’down’) Point C
+ * in the image is inside (two intersections in the ’down’ direction)</p>
+ * 
+ * <!--(Note:  This description and image were copied from <a href="http://developer.classpath.org/doc/java/awt/geom/GeneralPath.html">the GNU classpath</a>
+ * docs).  License here http://www.gnu.org/licenses/licenses.html#FDL 
+ * -->
  *
  * @author shannah
+ *
+ * @see com.codename1.ui.Graphics#drawShape
+ * @see com.codename1.ui.Graphics#fillShape
  */
 public final class GeneralPath  implements Shape {
 
+    /**
+     * Same constant as {@link PathIterator#WIND_EVEN_ODD}
+     */
     public static final int WIND_EVEN_ODD = PathIterator.WIND_EVEN_ODD;
+    /**
+     * Same constant as {@link PathIterator#WIND_NON_ZERO}
+     */
     public static final int WIND_NON_ZERO = PathIterator.WIND_NON_ZERO;
 
     /**
@@ -147,27 +179,49 @@ public final class GeneralPath  implements Shape {
 
     }
 
+    /**
+     * Constructs a GeneralPath with the default ({@link #WIND_NON_ZERO}) winding rule and initial capacity (10).
+     */
     public GeneralPath() {
         this(WIND_NON_ZERO, BUFFER_SIZE);
     }
 
+    /**
+     * Constructs a GeneralPath with a specific winding rule and the default initial capacity (10).
+     * @param rule The winding rule.  One of {@link #WIND_NON_ZERO} and {@link #WIND_EVEN_ODD}
+     * @see #WIND_NON_ZERO
+     * @see #WIND_EVEN_ODD
+     */
     public GeneralPath(int rule) {
         this(rule, BUFFER_SIZE);
     }
 
+    /**
+     * Constructs a GeneralPath with a specific winding rule and the initial capacity. The initial capacity should be the approximate number of path segments to be used.
+     * @param rule The winding rule.  ({@link #WIND_NON_ZERO} or {@link #WIND_EVEN_ODD}).
+     * @param initialCapacity the inital capacity, in path segments
+     */
     public GeneralPath(int rule, int initialCapacity) {
         setWindingRule(rule);
         types = new byte[initialCapacity];
         points = new float[initialCapacity * 2];
     }
 
-    public GeneralPath(GeneralPath shape) {
+    /**
+     * Constructs a GeneralPath from an arbitrary shape object. The Shapes PathIterator path and winding rule will be used.
+     * @param shape 
+     */
+    public GeneralPath(Shape shape) {
         this(WIND_NON_ZERO, BUFFER_SIZE);
         PathIterator p = shape.getPathIterator();
         setWindingRule(p.getWindingRule());
         append(p, false);
     }
 
+    /**
+     * Sets the path’s winding rule, which controls which areas are considered ’inside’ or ’outside’ the path on drawing. Valid rules are {@link #WIND_EVEN_ODD} for an even-odd winding rule, or {@link #WIND_NON_ZERO} for a non-zero winding rule.
+     * @param rule the rule. ({@link #WIND_NON_ZERO} or {@link #WIND_EVEN_ODD}).
+     */
     public void setWindingRule(int rule) {
         if (rule != WIND_EVEN_ODD && rule != WIND_NON_ZERO) {
             // awt.209=Invalid winding rule value
@@ -176,6 +230,10 @@ public final class GeneralPath  implements Shape {
         this.rule = rule;
     }
 
+    /**
+     * Returns the path’s current winding rule.
+     * @return {@link #WIND_NON_ZERO} or {@link #WIND_EVEN_ODD}
+     */
     public int getWindingRule() {
         return rule;
     }
@@ -184,7 +242,7 @@ public final class GeneralPath  implements Shape {
      * Checks points and types buffer size to add pointCount points. If necessary realloc buffers to enlarge size.   
      * @param pointCount - the point count to be added in buffer
      */
-    void checkBuf(int pointCount, boolean checkMove) {
+    private void checkBuf(int pointCount, boolean checkMove) {
         if (checkMove && typeSize == 0) {
             // awt.20A=First segment should be SEG_MOVETO type
             throw new IndexOutOfBoundsException("First segment must be a moveto"); //$NON-NLS-1$
@@ -201,6 +259,11 @@ public final class GeneralPath  implements Shape {
         }
     }
 
+    /**
+     * Adds a new point to a path.
+     * @param x the x-coordinate.
+     * @param y the y-coordinate.
+     */
     public void moveTo(float x, float y) {
         if (typeSize > 0 && types[typeSize - 1] == PathIterator.SEG_MOVETO) {
             points[pointSize - 2] = x;
@@ -213,6 +276,11 @@ public final class GeneralPath  implements Shape {
         }
     }
 
+    /**
+     * Appends a straight line to the current path.
+     * @param x x coordinate of the line endpoint.
+     * @param y  y coordinate of the line endpoint.
+     */
     public void lineTo(float x, float y) {
         checkBuf(2, true);
         types[typeSize++] = PathIterator.SEG_LINETO;
@@ -220,6 +288,13 @@ public final class GeneralPath  implements Shape {
         points[pointSize++] = y;
     }
 
+    /**
+     * Appends a quadratic Bezier curve to the current path.
+     * @param x1 x coordinate of the control point
+     * @param y1 y coordinate of the control point
+     * @param x2 x coordinate of the curve endpoint.
+     * @param y2 y coordinate of the curve endpoint.
+     */
     public void quadTo(float x1, float y1, float x2, float y2) {
         checkBuf(4, true);
         types[typeSize++] = PathIterator.SEG_QUADTO;
@@ -229,6 +304,15 @@ public final class GeneralPath  implements Shape {
         points[pointSize++] = y2;
     }
 
+    /**
+     * Appends a cubic Bezier curve to the current path.
+     * @param x1 x coordinate of the first control point
+     * @param y1  y coordinate of the first control point
+     * @param x2 x coordinate of the second control point
+     * @param y2 y coordinate of the second control point
+     * @param x3 x coordinate of the curve endpoint.
+     * @param y3 y coordinate of the curve endpoint.
+     */
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
         checkBuf(6, true);
         types[typeSize++] = PathIterator.SEG_CUBICTO;
@@ -240,6 +324,9 @@ public final class GeneralPath  implements Shape {
         points[pointSize++] = y3;
     }
 
+    /**
+     * Closes the current subpath by drawing a line back to the point of the last moveTo, unless the path is already closed.
+     */
     public void closePath() {
         if (typeSize == 0 || types[typeSize - 1] != PathIterator.SEG_CLOSE) {
             checkBuf(0, true);
@@ -247,11 +334,21 @@ public final class GeneralPath  implements Shape {
         }
     }
 
-    public void append(GeneralPath shape, boolean connect) {
+    /**
+     * Appends the segments of a Shape to the path. If connect is {@literal true}, the new path segments are connected to the existing one with a line. The winding rule of the Shape is ignored.
+     * @param shape  the shape (null not permitted).
+     * @param connect whether to connect the new shape to the existing path.
+     */
+    public void append(Shape shape, boolean connect) {
         PathIterator p = shape.getPathIterator();
         append(p, connect);
     }
 
+    /**
+     * Appends the segments of a PathIterator to this GeneralPath. Optionally, the initial {@link PathIterator#SEG_MOVETO} segment of the appended path is changed into a {@link PathIterator#SEG_LINETO} segment.
+     * @param path the PathIterator specifying which segments shall be appended (null not permitted).
+     * @param connect {@literal true} for substituting the initial {@link PathIterator#SEG_MOVETO} segment by a {@link PathIterator#SEG_LINETO}, or false for not performing any substitution. If this {@code GeneralPath} is currently empty, connect is assumed to be {@literal false}, thus leaving the initial {@link PathIterator#SEG_MOVETO} unchanged.
+     */
     public void append(PathIterator path, boolean connect) {
         while (!path.isDone()) {
             float coords[] = new float[6];
@@ -286,6 +383,10 @@ public final class GeneralPath  implements Shape {
         }
     }
 
+    /**
+     * Returns the current appending point of the path.
+     * @return 2-element array of the form {@code [x,y]} representing {@code x} and {@code y} coordinate of the current appending point of the path..
+     */
     public float[] getCurrentPoint() {
         if (typeSize == 0) {
             return null;
@@ -304,6 +405,9 @@ public final class GeneralPath  implements Shape {
         return new float[]{points[j], points[j + 1]};
     }
 
+    /**
+     * Resets the path. All points and segments are destroyed.
+     */
     public void reset() {
         typeSize = 0;
         pointSize = 0;
@@ -311,7 +415,10 @@ public final class GeneralPath  implements Shape {
 
     
 
-
+    /**
+     * Returns the path’s bounding box, in float precision.
+     * @return 4-element array of the form {@code [x, y, width, height]}.
+     */
     public float[] getBounds2D() {
         float rx1, ry1, rx2, ry2;
         if (pointSize == 0) {
@@ -340,6 +447,10 @@ public final class GeneralPath  implements Shape {
         return new float[]{rx1, ry1, rx2 - rx1, ry2 - ry1};
     }
 
+    /**
+     * Returns the path’s bounding box.
+     * @return The bounding box of the path.
+     */
     public Rectangle getBounds() {
         float[] r = getBounds2D();
         return new Rectangle((int)r[0], (int)r[1], (int)r[2], (int)r[3]);
@@ -348,6 +459,10 @@ public final class GeneralPath  implements Shape {
 
     
 
+    /**
+     * Creates a PathIterator for iterating along the segments of the path.
+     * @return 
+     */
     public PathIterator getPathIterator() {
         return new Iterator(this);
     }

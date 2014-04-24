@@ -551,16 +551,20 @@ public final class Graphics {
     // START SHAPE DRAWING STUFF
     //--------------------------------------------------------------------------
     /**
-     * Sets the stroke that will be used to draw shapes.
-     * @param stroke 
+     * Sets the stroke that will be used to draw shapes.  This only affects {@link #drawShape} and not
+     * any of the other drawing methods.  (Should this be changed to affect all drawing methods??)
+     * @param stroke The stroke settings to be used for drawing shapes.
+     * @see #getStroke
      */
     public void setStroke(Stroke stroke){
         this.stroke = stroke;
     }
     
     /**
-     * Gets the stroke that will be used to draw shapes
-     * @return 
+     * Gets the stroke that will be used to draw shapes.  This stroke setting only affects {@link #drawShape}
+     * and not any of the other drawing methods.  (Should this be changed to affect all drawing methods??)
+     * @return The current stroke settings.
+     * @see #setStroke
      */
     public Stroke getStroke(){
         return this.stroke;
@@ -569,16 +573,19 @@ public final class Graphics {
     
     /**
      * Draws the outline of the provided shape in the current graphics context.  This is not supported on
-     * all platforms and contexts currently.  Use the isShapeSupported() method to check if the current 
+     * all platforms and contexts currently.  Use {@link #isShapeSupported} to check if the current 
      * context supports drawing shapes.
-     * @param shape 
      * 
-     * @see setStroke() for setting the stroke properties to use for drawing the shape.
-     * @see isShapeSupported() To see if the current context supports the drawing of shapes.
+     * <p>Use {@link #setStroke} to set the stroke properties for stroking the shape (e.g. line thickness, etc...).</p>
+     * @param shape The shape to draw.
+     * 
+     * @see #setStroke
+     * @see #isShapeSupported
      */
     public void drawShape(Shape shape){
         this.drawShapeImpl(shape, this.stroke.getLineWidth(), this.stroke.getCapStyle(), this.stroke.getJoinStyle(), this.stroke.getMiterLimit());
     }
+    
     
     private void drawShapeImpl(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
         Rectangle r = shape.getBounds();
@@ -588,14 +595,18 @@ public final class Graphics {
     
     /**
      * Draws a outline shape inside the specified bounding box.  The bounding box will resize the shape to fit in its dimensions.
-     * @param shape
+     * <p>This is not supported on
+     * all platforms and contexts currently.  Use {@link #isShapeSupported} to check if the current 
+     * context supports drawing shapes.</p>
+     * <p>Use {@link #setStroke} to set the stroke properties for stroking the shape (e.g. line thickness, etc...).</p>
+     * @param shape The shape to be drawn.
      * @param x 
      * @param y
      * @param w
      * @param h 
      * 
-     * @see setStroke() To set the stroke used to stroke the shape.
-     * @see isShapeSupported() to see if this graphics context supports drawing shapes.
+     * @see #setStroke
+     * @see #isShapeSupported
      */
     public void drawShape(Shape shape, int x, int y, int w, int h){
         this.drawShape(shape,  this.stroke.getLineWidth(), this.stroke.getCapStyle(), this.stroke.getJoinStyle(), this.stroke.getMiterLimit(), x, y, w, h);
@@ -608,9 +619,12 @@ public final class Graphics {
     
     /**
      * Fills the given shape using the current alpha and color settings.
+     *  <p>This is not supported on
+     * all platforms and contexts currently.  Use {@link #isShapeSupported} to check if the current 
+     * context supports drawing shapes.</p>
      * @param shape The shape to be filled.
      * 
-     * @see isShapeSupported() To check if this graphics context supports drawing shapes.
+     * @see #isShapeSupported
      */
     public void fillShape(Shape shape){
         Rectangle r = shape.getBounds();
@@ -626,7 +640,7 @@ public final class Graphics {
      * @param w
      * @param h 
      * 
-     * @see isShapeSupported() to check if the graphics context supports drawing shapes.
+     * @see #isShapeSupported
      */
     public void fillShape(Shape shape, int x, int y, int w, int h){
         if ( isShapeSupported() ){
@@ -635,61 +649,68 @@ public final class Graphics {
     }
     
     /**
-     * Checks to see if matrix transforms are supported by this graphics context.
-     * @return True if this graphics context supports matrix transforms. 
+     * Checks to see if {@link com.codename1.ui.geom.Matrix} transforms are supported by this graphics context.
+     * @return {@literal true} if this graphics context supports {@link com.codename1.ui.geom.Matrix} transforms. 
+     * <p>Note that this method only confirms that 2D transforms are supported.  If you need to perform 3D 
+     * transformations, you should use the {@link #isPerspectiveTransformSupported} method.</p>
+     * @see #setTransform
+     * @see #getTransform
+     * @see #isPerspectiveTransformSupported
      */
     public boolean isTransformSupported(){
         return impl.isTransformSupported(nativeGraphics);
     }
     
     /**
-     * Checks to see if perspective (3D) matrix transforms are supported by this graphics
-     * context.  If 3D transforms are supported, you can use a 4x4 transformation matrix
-     * in your setTransform() method to perform 3d transforms.
+     * Checks to see if perspective (3D) {@link com.codename1.ui.geom.Matrix} transforms are supported by this graphics
+     * context.  If 3D transforms are supported, you can use a 4x4 transformation {@link com.codename1.ui.geom.Matrix}
+     * via {@link #setTransform} to perform 3D transforms.
      * 
      * <p>Note: It is possible for 3D transforms to not be supported but Affine (2D) 
      * transforms to be supported.  In this case you would be limited to a 3x3 transformation
-     * matrix in the setTransform() method.</p>
-     * @return True if Perspective (3D) transforms are supported.  False otherwise.
-     * @see isTransformSupported() Checks if at least 2D transforms are supported.
-     * @see setTransform() To set the current transform.
-     * @see getTransform() to get the current transform.
+     * matrix in {@link #setTransform}.  You can check for 2D transformation support using the {@link #isTransformSupported} method.</p>
+     * 
+     * @return {@literal true} if Perspective (3D) transforms are supported.  {@literal false} otherwise.
+     * @see #isTransformSupported
+     * @see #setTransform
+     * @see #getTransform
      */
     public boolean isPerspectiveTransformSupported(){
         return impl.isPerspectiveTransformSupported(nativeGraphics);
     }
     
     /**
-     * Checks to see if this graphics context supports drawing shapes (i.e. the drawShape()
-     * and fillShape() methods.
-     * @return 
-     * @see drawShape()
-     * @see fillShape()
+     * Checks to see if this graphics context supports drawing shapes (i.e. {@link #drawShape}
+     * and {@link #fillShape} methods. If this returns {@literal false}, and you call {@link #drawShape} or {@link #fillShape}, then
+     * nothing will be drawn.
+     * @return {@literal true} If {@link #drawShape} and {@link #fillShape} are supported.  
+     * @see #drawShape
+     * @see #fillShape
      */
     public boolean isShapeSupported(){
         return impl.isShapeSupported(nativeGraphics);
     }
     
     /**
-     * Sets the transformation matrix to apply to drawing in this graphics context.
+     * Sets the transformation {@link com.codename1.ui.geom.Matrix} to apply to drawing in this graphics context.
      * In order to use this for 2D/Affine transformations you should first check to 
-     * make sure that transforms are supported by calling the isTransformSupported()
+     * make sure that transforms are supported by calling the {@link #isTransformSupported}
      * method.  For 3D/Perspective transformations, you should first check to
      * make sure that 3D/Perspective transformations are supported by calling the 
-     * isPerspectiveTransformSupported().
+     * {@link #isPerspectiveTransformSupported}.
      * 
-     * <p>Transformations are applied with (0,0) as the origin.  So rotations and
+     * <p>Transformations are applied with {@literal (0,0)} as the origin.  So rotations and
      * scales are anchored at this point on the screen.  You can use a different
-     * anchor point by either embedding it in the transformation matrix (i.e. pre-transform the matrix to anchor at a different point)
-     * or use the setTransform(Matrix,int,int) variation that allows you to explicitly set the 
+     * anchor point by either embedding it in the transformation matrix (i.e. pre-transform the {@link com.codename1.ui.geom.Matrix} to anchor at a different point)
+     * or use the {@link #setTransform(com.codename1.ui.geom.Matrix,int,int)} variation that allows you to explicitly set the 
      * anchor point.</p>
-     * @param matrix The transformation matrix to use for drawing.  2D/Affine transformations
-     * can be achieved using a 3x3 transformation matrix.  3D/Perspective transformations
-     * can be achieved using a 4x3 transformation matrix.
+     * @param matrix The transformation {@link com.codename1.ui.geom.Matrix} to use for drawing.  2D/Affine transformations
+     * can be achieved using a 3x3 transformation {@link com.codename1.ui.geom.Matrix}.  3D/Perspective transformations
+     * can be achieved using a 4x3 transformation {@link com.codename1.ui.geom.Matrix}.
      * 
-     * @see isTransformSupported()
-     * @see isPerspectiveTransformSupported()
-     * @see setTransform(Matrix,int,int)
+     * @see #isTransformSupported
+     * @see #isPerspectiveTransformSupported
+     * @see #setTransform(com.codename1.ui.geom.Matrix,int,int)
      */
     public void setTransform(Matrix matrix){
         setTransform(matrix, 0, 0);
@@ -698,6 +719,13 @@ public final class Graphics {
     /**
      * Sets the transformation matrix to apply to drawing in this graphics context, using the 
      * specified origin for transformations (e.g. for rotation and scaling).
+     * 
+     * <p>In order to use this for 2D/Affine transformations you should first check to 
+     * make sure that transforms are supported by calling the {@link #isTransformSupported}
+     * method.  For 3D/Perspective transformations, you should first check to
+     * make sure that 3D/Perspective transformations are supported by calling 
+     * {@link #isPerspectiveTransformSupported}.</p>
+     * 
      * @param matrix The transformation matrix.  Can be a 3x3 matrix of a 4x4 matrix depending on whether you want a 2D transformation
      * or a 3D transformation.
      * @param originX The x coordinate of the anchor point for rotations.
@@ -713,6 +741,7 @@ public final class Graphics {
      * Gets the transformation matrix that is currently applied to this graphics context.  This method
      * will populate the passed matrix data with the values that are currently set.
      * @param matrix 
+     * @see #setTransform
      */
     public void getTransform(Matrix matrix){
         if ( isTransformSupported()){
