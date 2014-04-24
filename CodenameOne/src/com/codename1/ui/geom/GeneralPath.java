@@ -39,9 +39,9 @@ package com.codename1.ui.geom;
  *
  * <p>The {@link #WIND_NON_ZERO} winding rule defines a point as inside a path if: The path
  * intersects the ray in an equal number of opposite directions. Point {@link A} in the
- * image is outside (one intersection in the ’up’ direction, one in the ’down’
- * direction) Point {@literal B} in the image is inside (one intersection ’down’) Point C
- * in the image is inside (two intersections in the ’down’ direction)</p>
+ * image is outside (one intersection in the 'up' direction, one in the 'down'
+ * direction) Point {@literal B} in the image is inside (one intersection 'down') Point C
+ * in the image is inside (two intersections in the 'down' direction)</p>
  * 
  * <!--(Note:  This description and image were copied from <a href="http://developer.classpath.org/doc/java/awt/geom/GeneralPath.html">the GNU classpath</a>
  * docs).  License here http://www.gnu.org/licenses/licenses.html#FDL 
@@ -219,7 +219,7 @@ public final class GeneralPath  implements Shape {
     }
 
     /**
-     * Sets the path’s winding rule, which controls which areas are considered ’inside’ or ’outside’ the path on drawing. Valid rules are {@link #WIND_EVEN_ODD} for an even-odd winding rule, or {@link #WIND_NON_ZERO} for a non-zero winding rule.
+     * Sets the path's winding rule, which controls which areas are considered 'inside' or 'outside' the path on drawing. Valid rules are {@link #WIND_EVEN_ODD} for an even-odd winding rule, or {@link #WIND_NON_ZERO} for a non-zero winding rule.
      * @param rule the rule. ({@link #WIND_NON_ZERO} or {@link #WIND_EVEN_ODD}).
      */
     public void setWindingRule(int rule) {
@@ -231,7 +231,7 @@ public final class GeneralPath  implements Shape {
     }
 
     /**
-     * Returns the path’s current winding rule.
+     * Returns the path's current winding rule.
      * @return {@link #WIND_NON_ZERO} or {@link #WIND_EVEN_ODD}
      */
     public int getWindingRule() {
@@ -416,7 +416,7 @@ public final class GeneralPath  implements Shape {
     
 
     /**
-     * Returns the path’s bounding box, in float precision.
+     * Returns the path's bounding box, in float precision.
      * @return 4-element array of the form {@code [x, y, width, height]}.
      */
     public float[] getBounds2D() {
@@ -448,7 +448,7 @@ public final class GeneralPath  implements Shape {
     }
 
     /**
-     * Returns the path’s bounding box.
+     * Returns the path's bounding box.
      * @return The bounding box of the path.
      */
     public Rectangle getBounds() {
