@@ -22,6 +22,8 @@
  */
 package com.codename1.ui.geom;
 
+import com.codename1.ui.Stroke;
+
 /**
  * An interface that can be implemented by any class that wants to be drawable
  * as a shape. 
@@ -45,4 +47,5 @@ public interface Shape {
      * @return A {@link Rectangle} that comprises the bounds of the shape.
      */
     public Rectangle getBounds();
+
 }

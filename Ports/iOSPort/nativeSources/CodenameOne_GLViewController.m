@@ -30,6 +30,7 @@
 #import "DrawRect.h"
 #import "DrawString.h"
 #import "DrawPath.h"
+#import "DrawTextureAlphaMask.h"
 #import "SetTransform.h"
 #import "DrawImage.h"
 #import "TileImage.h"
@@ -672,6 +673,13 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
     // add to pipeline here
 }
 
+
+void Java_com_codename1_impl_ios_IOSImplementation_drawTextureAlphaMaskImpl(GLuint textureName, int color, int alpha, int x, int y, int w, int h)
+{
+    DrawTextureAlphaMask *f = [[DrawTextureAlphaMask alloc] initWithArgs:textureName color:color alpha:alpha x:x y:y w:w h:h];
+    [CodenameOne_GLViewController upcoming:f];
+    [f release];
+}
 void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_int_int(JAVA_OBJECT instanceObject,
                                                                                                                                                        JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
                                                                                                                                                        JAVA_FLOAT b0, JAVA_FLOAT b1, JAVA_FLOAT b2, JAVA_FLOAT b3,

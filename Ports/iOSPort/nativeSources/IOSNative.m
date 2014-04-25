@@ -4514,6 +4514,115 @@ void com_codename1_impl_ios_IOSNative_nativeDrawPath___int_int_long(JAVA_OBJECT 
     
     
 }
+
+extern void Java_com_codename1_impl_ios_IOSImplementation_drawTextureAlphaMaskImpl(GLuint textureName, int color, int alpha, int x, int y, int w, int h);
+void com_codename1_impl_ios_IOSNative_drawTextureAlphaMask___long_int_int_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_LONG textureName, JAVA_INT color, JAVA_INT alpha, JAVA_INT x, JAVA_INT y, JAVA_INT w, JAVA_INT h)
+{
+    Java_com_codename1_impl_ios_IOSImplementation_drawTextureAlphaMaskImpl((GLuint)textureName, color, alpha, x, y, w, h);
+    
+    
+}
+
+void com_codename1_impl_ios_IOSNative_nativeDeleteTexture___long(JAVA_OBJECT instanceObject, JAVA_LONG textureName)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        GLuint tex = (GLuint)textureName;
+        POOL_BEGIN();
+        glDeleteTextures(1, &tex);
+        POOL_END();
+    });
+}
+
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreateTexture___long(JAVA_OBJECT instanceObject, JAVA_LONG renderer)
+{
+#ifdef USE_ES2
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
+#define abs(x) ((x)>0?(x):-(x))
+    
+    EAGLContext *ctx = [[CodenameOne_GLViewController instance] context];
+    if ( ctx != nil ){
+        [EAGLContext setCurrentContext:ctx];
+    } else {
+        return 0;
+    }
+    
+    Renderer *r = (Renderer*)renderer;
+    JAVA_INT outputBounds[4];
+    
+    Renderer_getOutputBounds(renderer, (JAVA_INT*)&outputBounds);
+    if ( outputBounds[2] < 0 || outputBounds[3] < 0 ){
+        return 0;
+    }
+    
+    GLuint tex=0;
+    JAVA_INT x = min(outputBounds[0], outputBounds[2]);
+    JAVA_INT y = min(outputBounds[1], outputBounds[3]);
+    JAVA_INT width = outputBounds[2]-outputBounds[0];
+    JAVA_INT height = outputBounds[3]-outputBounds[1];
+    
+    if ( width < 0 ) width = -width;
+    if ( height < 0 ) height = -height;
+    
+    AlphaConsumer ac = {
+        x,
+        y,
+        width,
+        height,
+    };
+    
+    //NSLog(@"AC Width %d", ac.width);
+    
+    jbyte maskArray[ac.width*ac.height];
+    
+    //NSLog(@"Mask width %d height %d",
+    //      ac.width,
+    //      ac.height
+    //      );
+    ac.alphas = (JAVA_BYTE*)&maskArray;
+    Renderer_produceAlphas(renderer, &ac);
+    
+    _glEnableClientState(GL_VERTEX_ARRAY);
+    //glEnableClientState(GL_NORMAL_ARRAY);
+    GLErrorLog;
+    _glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    GLErrorLog;
+    glGenTextures(1, &tex);
+
+    GLErrorLog;
+    
+    if ( tex == 0 ){
+        return 0;
+    }
+    glActiveTexture(GL_TEXTURE1);
+    GLErrorLog;
+    glBindTexture(GL_TEXTURE_2D, tex);
+    GLErrorLog;
+    
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, ac.width, ac.height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, maskArray);
+    GLErrorLog;
+    glBindTexture(GL_TEXTURE_2D, 0);
+    GLErrorLog;
+    _glDisableClientState(GL_VERTEX_ARRAY);
+    GLErrorLog;
+    _glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    GLErrorLog;
+    
+    return (JAVA_LONG)tex;
+#else 
+    return 0;
+#endif
+    
+}
+
+
 //native void nativeSetTransform(
 //                               float a0, float a1, float a2, float a3,
 //                               float b0, float b1, float b2, float b3,
@@ -4570,6 +4679,14 @@ JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsPerspectiveTransformSuppor
 }
 
 JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsShapeSupportedGlobal__(JAVA_OBJECT instanceObject){
+#ifdef USE_ES2
+    return YES;
+#else
+    return NO;
+#endif
+}
+
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsAlphaMaskSupportedGlobal__(JAVA_OBJECT instanceObject){
 #ifdef USE_ES2
     return YES;
 #else

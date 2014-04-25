@@ -199,4 +199,27 @@ public class Stroke {
     public void setMiterLimit(float miterLimit) {
         this.miterLimit = miterLimit;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( obj instanceof Stroke ){
+            Stroke s = (Stroke)obj;
+            return (s.miterLimit==miterLimit && s.capStyle==capStyle && s.joinStyle==joinStyle && s.lineWidth==lineWidth);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + this.joinStyle;
+        hash = 59 * hash + this.capStyle;
+        hash = 59 * hash + Float.floatToIntBits(this.lineWidth);
+        hash = 59 * hash + Float.floatToIntBits(this.miterLimit);
+        return hash;
+    }
+    
+    
+    
+    
 }

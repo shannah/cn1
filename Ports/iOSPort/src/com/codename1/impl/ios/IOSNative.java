@@ -428,6 +428,8 @@ public final class IOSNative {
                            int windingRule);
     native void nativePathRendererGetOutputBounds(long ptr, int[] bounds);
     native long nativePathRendererGetConsumer(long ptr);
+    native long nativePathRendererCreateTexture(long ptr);
+    native void nativeDeleteTexture(long textureID);
     
     native void nativePathConsumerMoveTo(long ptr, float x, float y);
     native void nativePathConsumerLineTo(long ptr, float x, float y);
@@ -435,6 +437,7 @@ public final class IOSNative {
     native void nativePathConsumerCurveTo(long ptr, float xc1, float yc1, float xc2, float yc2, float x1, float y1);
     native void nativePathConsumerClose(long ptr);
     native void nativePathConsumerDone(long ptr);
+   
     
     native void nativeDrawPath(int color, int alpha, long ptr);
     native void nativeSetTransform( 
@@ -451,6 +454,12 @@ public final class IOSNative {
     native boolean nativeIsTransformSupportedGlobal();
     native boolean nativeIsShapeSupportedGlobal();
     native boolean nativeIsPerspectiveTransformSupportedGlobal();
+    native boolean nativeIsAlphaMaskSupportedGlobal();
+    
+    
+    native void drawTextureAlphaMask(long textureId, int color, int alpha, int x, int y, int w, int h);
+    
+    
     
     // End paths
 }

@@ -1340,6 +1340,17 @@ public abstract class CodenameOneImplementation {
     
     
     // METHODS FOR DEALING WITH 2-D Paths
+    
+    public Object createAlphaMask(Shape shape, Stroke stroke){
+        return null;
+    }
+    public void deleteAlphaMask(Object texture){}
+    
+    public void drawAlphaMask(Object graphics, Object mask){}
+    public boolean isAlphaMaskSupported(Object graphics){
+        return false;
+    }
+    
     /**
      * Draws outline of shape on the given graphics context.
      * <p>The last 4 parameters specify a bounding box for drawing the Shape.  The shape's bounds will
@@ -1430,6 +1441,8 @@ public abstract class CodenameOneImplementation {
     public boolean isPerspectiveTransformSupported(Object graphics){
         return false;
     }
+    
+    
     
     
     /**

@@ -570,8 +570,18 @@ public final class Graphics {
      * @see #isShapeSupported
      */
     public void drawShape(Shape shape, Stroke stroke){
+        if ( isAlphaMaskSupported() && shape instanceof GeneralPath ){
+            GeneralPath gp = (GeneralPath)shape;
+            Object texture = gp.getAlphaMask(stroke);
+            if ( texture != null ){
+                drawAlphaMask(texture);
+                return;
+            }
+            
+        }
         this.drawShape(shape,  stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
     }
+    
     private void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
         if ( isShapeSupported()){
             impl.drawShape(nativeGraphics, shape, lineWidth, capStyle, miterStyle, miterLimit);
@@ -579,6 +589,16 @@ public final class Graphics {
     }
     
     
+    private void drawAlphaMask(Object mask){
+        if ( isAlphaMaskSupported()){
+            impl.drawAlphaMask(nativeGraphics, mask);
+        }
+        
+    }
+    
+    private boolean isAlphaMaskSupported(){
+        return impl.isAlphaMaskSupported(nativeGraphics);
+    }
     
     /**
      * Fills the given shape using the current alpha and color settings.
@@ -590,6 +610,14 @@ public final class Graphics {
      * @see #isShapeSupported
      */
     public void fillShape(Shape shape){
+        if ( isAlphaMaskSupported() && shape instanceof GeneralPath){
+            GeneralPath gp = (GeneralPath)shape;
+            Object texture = gp.getAlphaMask(null);
+            if ( texture != null ){
+                drawAlphaMask(texture);
+                return;
+            }
+        }
         if ( isShapeSupported() ){
             impl.fillShape(nativeGraphics, shape);
         }

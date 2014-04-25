@@ -81,6 +81,7 @@ import com.codename1.io.Cookie;
 import com.codename1.media.MediaManager;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
+import com.codename1.ui.Stroke;
 import com.codename1.ui.geom.Matrix;
 import com.codename1.ui.geom.PathIterator;
 import com.codename1.ui.geom.Shape;
@@ -1024,7 +1025,92 @@ public class IOSImplementation extends CodenameOneImplementation {
     // -------------------------------------------------------------------------
     // METHODS FOR DRAWING SHAPES AND TRANSFORMATIONS
     // -------------------------------------------------------------------------
+    @Override
+    public Object createAlphaMask(Shape shape, Stroke stroke) {
+        long tex = nativeCreateAlphaMaskForShape(shape, stroke);
+        if ( tex == 0 ){
+            return null;
+        }
+        return new TextureAlphaMask(tex, shape.getBounds());
+    }
     
+    long nativeCreateAlphaMaskForShape(Shape shape, Stroke stroke) {
+        
+        if ( stroke != null ){
+            float lineWidth = stroke.getLineWidth();
+            int capStyle = stroke.getCapStyle();
+            int miterStyle = stroke.getJoinStyle();
+            float miterLimit = stroke.getMiterLimit();
+            
+            PathIterator path = shape.getPathIterator();
+            Rectangle rb = shape.getBounds();
+            // Notice that these will be cleaned up in the dealloc method of the DrawPath objective-c class
+            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
+            NativePathStroker stroker = new NativePathStroker(renderer, lineWidth, capStyle, miterStyle, miterLimit);
+            //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+            //stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
+            NativePathConsumer c = stroker.consumer;
+            fillPathConsumer(path, c);
+
+            // We don't need the stroker anymore because it has passed the strokes to the renderer.
+            stroker.destroy();
+
+            long tex = renderer.createTexture();
+            renderer.destroy();
+            return tex;
+        } else {
+            PathIterator path = shape.getPathIterator();
+
+            Rectangle rb = shape.getBounds();
+            // Notice that this will be cleaned up in the dealloc method of the DrawPath objective-c class.
+            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
+            //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+            NativePathConsumer c = renderer.consumer;
+            fillPathConsumer(path, c);
+            long tex = renderer.createTexture();
+            renderer.destroy();
+            return tex;
+            
+        }
+        
+        
+        
+    }
+
+
+    
+    
+
+    @Override
+    public void deleteAlphaMask(Object mask) {
+        if ( mask instanceof TextureAlphaMask ){
+            ((TextureAlphaMask)mask).dispose();
+        }
+    }
+
+    @Override
+    public void drawAlphaMask(Object graphics, Object mask) {
+        if ( mask instanceof TextureAlphaMask ){
+            TextureAlphaMask nt = (TextureAlphaMask)mask;
+            NativeGraphics ng = (NativeGraphics)graphics;
+            ng.checkControl();
+            ng.applyClip();
+            ng.nativeDrawAlphaMask(nt);
+        }
+    }
+
+    @Override
+    public boolean isAlphaMaskSupported(Object graphics) {
+        return ((NativeGraphics)graphics).isAlphaMaskSupported();
+    }
+    
+    
+    
+    
+    
+    void nativeDeleteTexture(long textureID){
+        nativeInstance.nativeDeleteTexture(textureID);
+    }
     /**
      * Draws the outline of a shape in the given graphics context.
      * @param graphics the graphics context
@@ -2087,13 +2173,44 @@ public class IOSImplementation extends CodenameOneImplementation {
             nativeInstance.nativePathRendererGetOutputBounds(ptr, bounds);
         }
         
-        
-        
-       
+       /**
+        * This creates a texture with the renderer.  Note that you'll need to 
+        * @return 
+        */
+       long createTexture(){
+           return nativeInstance.nativePathRendererCreateTexture(ptr);
+       }
         
        
     }
     
+    
+    
+    
+    class TextureAlphaMask {
+        Rectangle bounds;
+        long textureName;
+        
+        TextureAlphaMask(long textureName, Rectangle bounds){
+            this.bounds = bounds;
+            this.textureName = textureName;
+        }
+        
+        void dispose(){
+            if ( textureName != 0 ){
+                nativeDeleteTexture(textureName);
+                textureName = 0;
+            }
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            dispose();
+            super.finalize(); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+        
+    }
     
     
     class NativeGraphics {
@@ -2170,8 +2287,16 @@ public class IOSImplementation extends CodenameOneImplementation {
             nativeDrawImageMutable(peer, alpha, x, y, width, height);
         }
         
+        
+        
         //----------------------------------------------------------------------
         // BEGIN DRAW SHAPE METHODS
+        
+        
+        void nativeDrawAlphaMask(TextureAlphaMask mask){
+            
+        }
+        
         
         /**
          * Draws a shape in the graphics context
@@ -2230,6 +2355,10 @@ public class IOSImplementation extends CodenameOneImplementation {
         }
         
         boolean isShapeSupported(){
+            return false;
+        }
+        
+        boolean isAlphaMaskSupported(){
             return false;
         }
 
@@ -2353,7 +2482,17 @@ public class IOSImplementation extends CodenameOneImplementation {
         void nativeDrawImage(long peer, int alpha, int x, int y, int width, int height) {
             nativeDrawImageGlobal(peer, alpha, x, y, width, height);
         }
+
+        @Override
+        void nativeDrawAlphaMask(TextureAlphaMask mask) {
+            if ( mask.textureName != 0 ){
+                Rectangle r = mask.bounds;
+                nativeInstance.drawTextureAlphaMask(mask.textureName, this.color, this.alpha, r.getX(), r.getY(), r.getWidth(), r.getHeight() );
+            }
+        }
      
+        
+        
         void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit) {
             PathIterator path = shape.getPathIterator();
             Rectangle rb = shape.getBounds();
@@ -2370,6 +2509,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             drawPath(renderer, this.color, this.alpha);
         }
 
+        
         /**
          * Draws a path on the current graphics context.
          *
@@ -2417,6 +2557,10 @@ public class IOSImplementation extends CodenameOneImplementation {
             return nativeInstance.nativeIsShapeSupportedGlobal();
         }
         
+        
+        boolean isAlphaMaskSupported(){
+            return nativeInstance.nativeIsAlphaMaskSupportedGlobal();
+        }
         
 
         public void fillRectRadialGradient(int startColor, int endColor, int x, int y, int width, int height, float relativeX, float relativeY, float relativeSize) {
@@ -2512,6 +2656,27 @@ public class IOSImplementation extends CodenameOneImplementation {
         protected void finalize() {
             deleteImage();
         }
+    }
+    
+    class NativeAlphaMask {
+        long peer;
+        String debugText;
+        public NativeAlphaMask(String debugText){
+            this.debugText = debugText;
+        }
+        
+        
+        void deleteTexture(){
+            if ( peer != 0 ){
+                nativeDeleteTexture(peer);
+            }
+        }
+        
+        protected void finalize(){
+            deleteTexture();
+        }
+        
+        
     }
 
     @Override

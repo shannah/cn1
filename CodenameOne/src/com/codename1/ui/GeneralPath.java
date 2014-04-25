@@ -20,7 +20,12 @@
  * Please contact Codename One through http://www.codenameone.com/ if you 
  * need additional information or have any questions.
  */
-package com.codename1.ui.geom;
+package com.codename1.ui;
+
+import com.codename1.impl.CodenameOneImplementation;
+import com.codename1.ui.geom.PathIterator;
+import com.codename1.ui.geom.Rectangle;
+import com.codename1.ui.geom.Shape;
 
 /**
  * A general geometric path, consisting of any number of subpaths constructed
@@ -52,7 +57,44 @@ package com.codename1.ui.geom;
  * @see com.codename1.ui.Graphics#drawShape
  * @see com.codename1.ui.Graphics#fillShape
  */
-public final class GeneralPath  implements Shape {
+public final class GeneralPath implements Shape {
+    
+    private static final int FILL_CACHE=0;
+    private static final int STROKE_CACHE=1;
+    private Stroke cachedStroke = null;
+    private Object[] textureCache = new Object[2];
+    private boolean dirty = true;
+    Object getAlphaMask(Stroke stroke){
+        if ( dirty ){
+            for ( int i=0; i<textureCache.length; i++){
+                textureCache[i] = null;
+            }
+            dirty = false;
+        }
+        int cacheType = FILL_CACHE;
+        if ( stroke != null ){
+            cacheType = STROKE_CACHE;
+            if ( cachedStroke != null && !cachedStroke.equals(stroke)){
+                textureCache[STROKE_CACHE] = null;
+            }
+            cachedStroke = stroke;
+        }
+        if ( textureCache[cacheType] == null){
+            textureCache[cacheType] = Display.getInstance().getImplementation().createAlphaMask(this, stroke);
+        }
+        return textureCache[cacheType];
+    }
+    
+    void deleteAlphaMasks(){
+        CodenameOneImplementation impl = Display.getInstance().getImplementation();
+        for ( int i=0; i<textureCache.length; i++){
+            Object tex = textureCache[i];
+            if ( tex != null ){
+                impl.deleteAlphaMask(tex);
+                textureCache[i] = null;
+            }
+        }
+    }
 
     /**
      * Same constant as {@link PathIterator#WIND_EVEN_ODD}
@@ -227,6 +269,7 @@ public final class GeneralPath  implements Shape {
             // awt.209=Invalid winding rule value
             throw new java.lang.IllegalArgumentException("Invalid winding rule"); //$NON-NLS-1$
         }
+        dirty = true;
         this.rule = rule;
     }
 
@@ -274,6 +317,7 @@ public final class GeneralPath  implements Shape {
             points[pointSize++] = x;
             points[pointSize++] = y;
         }
+        dirty = true;
     }
 
     /**
@@ -286,6 +330,7 @@ public final class GeneralPath  implements Shape {
         types[typeSize++] = PathIterator.SEG_LINETO;
         points[pointSize++] = x;
         points[pointSize++] = y;
+        dirty = true;
     }
 
     /**
@@ -302,6 +347,7 @@ public final class GeneralPath  implements Shape {
         points[pointSize++] = y1;
         points[pointSize++] = x2;
         points[pointSize++] = y2;
+        dirty = true;
     }
 
     /**
@@ -322,6 +368,7 @@ public final class GeneralPath  implements Shape {
         points[pointSize++] = y2;
         points[pointSize++] = x3;
         points[pointSize++] = y3;
+        dirty = true;
     }
 
     /**
@@ -331,6 +378,7 @@ public final class GeneralPath  implements Shape {
         if (typeSize == 0 || types[typeSize - 1] != PathIterator.SEG_CLOSE) {
             checkBuf(0, true);
             types[typeSize++] = PathIterator.SEG_CLOSE;
+            dirty = true;
         }
     }
 
@@ -342,6 +390,7 @@ public final class GeneralPath  implements Shape {
     public void append(Shape shape, boolean connect) {
         PathIterator p = shape.getPathIterator();
         append(p, connect);
+        dirty = true;
     }
 
     /**
@@ -381,6 +430,7 @@ public final class GeneralPath  implements Shape {
             path.next();
             connect = false;
         }
+        dirty = true;
     }
 
     /**
@@ -411,6 +461,7 @@ public final class GeneralPath  implements Shape {
     public void reset() {
         typeSize = 0;
         pointSize = 0;
+        dirty = true;
     }
 
     
@@ -467,7 +518,7 @@ public final class GeneralPath  implements Shape {
         return new Iterator(this);
     }
 
-   
 
+    
 
 }
