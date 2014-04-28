@@ -1477,7 +1477,6 @@ public abstract class CodenameOneImplementation {
     }
     
     
-    
     /*
     public void matrix2DRotate(Matrix m, float a, float x, float y){
         

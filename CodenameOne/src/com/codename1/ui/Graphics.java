@@ -738,7 +738,7 @@ public final class Graphics {
      */
     public Matrix getTransform(){
         if ( transform == null ){
-            transform = new Matrix(new float[]{1f});
+            transform = Matrix.makeIdentity();
         }
         if ( isTransformSupported()){
             
@@ -747,6 +747,7 @@ public final class Graphics {
         }
         return transform;
     }
+    
     
     
     //--------------------------------------------------------------------------
