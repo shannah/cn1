@@ -1341,12 +1341,61 @@ public abstract class CodenameOneImplementation {
     
     // METHODS FOR DEALING WITH 2-D Paths
     
+    /**
+     * Creates a platform-specific alpha mask for a shape.  This is used to cache 
+     * masks in the {@link com.codename1.ui.GeneralPath} class.  On iOS the alpha
+     * mask is an OpenGL texture ID (not a raster of alpha pixels), but other platforms 
+     * may use different representations if they like.
+     * 
+     * <p>The {@link com.codename1.ui.Graphics#drawAlphaMask} method
+     * is used to draw a mask on the graphics context and this will ultimately call {@link #drawAlphaMask}
+     * which can be platform specific also.
+     * </p>
+     * @param shape The shape that will have an alpha mask created.
+     * @param stroke The stroke settings for stroking the outline of the mask.  Leave null to produce a fill 
+     * mask.
+     * @return The platform specific alpha mask object or null if it is not supported or failed.
+     * @see #deleteAlphaMask
+     * @see #drawAlphaMask
+     * @see #isAlphaMaskSupported
+     * @see com.codename1.ui.Graphics#drawAlphaMask 
+     * @see com.codename1.ui.GeneralPath#getAlphaMask
+     */
     public Object createAlphaMask(Shape shape, Stroke stroke){
         return null;
     }
+    
+    /**
+     * Deletes an alpha mask that was created with {@link #createAlphaMask}.
+     * @param texture The alpha mask to be deleted.
+     * @see #createAlphaMask
+     * @see #isAlphaMaskSupported
+     */
     public void deleteAlphaMask(Object texture){}
     
+    /**
+     * Draws the given alpha mask (created by {@link #createAlphaMask} to the given graphics context.
+     * @param graphics The graphics context to which to draw the alpha mask.
+     * @param mask The mask to be drawn.
+     * @see #createAlphaMask
+     * @see #deleteAlphaMask
+     * @see #isAlphaMaskSupported
+     * @see com.codename1.ui.Graphics#drawAlphaMask 
+     * @see com.codename1.ui.GeneralPath#getAlphaMask
+     */
     public void drawAlphaMask(Object graphics, Object mask){}
+    
+    /**
+     * Checks to see if alpha masks are supported.  If alpha masks are supported, then {@link com.codename1.ui.Graphics#drawShape}
+     * will try to first convert the shape to a platform-specific alpha mask (which can be cached) and then draw the alpha mask.
+     * @param graphics The graphics context.
+     * @return True if alpha masks are supported.
+     * @see #createAlphaMask
+     * @see #deleteAlphaMask
+     * @see #drawAlphaMask
+     * @see com.codename1.ui.Graphics#drawAlphaMask 
+     * @see com.codename1.ui.GeneralPath#getAlphaMask
+     */
     public boolean isAlphaMaskSupported(Object graphics){
         return false;
     }
@@ -1426,6 +1475,43 @@ public abstract class CodenameOneImplementation {
     public boolean isTransformSupported(Object graphics){
         return false;
     }
+    
+    
+    
+    /*
+    public void matrix2DRotate(Matrix m, float a, float x, float y){
+        
+    }
+    
+    public void matrix3DRotate(Matrix m, float a, float x, float y, float z){
+        
+    }
+    
+    public void matrix2DTranslate(Matrix m, float x, float y){
+        
+    }
+    
+    public void matrix3DTranslate(Matrix m, float x, float y, float z){
+        
+    }
+    
+    public void matrix2DScale(Matrix m, float x, float y){
+        
+    }
+    
+    public void matrix3DScale(Matrix m, float x, float y, float z){
+        
+    }
+    
+    
+    public void matrix3DSetOrtho(Matrix m, float left, float right, float bottom, float top, float near, float far){
+        
+    }
+    
+    public void matrix3DSetPerspective(Matrix m, float fovy, float aspect, float zNear, float zFar){
+        
+    }
+    */
     
     
     /**

@@ -589,14 +589,33 @@ public final class Graphics {
     }
     
     
-    private void drawAlphaMask(Object mask){
+    /**
+     * Draws platform-specific alpha mask. This is used by drawShape to help improve performance as shapes
+     * can be cached as an alpha mask and then drawn more efficiently (e.g. can skip the tesselation step).
+     * * <p>NOTE:  For now leaving this as package private because alpha masks aren't exposed
+     * anywhere yet in the public API and it is possible that we never want to expose them.</p>
+     * 
+     * @param mask The mask that is to be drawn.
+     * @see GeneralPath#getAlphaMask
+     * @see com.codename1.impl.CodenameOneImplementation#drawAlphaMask
+     * @see #isAlphaMaskSupported
+     * 
+     */
+    void drawAlphaMask(Object mask){
         if ( isAlphaMaskSupported()){
             impl.drawAlphaMask(nativeGraphics, mask);
         }
         
     }
     
-    private boolean isAlphaMaskSupported(){
+    /**
+     * Checks if this graphics context supports drawing platform-specific alpha masks.
+     * 
+     * <p>NOTE:  For now leaving this as package private because alpha masks aren't exposed
+     * anywhere yet in the public API and it is possible that we never want to expose them.</p>
+     * @return {@code true} if this graphics context supported alpha masks.
+     */
+    boolean isAlphaMaskSupported(){
         return impl.isAlphaMaskSupported(nativeGraphics);
     }
     

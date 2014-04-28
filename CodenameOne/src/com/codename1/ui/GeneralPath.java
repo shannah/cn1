@@ -59,11 +59,61 @@ import com.codename1.ui.geom.Shape;
  */
 public final class GeneralPath implements Shape {
     
+    //--------------------------------------------------------------------------
+    // Alpha Mask Caching Functionality
+    
+    /**
+     * Index for the alpha mask for the filled version of this path.
+     */
     private static final int FILL_CACHE=0;
+    
+    /**
+     * Index for the alpha mask for the stroked version of this path.
+     * Note that there may be many stroke settings, but only the most recently
+     * requested one will remain in the cache.  This is to try to maintain 
+     * a constant memory footprint.  If performance tests reveal that it would
+     * be better to cache multiple stroked versions in the cache, then we can 
+     * look at changing this.
+     */
     private static final int STROKE_CACHE=1;
+    
+    /**
+     * The last stroke settings for the stroke cache of the alpha mask.  If 
+     * {@link #getAlphaMask} is called with a different stroke setting, then 
+     * the stroke alpha mask cache will be cleared and a new mask generated.
+     */
     private Stroke cachedStroke = null;
+    
+    /**
+     * Array to store alpha masks for this path.  This is only a 2-element
+     * cache: 1 for the filled version, and the other for the stroked version.
+     */
     private Object[] textureCache = new Object[2];
+    
+    /**
+     * Dirty flag to indicate that the Alpha mask cache needs to be cleared.  This
+     * flag is set if any changes are made to the path.
+     */
     private boolean dirty = true;
+    
+    /**
+     * Gets an alpha mask for this path using the specified stroke settings.  If {@code stroke} 
+     * is null, then this returns an alpha mask for the shape filled.
+     * 
+     * <p>Alpha masks are platform-dependent - hence why it is returned as an {@code Object}.  Some
+     * platforms (e.g. iOS) use OpenGL texture IDs for alpha masks for best performance.  Other platforms
+     * might actually store an array of bytes representing alpha values.</p>
+     * @param stroke The stroke to be used for generating the alpha mask.  A {@code null} stroke will cause
+     * a "fill" alpha mask to be returned.
+     * @return The platform dependent stroke object, or null if the platform doesn't supported alpha masks.
+     * 
+     * @see Graphics#drawAlphaMask
+     * @see com.codename1.impl.CodenameOneImplementation#createAlphaMask 
+     * @see com.codename1.impl.CodenameOneImplementation#deleteAlphaMask 
+     * @see com.codename1.impl.CodenameOneImplementation#drawAlphaMask 
+     * @see com.codename1.impl.CodenameOneImplementation#isAlphaMaskSupported
+     * @see #deleteAlphaMasks
+     */
     Object getAlphaMask(Stroke stroke){
         if ( dirty ){
             for ( int i=0; i<textureCache.length; i++){
@@ -84,7 +134,10 @@ public final class GeneralPath implements Shape {
         }
         return textureCache[cacheType];
     }
-    
+    /**
+     * Deletes cached alpha masks.
+     * @see #getAlphaMask
+     */
     void deleteAlphaMasks(){
         CodenameOneImplementation impl = Display.getInstance().getImplementation();
         for ( int i=0; i<textureCache.length; i++){
@@ -96,6 +149,8 @@ public final class GeneralPath implements Shape {
         }
     }
 
+    // END Alpha Mask Caching Functionality
+    //--------------------------------------------------------------------------
     /**
      * Same constant as {@link PathIterator#WIND_EVEN_ODD}
      */
