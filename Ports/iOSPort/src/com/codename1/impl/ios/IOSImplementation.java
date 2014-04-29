@@ -1122,8 +1122,8 @@ public class IOSImplementation extends CodenameOneImplementation {
     @Override
     public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
         NativeGraphics ng = (NativeGraphics)graphics;
-        ng.checkControl();
-        ng.applyClip();
+        //ng.checkControl();
+        //ng.applyClip();
         ng.nativeDrawShape(shape, lineWidth, capStyle, miterStyle, miterLimit);
     }
     
@@ -1135,8 +1135,8 @@ public class IOSImplementation extends CodenameOneImplementation {
     @Override
     public void fillShape(Object graphics, Shape shape){
         NativeGraphics ng = (NativeGraphics)graphics;
-        ng.checkControl();
-        ng.applyClip();
+        //ng.checkControl();
+        //ng.applyClip();
         ng.nativeFillShape(shape);
         
         

@@ -38,6 +38,7 @@ static CGRect drawingRect;
     y = ypos;
     width = w;
     height = h;
+    firstClip = !f;
     return self;
 }
 
@@ -59,7 +60,12 @@ static CGRect drawingRect;
 
 -(void)execute {
 #ifdef USE_ES2
-    //NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
+    //return;
+    if ( x == clipX && y == clipY && width == clipW && height == clipH){
+        return;
+    }
+    clipX = x; clipY=y; clipW=width; clipH=height;
+    NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
     glClearStencil(0x0);
     
     glEnable(GL_STENCIL_TEST);
@@ -77,6 +83,9 @@ static CGRect drawingRect;
     glStencilFunc(GL_EQUAL, 1, 0xff);
     
     //glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    //f = [[FillRect alloc] initWithArgs:0xff0000 a:0x44 xpos:x ypos:y w:width h:height];
+    //[f execute];
+    //[f release];
     
     
     
@@ -129,7 +138,6 @@ static CGRect drawingRect;
 
 +(void)updateClipToScale {
 #ifdef USE_ES2
-    //NSLog(@"Using ES2 clipping scale");
     
 #else
     int displayHeight = [CodenameOne_GLViewController instance].view.bounds.size.height * scaleValue;
