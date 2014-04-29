@@ -65,7 +65,7 @@ static CGRect drawingRect;
         return;
     }
     clipX = x; clipY=y; clipW=width; clipH=height;
-    NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
+    //NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
     glClearStencil(0x0);
     
     glEnable(GL_STENCIL_TEST);
