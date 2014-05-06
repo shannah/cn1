@@ -171,7 +171,13 @@ public final class Matrix {
         
     }
         
-    
+    public boolean isIdentity(){
+        for ( int i=0; i<16; i++){
+            if ( i % 5 == 0 && data[i] != 1f ) return false;
+            else if ( i % 5 != 0 && data[i] != 0f ) return false;
+        }
+        return true;
+    }
     
     
     /**
