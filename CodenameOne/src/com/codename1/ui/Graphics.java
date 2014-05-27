@@ -570,6 +570,12 @@ public final class Graphics {
      * @see #isShapeSupported
      */
     public void drawShape(Shape shape, Stroke stroke){
+        if ( xTranslate != 0 || yTranslate != 0 ){
+            GeneralPath p = new GeneralPath();
+            Matrix t = Matrix.makeTranslation(xTranslate, yTranslate, 0);
+            p.append(shape.getPathIterator(t), true);
+            shape = p;
+        }
         if ( isAlphaMaskSupported() && shape instanceof GeneralPath ){
             GeneralPath gp = (GeneralPath)shape;
             Object texture = gp.getAlphaMask(stroke);
@@ -629,6 +635,12 @@ public final class Graphics {
      * @see #isShapeSupported
      */
     public void fillShape(Shape shape){
+        if ( xTranslate != 0 || yTranslate != 0 ){
+            GeneralPath p = new GeneralPath();
+            Matrix t = Matrix.makeTranslation(xTranslate, yTranslate, 0);
+            p.append(shape.getPathIterator(t), true);
+            shape = p;
+        }
         if ( isAlphaMaskSupported() && shape instanceof GeneralPath){
             GeneralPath gp = (GeneralPath)shape;
             Object texture = gp.getAlphaMask(null);

@@ -24,6 +24,9 @@
 #import "ClipRect.h"
 #import "CodenameOne_GLViewController.h"
 #include "xmlvm.h"
+#ifdef USE_ES2
+#import "SetTransform.h"
+#endif
 
 float currentRotate = 1;
 float currentRotateX = 1;
@@ -35,23 +38,30 @@ float currentRotateY = 1;
     x = xx;
     y = yy;
     angle = ang;
+#ifdef USE_ES2
+    m = [SetTransform currentTransform];
+    float a = angle * M_PI / 180.0;
+    m = GLKMatrix4Translate(m, x, y, 0);
+    m = GLKMatrix4Rotate(m, a, 0, 0, 1);
+    m = GLKMatrix4Translate(m, -x, -y, 0);
+
+    [SetTransform currentTransform:m];
+    
+#endif
     return self;
 }
 
 -(void)execute {
-#ifdef USE_ES2
-    GLKMatrix4 m = GLKMatrix4MakeTranslation(x, y, 0);
-    angle = angle * M_PI / 180.0;
-    GLKMatrix4 rotate = GLKMatrix4MakeRotation(angle, 0,0,1);
-    m = GLKMatrix4Multiply(m, rotate);
-    m = GLKMatrix4Translate(m, -x, -y, 0);
-    glSetTransformES2(GLKMatrix4Multiply(glGetTransformES2(), m));
-#else
+#ifndef USE_ES2
     _glTranslatef(x, y, 0);
     _glRotatef(angle, 0, 0, 1);
     _glTranslatef(-x, -y, 0);
     
     GLErrorLog;
+#else
+    SetTransform *f = [[SetTransform alloc] initWithArgs:m originX:0 originY:0];
+    [f execute];
+    [f release];
 #endif
     currentRotateX = x;
     currentRotateY = y;

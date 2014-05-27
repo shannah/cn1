@@ -20,22 +20,25 @@
  * Please contact Codename One through http://www.codenameone.com/ if you
  * need additional information or have any questions.
  */
-#import "CN1ES2compat.h"
-#ifdef USE_ES2
-#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
-#import "ExecutableOp.h"
-#import <GLKit/GLKit.h>
 
-@interface SetTransform : ExecutableOp {
-    GLKMatrix4 m;
-    int originX;
-    int originY;
-    
-}
--(id)initWithArgs:(GLKMatrix4)matrix originX:(int)x originY:(int)y;
--(void)execute;
-+(GLKMatrix4)currentTransform;
-+(void)currentTransform:(GLKMatrix4)matrix;
-@end
+#import "EndClip.h"
+#ifdef USE_ES2
+#import <OpenGLES/ES2/gh.h>
 #endif
+
+@implementation EndClip
+
+-(id)init
+{
+    return self;
+}
+
+-(void)execute
+{
+#ifdef USE_ES2
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glStencilMask(0x0);
+    glStencilFunc(GL_EQUAL, 1, 0xff);
+#endif
+}
+@end

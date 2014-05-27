@@ -689,7 +689,8 @@ void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_flo
                                                                                                                                                                    )
 {
 #ifdef USE_ES2
-    GLKMatrix4 m = GLKMatrix4Make(a0,a1,a2,a3,
+
+    GLKMatrix4 m = GLKMatrix4MakeAndTranspose(a0,a1,a2,a3,
                                   b0,b1,b2,b3,
                                   c0,c1,c2,c3,
                                   d0,d1,d2,d3);
@@ -703,13 +704,20 @@ void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_flo
 void com_codename1_impl_ios_IOSImplementation_nativeGetTransformImpl___float_1ARRAY(JAVA_OBJECT instanceObject,JAVA_OBJECT n1)
 {
 #ifdef USE_ES2
-    GLKMatrix4 m = glGetTransformES2();
+    //GLKMatrix4 m = glGetTransformES2();
+    GLKMatrix4 m = [SetTransform currentTransform];
     org_xmlvm_runtime_XMLVMArray* floatArray = n1;
     JAVA_ARRAY_FLOAT* data = (JAVA_ARRAY_FLOAT*)floatArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
     for ( int i=0; i<16; i++){
+        
         data[i] = m.m[i];
     }
-
+    /*
+    data[0] = (JAVA_FLOAT)m.m[0]; data[1] = (JAVA_FLOAT)m.m[4]; data[2] = (JAVA_FLOAT)m.m[8]; data[3] = (JAVA_FLOAT)m.m[12];
+    data[4] = (JAVA_FLOAT)m.m[1]; data[5] = (JAVA_FLOAT)m.m[5]; data[6] = (JAVA_FLOAT)m.m[9]; data[7] = (JAVA_FLOAT)m.m[13];
+    data[8] = (JAVA_FLOAT)m.m[2]; data[9] = (JAVA_FLOAT)m.m[6]; data[10] = (JAVA_FLOAT)m.m[10]; data[11] = (JAVA_FLOAT)m.m[14];
+    data[12] = (JAVA_FLOAT)m.m[3]; data[13] =(JAVA_FLOAT) m.m[7]; data[14] = (JAVA_FLOAT)m.m[11]; data[15] = (JAVA_FLOAT)m.m[15];
+    */
 #endif
 }
 
@@ -856,6 +864,17 @@ void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingGlobalImpl
     [f release];
 #endif
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingGlobalImpl finished");
+}
+
+void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingMaskGlobalImpl(JAVA_LONG textureName, JAVA_INT x, JAVA_INT y, JAVA_INT w, JAVA_INT h)
+{
+#ifdef USE_ES2
+    ClipRect* f = [[ClipRect alloc] initWithArgs:x ypos:y w:w h:h f:0 texture:textureName];
+    [[CodenameOne_GLViewController instance] upcomingAddClip:f];
+#ifndef CN1_USE_ARC
+    [f release];
+#endif
+#endif
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineMutableImpl

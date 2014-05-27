@@ -23,6 +23,9 @@
 #import "CN1ES2compat.h"
 #import "ResetAffine.h"
 #import "CodenameOne_GLViewController.h"
+#ifdef USE_ES2
+#import "SetTransform.h"
+#endif
 #include "xmlvm.h"
 
 extern int Java_com_codename1_impl_ios_IOSImplementation_getDisplayWidthImpl();
@@ -38,6 +41,10 @@ extern float currentScaleY;
 @implementation ResetAffine
 
 -(id)init {
+#ifdef USE_ES2
+    [SetTransform currentTransform:GLKMatrix4Identity];
+#endif
+    
     return self;
 }
 
@@ -45,9 +52,9 @@ extern float currentScaleY;
     //_glMatrixMode(GL_PROJECTION);
     //GLErrorLog;
 #ifdef USE_ES2
-    
-    //glSetTransformES2(GLKMatrix4Translate(GLKMatrix4Identity, currentTranslationX, currentTranslationY, 0));
-    glSetTransformES2(GLKMatrix4Identity);
+    SetTransform *f = [[SetTransform alloc] initWithArgs:GLKMatrix4Identity originX:0 originY:0];
+    [f execute];
+    [f release];
 #endif
     _glLoadIdentity();
     GLErrorLog;

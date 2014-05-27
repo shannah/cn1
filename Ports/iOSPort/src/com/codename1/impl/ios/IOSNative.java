@@ -462,4 +462,6 @@ public final class IOSNative {
     
     
     // End paths
+
+    native void setNativeClippingMaskGlobal(long textureName, int x, int y, int width, int height);
 }

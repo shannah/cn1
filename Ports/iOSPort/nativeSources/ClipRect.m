@@ -23,9 +23,13 @@
 #import "ClipRect.h"
 #import "CodenameOne_GLViewController.h"
 #import "FillRect.h"
+#ifdef USE_ES2
+#import "DrawTextureAlphaMask.h"
+#endif
 
 static int clipX, clipY, clipW, clipH;
 static BOOL clipApplied = NO;
+static BOOL clipIsTexture = NO;
 extern float currentScaleX;
 extern float currentScaleY;
 extern float scaleValue;
@@ -33,11 +37,24 @@ extern float scaleValue;
 @implementation ClipRect
 static CGRect drawingRect;
 
--(id)initWithArgs:(int)xpos ypos:(int)ypos w:(int)w h:(int)h f:(BOOL)f {
+-(id)initWithArgs:(int)xpos ypos:(int)ypos w:(int)w h:(int)h f:(BOOL)f
+{
+    return [self initWithArgs:xpos ypos:ypos w:w h:h f:f texture:0];
+}
+
+-(id)initWithArgs:(int)xpos ypos:(int)ypos w:(int)w h:(int)h f:(BOOL)f texture:(GLuint)tex{
     x = xpos;
     y = ypos;
     width = w;
     height = h;
+    texture = tex;
+    if ( width == -1 && height == -1 ){
+        "foo";
+        
+    }
+    if ( tex != 0 ){
+        "hello";
+    }
     firstClip = !f;
     return self;
 }
@@ -61,35 +78,53 @@ static CGRect drawingRect;
 -(void)execute {
 #ifdef USE_ES2
     //return;
-    if ( x == clipX && y == clipY && width == clipW && height == clipH){
+    if ( texture != 0 ){
+        //if ( x == clipX && y == clipY && width == clipW && height == clipH){
+        //    return;
+        //}
+        //if ( width == -1 || height == -1 ){
+        //    return;
+       // }
+        clipX = x; clipY=y; clipW=width; clipH=height;
+        NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
+        glClearStencil(0x0);
+        
+        glEnable(GL_STENCIL_TEST);
+        //glDisable(GL_STENCIL_TEST);
+        _glDisable(GL_SCISSOR_TEST);
+        glStencilFunc(GL_NEVER, 1, 0xff);
+        
+        glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);
+        //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glStencilMask(0xff);
+        glClear(GL_STENCIL_BUFFER_BIT);
+        
+        GLKMatrix4 transform = glGetTransformES2();
+        glSetTransformES2(GLKMatrix4Identity);
+        DrawTextureAlphaMask *f = [[DrawTextureAlphaMask alloc] initWithArgs:texture color:0xffffff alpha:0xff x:x y:y w:width h:height];
+        [f execute];
+        
+        
+        [f release];
+        glSetTransformES2(transform);
+        
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glStencilMask(0x0);
+        glStencilFunc(GL_EQUAL, 1, 0xff);
+        clipIsTexture = YES;
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        //f = [[FillRect alloc] initWithArgs:0xff0000 a:0x44 xpos:x ypos:y w:width h:height];
+        //[f execute];
+        //[f release];
+        
         return;
     }
-    clipX = x; clipY=y; clipW=width; clipH=height;
-    //NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
-    glClearStencil(0x0);
     
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NEVER, 1, 0xff);
+    NSLog(@"Using RECT clipping %d %d %d %d ", x, y, width, height);
+
     
-    glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-    glStencilMask(0xff);
-    glClear(GL_STENCIL_BUFFER_BIT);
-    FillRect* f = [[FillRect alloc] initWithArgs:0xffffff a:0xff xpos:x ypos:y w:width h:height];
-    [f execute];
-    [f release];
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    glStencilMask(0x0);
-    glStencilFunc(GL_EQUAL, 1, 0xff);
-    
-    //glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    //f = [[FillRect alloc] initWithArgs:0xff0000 a:0x44 xpos:x ypos:y w:width h:height];
-    //[f execute];
-    //[f release];
-    
-    
-    
-#else
+#endif
+    clipIsTexture = NO;
     int x2 = x + width;
     int y2 = y + height;
     int orX = drawingRect.origin.x;
@@ -114,8 +149,13 @@ static CGRect drawingRect;
         int scale = scaleValue;
         int displayHeight = [CodenameOne_GLViewController instance].view.bounds.size.height * scale;
         if(width == [CodenameOne_GLViewController instance].view.bounds.size.width * scale && height == displayHeight) {
-            _glDisable(GL_SCISSOR_TEST);
             GLErrorLog;
+            _glDisable(GL_SCISSOR_TEST);
+#ifdef USE_ES2
+            glDisable(GL_STENCIL_TEST);
+            GLErrorLog;
+#endif
+            
             return;
         }
         clipX = x;
@@ -125,26 +165,37 @@ static CGRect drawingRect;
         [ClipRect updateClipToScale];
         _glEnable(GL_SCISSOR_TEST);
         GLErrorLog;
+#ifdef USE_ES2
+        glDisable(GL_STENCIL_TEST);
+        GLErrorLog;
+#endif
         clipApplied = YES;
     } else {
         [super clipBlock:YES];
         _glDisable(GL_SCISSOR_TEST);
+
         GLErrorLog;
+#ifdef USE_ES2
+        glDisable(GL_STENCIL_TEST);
+        GLErrorLog;
+#endif
         clipApplied = NO;
     }
-#endif
+
 }
 
 
 +(void)updateClipToScale {
-#ifdef USE_ES2
-    
-#else
+    if ( clipIsTexture ){
+        return;
+    }
     int displayHeight = [CodenameOne_GLViewController instance].view.bounds.size.height * scaleValue;
     if(currentScaleX == 1 && currentScaleY == 1) {
+        //_glEnable(GL_SCISSOR_TEST);
+        //NSLog(@"Updating clip to scale");
         glScissor(clipX, displayHeight - clipY - clipH, clipW, clipH);
     }
-#endif
+
 }
 
 #ifndef CN1_USE_ARC

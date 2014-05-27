@@ -20,22 +20,47 @@
  * Please contact Codename One through http://www.codenameone.com/ if you
  * need additional information or have any questions.
  */
-#import "CN1ES2compat.h"
-#ifdef USE_ES2
-#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
-#import "ExecutableOp.h"
-#import <GLKit/GLKit.h>
 
-@interface SetTransform : ExecutableOp {
-    GLKMatrix4 m;
-    int originX;
-    int originY;
-    
-}
--(id)initWithArgs:(GLKMatrix4)matrix originX:(int)x originY:(int)y;
--(void)execute;
-+(GLKMatrix4)currentTransform;
-+(void)currentTransform:(GLKMatrix4)matrix;
-@end
+#import "SetClipOp.h"
+#ifdef USE_ES2
+#import <OpenGLES/ES2/gl.h>
 #endif
+
+static int CLIP_OP_REPLACE=0;
+static int CLIP_OP_INCREMENT=1;
+static int CLIP_OP_DECREMENT=2;
+
+@implementation SetClipOp
+-(id)initWithArgs:(int)opP
+{
+    op = opP;
+    return self;
+}
+
+-(void)execute
+{
+#ifdef USE_ES2
+    GLuint glop = GL_REPLACE;
+    
+    switch (op){
+        case CLIP_OP_REPLACE:
+            glop = GL_REPLACE;
+            break;
+        case CLIP_OP_INCREMENT:
+            glop = GL_INCR;
+            break;
+        case CLIP_OP_DECREMENT:
+            glop = GL_DECR;
+            break;
+        default:
+            NSLog(@"Invalid clip op %d", op);
+            return;
+            
+    }
+    
+    glStencilOp(glop, GL_KEEP, GL_KEEP);
+    
+#endif
+}
+
+@end

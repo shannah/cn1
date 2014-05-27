@@ -40,6 +40,7 @@ public interface Shape {
      * 
      */
     public PathIterator getPathIterator();
+    public PathIterator getPathIterator(Matrix transform);
     
     /**
      * Returns the bounding rectangle for the shape.  This should be the smallest rectangle
@@ -47,5 +48,9 @@ public interface Shape {
      * @return A {@link Rectangle} that comprises the bounds of the shape.
      */
     public Rectangle getBounds();
-
+    
+    
+    public boolean isRectangle();
+    public boolean contains(int x, int y);
+    public Shape intersection(Rectangle rect);
 }

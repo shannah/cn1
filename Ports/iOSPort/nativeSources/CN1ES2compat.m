@@ -137,6 +137,9 @@ static void CN1compileBasicProgram(){
 
         "   if ( uUseAlphaMaskTexture ){\n"
         "       color = vec4(color.rgb, texture2D(uTextureMask, vTextureMaskCoord).a*color.a);\n"
+        "       if ( color.a < 0.00001 ){\n"
+        "           discard;\n"
+        "       }\n"
         "   }"
         "   gl_FragColor = color;\n"
         "}\n"

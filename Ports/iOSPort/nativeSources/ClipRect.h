@@ -31,10 +31,12 @@
     int width;
     int height;
     BOOL firstClip;
+    GLuint texture;
 }
 +(void)setDrawRect:(CGRect)rect;
 -(void)executeWithClipping;
 -(id)initWithArgs:(int)xpos ypos:(int)ypos w:(int)w h:(int)h f:(BOOL)f;
+-(id)initWithArgs:(int)xpos ypos:(int)ypos w:(int)w h:(int)h f:(BOOL)f texture:(GLuint)texture;
 -(void)execute;
 +(void)updateClipToScale;
 

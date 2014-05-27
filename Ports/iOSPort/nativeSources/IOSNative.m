@@ -457,6 +457,16 @@ void com_codename1_impl_ios_IOSNative_setNativeClippingGlobal___int_int_int_int_
     //XMLVM_END_WRAPPER
 }
 
+extern void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingMaskGlobalImpl(JAVA_LONG textureName, JAVA_INT x, JAVA_INT y, JAVA_INT w, JAVA_INT h);
+void com_codename1_impl_ios_IOSNative_setNativeClippingMaskGlobal___long_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_LONG textureName, JAVA_INT x, JAVA_INT y, JAVA_INT w, JAVA_INT h)
+{
+    //XMLVM_BEGIN_WRAPPER[com_codename1_impl_ios_IOSNative_setNativeClippingGlobal___int_int_int_int_boolean]
+    POOL_BEGIN();
+    Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingMaskGlobalImpl(textureName, x, y, w, h);
+    POOL_END();
+    //XMLVM_END_WRAPPER
+}
+
 void com_codename1_impl_ios_IOSNative_nativeDrawLineMutable___int_int_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_INT n1, JAVA_INT n2, JAVA_INT n3, JAVA_INT n4, JAVA_INT n5, JAVA_INT n6)
 {
     //XMLVM_BEGIN_WRAPPER[com_codename1_impl_ios_IOSNative_nativeDrawLineMutable___int_int_int_int_int_int]
