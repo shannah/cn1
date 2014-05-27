@@ -4441,7 +4441,7 @@ JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreate___int_int_in
     }
     Renderer *renderer = (Renderer*)malloc(sizeof(Renderer));
     Renderer_init(renderer);
-    Renderer_reset(renderer, pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, 1);
+    Renderer_reset(renderer, pix_boundsX, pix_boundsY, pix_boundsWidth, pix_boundsHeight, windingRule);
     return (JAVA_LONG)renderer;
     
 }
@@ -4583,13 +4583,14 @@ JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreateTexture___lon
     
     //NSLog(@"AC Width %d", ac.width);
     
-    jbyte maskArray[ac.width*ac.height];
+    //jbyte maskArray[ac.width*ac.height];
+    jbyte* maskArray = malloc(sizeof(jbyte)*ac.width*ac.height);
     
     //NSLog(@"Mask width %d height %d",
     //      ac.width,
     //      ac.height
     //      );
-    ac.alphas = (JAVA_BYTE*)&maskArray;
+    ac.alphas = (JAVA_BYTE*)maskArray;
     Renderer_produceAlphas(renderer, &ac);
     
     _glEnableClientState(GL_VERTEX_ARRAY);
@@ -4602,6 +4603,7 @@ JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreateTexture___lon
     GLErrorLog;
     
     if ( tex == 0 ){
+        free(maskArray);
         return 0;
     }
     glActiveTexture(GL_TEXTURE1);
@@ -4618,6 +4620,7 @@ JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreateTexture___lon
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, ac.width, ac.height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, maskArray);
     GLErrorLog;
+    free(maskArray);
     glBindTexture(GL_TEXTURE_2D, 0);
     GLErrorLog;
     _glDisableClientState(GL_VERTEX_ARRAY);

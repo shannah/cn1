@@ -867,7 +867,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             ng.nativeGetTransform(ng.transform);
             
             if ( ng.transform.isIdentity()){
-                Log.p("Identity transform");
+                //Log.p("Identity transform");
                 if ( ng.clip != null ){
                     if ( ng.clip.isRectangle() ){
                         Rectangle r = ng.clip.getBounds();
@@ -897,7 +897,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                     }
                 } else {
                     ng.clip = gp;
-                    Log.p("Clipping path "+ng.clip);
+                    //Log.p("Clipping path "+ng.clip);
                     if(currentlyDrawingOn == graphics || graphics == globalGraphics) {
                         ng.setNativeClipping(ng.clip);
                         ng.clipApplied = true;
@@ -944,13 +944,13 @@ public class IOSImplementation extends CodenameOneImplementation {
                GeneralPath gp = (GeneralPath)shape;
                TextureAlphaMask mask = (TextureAlphaMask)gp.getAlphaMask(null);
                if ( mask != null ){
-                   Log.p("Setting native clipping mask global with mask with bounds "+mask.bounds);
+                   //Log.p("Setting native clipping mask global with mask with bounds "+mask.bounds);
                    nativeInstance.setNativeClippingMaskGlobal(mask.textureName, mask.bounds.getX(), mask.bounds.getY(), mask.bounds.getWidth(), mask.bounds.getHeight());
                } else {
                    Log.p("Failed to create texture mask for clipping region");
                }
             } else {
-                //Log.p("Only Rectangles and GeneralPaths are supported for clipping");
+                Log.p("Only Rectangles and GeneralPaths are supported for clipping");
             }
         }
     }
@@ -1057,16 +1057,16 @@ public class IOSImplementation extends CodenameOneImplementation {
                 // Case 2: There is a transform, so we have to transform
                 // the clip rect to produce a shape.
                 //Log.p("Copying matrix "+ng.transform);
-                Log.p("Original transform: "+ng.transform);
+                //Log.p("Original transform: "+ng.transform);
                 Matrix inverseTransform = ng.transform.copy();
                 //Log.p("Inverting matrix");
                 boolean res = inverseTransform.invert();
-                Log.p("Inverse transform: "+inverseTransform);
+                //Log.p("Inverse transform: "+inverseTransform);
                 //Log.p("Inverted matrix "+inverseTransform);
                 if ( ! res ){
                     throw new RuntimeException("Failed to invert transform");
                 }
-                Log.p("Original Clip:"+ng.clip);
+                //Log.p("Original Clip:"+ng.clip);
                 GeneralPath clipProjection = new GeneralPath();
                 //Log.p("About to transform the path with the inverse transform for path "+ng.clip);
                 clipProjection.append(ng.clip.getPathIterator(inverseTransform), false);
@@ -1076,7 +1076,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                 
                 //Log.p("About to set bounds in reusable rect");
                 ng.reusableRect.setBounds(x, y, width, height);
-                Log.p("Clip rect to "+ng.reusableRect);
+                //Log.p("Clip rect to "+ng.reusableRect);
                 //Log.p("Set bounds in reusable rect");
                 //Log.p("About to get intersection of clips");
                 Shape clipIntersection = clipProjection.intersection(ng.reusableRect);
@@ -1087,7 +1087,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                     ng.clipApplied = true;
                     return;
                 }
-                Log.p("Intersection: "+clipIntersection);
+                //Log.p("Intersection: "+clipIntersection);
                 //Log.p("Gotten intersection of clips "+clipIntersection);
                 ng.clip = new GeneralPath();
                 ((GeneralPath)ng.clip).append(clipIntersection.getPathIterator(ng.transform), false);
@@ -1095,18 +1095,18 @@ public class IOSImplementation extends CodenameOneImplementation {
                 if ( ng.clip.isRectangle() ){
                     //Log.p("Clip is rectangle");
                     Rectangle r = ng.clip.getBounds();
-                    Log.p("Transformed clip is rectangle : "+r);
-                    Log.p("Transform :"+ng.transform);
-                    Log.p("Clip path: "+ng.clip);
+                    //Log.p("Transformed clip is rectangle : "+r);
+                    //Log.p("Transform :"+ng.transform);
+                    //Log.p("Clip path: "+ng.clip);
                     ng.clip = r;
                     ng.setNativeClipping(r.getX(), r.getY(), r.getWidth(), r.getHeight(), ng.clipApplied);
                     ng.clipApplied = true;
                     ng.clipDirty = true;
                     return;
                 } else {
-                    Log.p("Clip is not rectangle and bounds are "+ng.clip.getBounds());
-                    Log.p("Transform :"+ng.transform);
-                    Log.p("Clip path: "+ng.clip);
+                    //Log.p("Clip is not rectangle and bounds are "+ng.clip.getBounds());
+                    //Log.p("Transform :"+ng.transform);
+                    //Log.p("Clip path: "+ng.clip);
                     ng.setNativeClipping(ng.clip);
                     ng.clipApplied = true;
                     ng.clipDirty = true;
@@ -1325,7 +1325,7 @@ public class IOSImplementation extends CodenameOneImplementation {
 
             // We don't need the stroker anymore because it has passed the strokes to the renderer.
             stroker.destroy();
-
+            //Log.p("Creating texture with stroke for shape "+shape);
             long tex = renderer.createTexture();
             renderer.destroy();
             return tex;
@@ -1338,6 +1338,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
             NativePathConsumer c = renderer.consumer;
             fillPathConsumer(path, c);
+            //Log.p("Creating texture without stroke for shape "+shape+" bounds "+shape.getBounds());
             long tex = renderer.createTexture();
             renderer.destroy();
             return tex;
@@ -1456,7 +1457,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         
         // Note that Matrix is stored in column-major format but GLKMatrix is stored in row-major
         // that's why we transpose it here.
-        Log.p("....Setting transform.....");
+        //Log.p("....Setting transform.....");
         nativeInstance.nativeSetTransform(
             m[0], m[4], m[8], m[12],
             m[1], m[5], m[9], m[13],

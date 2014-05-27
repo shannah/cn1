@@ -730,7 +730,7 @@ public final class GeneralPath implements Shape {
     }
 
     public void intersect(Shape shape) {
-        Log.p("Start intersect");
+        //Log.p("Start intersect");
         if ( !(shape instanceof Rectangle) ){
             throw new RuntimeException("GeneralPath.intersect() only supports Rectangles");
         }
@@ -738,7 +738,7 @@ public final class GeneralPath implements Shape {
         GeneralPath tmp = (GeneralPath)ShapeUtil.intersection(r, this);
         this.reset();
         this.append(tmp, false);
-        Log.p("End intersect");
+        //Log.p("End intersect");
     }
     
     public Shape intersection(Rectangle rect){
