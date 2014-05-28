@@ -22,7 +22,7 @@
  */
 package com.codename1.ui.geom;
 
-import com.codename1.io.Log;
+
 
 /**
  * Encapsulates a 4x4 transformation matrix that can be used to apply 3D transformations

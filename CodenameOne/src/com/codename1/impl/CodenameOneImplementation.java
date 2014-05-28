@@ -480,7 +480,7 @@ public abstract class CodenameOneImplementation {
             }
 
             paintOverlay(wrapper);
-
+            Log.p("Flushing graphics : "+topX+","+topY+","+bottomX+","+bottomY);
             flushGraphics(topX, topY, bottomX - topX, bottomY - topY);
         }
     }
@@ -1418,7 +1418,7 @@ public abstract class CodenameOneImplementation {
      * @see isShapeSupported() to determine of the graphics context supports drawing
      * shapes.
      */
-    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){}
+    public void drawShape(Object graphics, Shape shape, Stroke stroke){}
     
     /**
      * Fills the given shape in the specified graphics context using the graphics context's 
@@ -1451,7 +1451,9 @@ public abstract class CodenameOneImplementation {
      * @see isPerspectiveTransformSupported() To check if this graphics context
      * supports perspective/3D transformations. 
      */
-    public void setTransform(Object graphics, Matrix m, int originX, int originY){}
+    public void setTransform(Object graphics, Matrix m){
+        
+    }
     
     /**
      * Gets the current transformation matrix.  This will populate the provided 
@@ -1461,7 +1463,9 @@ public abstract class CodenameOneImplementation {
      * @see isTransformSupported()
      * @see isPerspectiveTransformSupported()
      */
-    public void getTransform(Object graphics, Matrix m){}
+    public Matrix getTransform(Object graphics){
+        return Matrix.makeIdentity();
+    }
     
     /**
      * Checks if matrix transformations are supported in the provided graphics context.

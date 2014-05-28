@@ -24,6 +24,7 @@
 package com.codename1.ui;
 
 import com.codename1.impl.CodenameOneImplementation;
+import com.codename1.io.Log;
 import com.codename1.ui.geom.Matrix;
 import com.codename1.ui.geom.PathIterator;
 import com.codename1.ui.geom.Rectangle;
@@ -50,14 +51,7 @@ public final class Graphics {
 
     private Object[] nativeGraphicsState;
     private float scaleX = 1, scaleY = 1;
-    /**
-     * Note that this transform is just a placeholder for the current transform
-     * and may contain out of date information since the "actual" transform
-     * will be maintained in native code.  Basically this transform
-     * will always contain the transform as it was the last time getTransform
-     * was called.
-     */
-    private Matrix transform;
+    
     /**
      * Constructing new graphics with a given javax.microedition.lcdui.Graphics 
      * @param g an implementation dependent native graphics instance
@@ -576,6 +570,7 @@ public final class Graphics {
             p.append(shape.getPathIterator(t), true);
             shape = p;
         }
+        /*
         if ( isAlphaMaskSupported() && shape instanceof GeneralPath ){
             GeneralPath gp = (GeneralPath)shape;
             Object texture = gp.getAlphaMask(stroke);
@@ -585,14 +580,20 @@ public final class Graphics {
             }
             
         }
-        this.drawShape(shape,  stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
+        */
+        if ( isShapeSupported()){
+            impl.drawShape(nativeGraphics, shape, stroke);
+        }
+        //this.drawShape(shape,  stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
     }
     
+    /*
     private void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
         if ( isShapeSupported()){
-            impl.drawShape(nativeGraphics, shape, lineWidth, capStyle, miterStyle, miterLimit);
+            impl.drawShape(nativeGraphics, shape, stroke);
         }
     }
+    */
     
     
     /**
@@ -641,6 +642,7 @@ public final class Graphics {
             p.append(shape.getPathIterator(t), true);
             shape = p;
         }
+        /*
         if ( isAlphaMaskSupported() && shape instanceof GeneralPath){
             GeneralPath gp = (GeneralPath)shape;
             Object texture = gp.getAlphaMask(null);
@@ -649,6 +651,7 @@ public final class Graphics {
                 return;
             }
         }
+        */
         if ( isShapeSupported() ){
             impl.fillShape(nativeGraphics, shape);
         }
@@ -697,6 +700,8 @@ public final class Graphics {
         return impl.isShapeSupported(nativeGraphics);
     }
     
+    
+    
     /**
      * Sets the transformation {@link com.codename1.ui.geom.Matrix} to apply to drawing in this graphics context.
      * In order to use this for 2D/Affine transformations you should first check to 
@@ -719,27 +724,10 @@ public final class Graphics {
      * @see #setTransform(com.codename1.ui.geom.Matrix,int,int)
      */
     public void setTransform(Matrix matrix){
-        setTransform(matrix, 0, 0);
-    }
-    
-    /**
-     * Sets the transformation matrix to apply to drawing in this graphics context, using the 
-     * specified origin for transformations (e.g. for rotation and scaling).
-     * 
-     * <p>In order to use this for 2D/Affine transformations you should first check to 
-     * make sure that transforms are supported by calling the {@link #isTransformSupported}
-     * method.  For 3D/Perspective transformations, you should first check to
-     * make sure that 3D/Perspective transformations are supported by calling 
-     * {@link #isPerspectiveTransformSupported}.</p>
-     * 
-     * @param matrix The transformation matrix.  Can be a 3x3 matrix of a 4x4 matrix depending on whether you want a 2D transformation
-     * or a 3D transformation.
-     * @param originX The x coordinate of the anchor point for rotations.
-     * @param originY The y coordinate of the anchor point for rotations.
-     */
-    public void setTransform(Matrix matrix, int originX, int originY){
+        //Log.p("Setting transform..");
         if ( isTransformSupported()){
-            impl.setTransform(nativeGraphics, matrix, originX, originY);
+            //Log.p("Transforms supported");
+            impl.setTransform(nativeGraphics, matrix);
         }
     }
     
@@ -749,15 +737,12 @@ public final class Graphics {
      * @see #setTransform
      */
     public Matrix getTransform(){
-        if ( transform == null ){
-            transform = Matrix.makeIdentity();
+        if ( isTransformSupported() ){
+            return impl.getTransform(nativeGraphics);
+        } else {
+            return Matrix.makeIdentity();
         }
-        if ( isTransformSupported()){
-            
-            impl.getTransform(nativeGraphics, transform);
-            
-        }
-        return transform;
+        
     }
     
     

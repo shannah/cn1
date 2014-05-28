@@ -112,6 +112,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     private static CodeScannerImpl scannerInstance;
     private static boolean minimized;
     private String userAgent;
+    private TextureCache textureCache = new TextureCache();
     
     private NativePathRenderer globalPathRenderer;
     private NativePathStroker globalPathStroker;
@@ -791,7 +792,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                 if ( ng.clip == null ){
                     return;
                 }
-                ng.nativeGetTransform(ng.transform);
+                //ng.nativeGetTransform(ng.transform);
                 if ( ng.transform.isIdentity() ){
                     Rectangle r = ng.clip.getBounds();
                     ng.clipX = r.getX();
@@ -799,9 +800,10 @@ public class IOSImplementation extends CodenameOneImplementation {
                     ng.clipW = r.getWidth();
                     ng.clipH = r.getHeight();
                 } else {
-                    ng.transform.invert();
+                    Matrix inverted = ng.transform.copy();
+                    inverted.invert();
                     GeneralPath gp = new GeneralPath();
-                    gp.append(ng.clip.getPathIterator(ng.transform), false);
+                    gp.append(ng.clip.getPathIterator(inverted), false);
                     Rectangle r = gp.getBounds();
                     ng.clipX = r.getX();
                     ng.clipY = r.getY();
@@ -864,7 +866,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             if ( ng.transform == null ){
                 ng.transform = Matrix.makeIdentity();
             }
-            ng.nativeGetTransform(ng.transform);
+            //ng.nativeGetTransform(ng.transform);
             
             if ( ng.transform.isIdentity()){
                 //Log.p("Identity transform");
@@ -924,15 +926,15 @@ public class IOSImplementation extends CodenameOneImplementation {
         //Log.p("Exiting setClip 3");
     }
 
-    private static void setNativeClippingMutable(int x, int y, int width, int height, boolean firstClip) {
+    private  void setNativeClippingMutable(int x, int y, int width, int height, boolean firstClip) {
         nativeInstance.setNativeClippingMutable(x, y, width, height, firstClip);
     }
-    private static void setNativeClippingGlobal(int x, int y, int width, int height, boolean firstClip) {
+    private  void setNativeClippingGlobal(int x, int y, int width, int height, boolean firstClip) {
         //Log.p("Setting native clipping global to "+x+","+y+","+width+","+height);
         nativeInstance.setNativeClippingGlobal(x, y, width, height, firstClip);
     }
     
-    private static void setNativeClippingGlobal(Shape shape){
+    private  void setNativeClippingGlobal(Shape shape){
         Rectangle bounds = shape.getBounds();
         if ( shape.isRectangle() || bounds.getWidth() <= 0 || bounds.getHeight() <= 0){
             
@@ -940,17 +942,17 @@ public class IOSImplementation extends CodenameOneImplementation {
             setNativeClippingGlobal(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), true);
         } else {
             //Log.p("Setting native clipping to not rect");
-            if ( shape instanceof GeneralPath ){
-               GeneralPath gp = (GeneralPath)shape;
-               TextureAlphaMask mask = (TextureAlphaMask)gp.getAlphaMask(null);
-               if ( mask != null ){
-                   //Log.p("Setting native clipping mask global with mask with bounds "+mask.bounds);
-                   nativeInstance.setNativeClippingMaskGlobal(mask.textureName, mask.bounds.getX(), mask.bounds.getY(), mask.bounds.getWidth(), mask.bounds.getHeight());
-               } else {
-                   Log.p("Failed to create texture mask for clipping region");
-               }
+            TextureAlphaMask mask = (TextureAlphaMask)textureCache.get(shape, null);
+            if ( mask == null ){
+                mask = (TextureAlphaMask)this.createAlphaMask(shape, null);
+                textureCache.add(shape, null, mask);
+            }
+            
+           if ( mask != null ){
+                //Log.p("Setting native clipping mask global with mask with bounds "+mask.bounds);
+                nativeInstance.setNativeClippingMaskGlobal(mask.getTextureName(), mask.getBounds().getX(), mask.getBounds().getY(), mask.getBounds().getWidth(), mask.getBounds().getHeight());
             } else {
-                Log.p("Only Rectangles and GeneralPaths are supported for clipping");
+                Log.p("Failed to create texture mask for clipping region");
             }
         }
     }
@@ -1001,7 +1003,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                 ng.transform = Matrix.makeIdentity();
             }
             //Log.p("Getting transform");
-            ng.nativeGetTransform(ng.transform);
+            //ng.nativeGetTransform(ng.transform);
             //Log.p("Gotten transform");
             // Case 1:  There is no transform
             // We can cheat a bit
@@ -1071,7 +1073,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                 //Log.p("About to transform the path with the inverse transform for path "+ng.clip);
                 clipProjection.append(ng.clip.getPathIterator(inverseTransform), false);
                 //Log.p("Finished inverting the path");
-                Log.p("Projected clip: "+clipProjection);
+                //Log.p("Projected clip: "+clipProjection);
                 
                 
                 //Log.p("About to set bounds in reusable rect");
@@ -1148,6 +1150,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void drawLine(Object graphics, int x1, int y1, int x2, int y2) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.nativeDrawLine(ng.color, ng.alpha, x1, y1, x2, y2);
     }
@@ -1166,6 +1169,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             return;
         }
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.nativeFillRect(ng.color, ng.alpha, x, y, width, height);
     }
@@ -1180,6 +1184,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void drawRect(Object graphics, int x, int y, int width, int height) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.nativeDrawRect(ng.color, ng.alpha, x, y, width, height);
     }
@@ -1187,6 +1192,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void drawRoundRect(Object graphics, int x, int y, int width, int height, int arcWidth, int arcHeight) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.nativeDrawRoundRect(ng.color, ng.alpha, x, y, width, height, arcWidth, arcHeight);
     }
@@ -1202,6 +1208,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void fillRoundRect(Object graphics, int x, int y, int width, int height, int arcWidth, int arcHeight) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.nativeFillRoundRect(ng.color, ng.alpha, x, y, width, height, arcWidth, arcHeight);
     }
@@ -1216,6 +1223,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void fillArc(Object graphics, int x, int y, int width, int height, int startAngle, int arcAngle) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.nativeFillArc(ng.color, ng.alpha, x, y, width, height, startAngle, arcAngle);
     }
@@ -1236,6 +1244,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void drawArc(Object graphics, int x, int y, int width, int height, int startAngle, int arcAngle) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.nativeDrawArc(ng.color, ng.alpha, x, y, width, height, startAngle, arcAngle);
     }
@@ -1250,6 +1259,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void drawString(Object graphics, String str, int x, int y) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         NativeFont fnt = ng.getFont();
         int l = str.length();
@@ -1276,6 +1286,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         NativeGraphics ng = (NativeGraphics)graphics;
         if(ng instanceof GlobalGraphics) {
             ng.checkControl();
+            ng.applyTransform();
             ng.applyClip();
             NativeImage nm = (NativeImage)img;
             nativeInstance.nativeTileImageGlobal(nm.peer, ng.alpha, x, y, w, h);
@@ -1288,6 +1299,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         NativeGraphics ng = (NativeGraphics)graphics;
         //System.out.println("Drawing image " + img);
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         NativeImage nm = (NativeImage)img;
         ng.nativeDrawImage(nm.peer, ng.alpha, x, y, nm.width, nm.height);
@@ -1366,6 +1378,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             TextureAlphaMask nt = (TextureAlphaMask)mask;
             NativeGraphics ng = (NativeGraphics)graphics;
             ng.checkControl();
+            ng.applyTransform();
             ng.applyClip();
             ng.nativeDrawAlphaMask(nt);
         }
@@ -1392,11 +1405,15 @@ public class IOSImplementation extends CodenameOneImplementation {
      * @param path the path to draw.
      */
     @Override
-    public void drawShape(Object graphics, Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
+    public void drawShape(Object graphics, Shape shape, Stroke stroke){// float lineWidth, int capStyle, int miterStyle, float miterLimit){
+        
         NativeGraphics ng = (NativeGraphics)graphics;
-        ng.checkControl();
-        ng.applyClip();
-        ng.nativeDrawShape(shape, lineWidth, capStyle, miterStyle, miterLimit);
+        if ( ng.isShapeSupported()){
+            ng.checkControl();
+            ng.applyTransform();
+            ng.applyClip();
+            ng.nativeDrawShape(shape, stroke);
+        }
     }
     
     /**
@@ -1407,9 +1424,12 @@ public class IOSImplementation extends CodenameOneImplementation {
     @Override
     public void fillShape(Object graphics, Shape shape){
         NativeGraphics ng = (NativeGraphics)graphics;
-        ng.checkControl();
-        ng.applyClip();
-        ng.nativeFillShape(shape);
+        if ( ng.isShapeSupported()){
+            ng.checkControl();
+            ng.applyTransform();
+            ng.applyClip();
+            ng.nativeFillShape(shape);
+        }
         
         
     }
@@ -1445,14 +1465,18 @@ public class IOSImplementation extends CodenameOneImplementation {
     }
 
     @Override
-    public void getTransform(Object graphics, Matrix m) {
-        ((NativeGraphics)graphics).nativeGetTransform(m);
+    public Matrix getTransform(Object graphics) {
+        return ((NativeGraphics)graphics).transform;
+        //((NativeGraphics)graphics).nativeGetTransform(m);
     }
 
     
     
     @Override
-    public void setTransform(Object graphics, Matrix t, int originX, int originY) {
+    public void setTransform(Object graphics, Matrix t) {
+        //Log.p("Setting transform to "+t);
+        ((NativeGraphics)graphics).transform = t;
+        /*
         float[] m = t.getData();
         
         // Note that Matrix is stored in column-major format but GLKMatrix is stored in row-major
@@ -1463,7 +1487,23 @@ public class IOSImplementation extends CodenameOneImplementation {
             m[1], m[5], m[9], m[13],
             m[2], m[6], m[10], m[14],
             m[3], m[7], m[11], m[15],
-            originX, originY
+            0, 0
+        );
+        */
+    }
+    
+    public void setNativeTransformGlobal(Matrix t){
+        float[] m = t.getData();
+        
+        // Note that Matrix is stored in column-major format but GLKMatrix is stored in row-major
+        // that's why we transpose it here.
+        //Log.p("....Setting transform.....");
+        nativeInstance.nativeSetTransform(
+            m[0], m[4], m[8], m[12],
+            m[1], m[5], m[9], m[13],
+            m[2], m[6], m[10], m[14],
+            m[3], m[7], m[11], m[15],
+            0, 0
         );
     }
 
@@ -2463,8 +2503,8 @@ public class IOSImplementation extends CodenameOneImplementation {
     
     
     class TextureAlphaMask {
-        Rectangle bounds;
-        long textureName;
+        private Rectangle bounds;
+        private long textureName;
         
         TextureAlphaMask(long textureName, Rectangle bounds){
             this.bounds = bounds;
@@ -2472,18 +2512,79 @@ public class IOSImplementation extends CodenameOneImplementation {
         }
         
         void dispose(){
-            if ( textureName != 0 ){
-                nativeDeleteTexture(textureName);
-                textureName = 0;
+            if ( getTextureName() != 0 ){
+                nativeDeleteTexture(getTextureName());
+                setTextureName(0);
             }
         }
+        
+        
 
         @Override
         protected void finalize() throws Throwable {
             dispose();
             super.finalize(); //To change body of generated methods, choose Tools | Templates.
         }
+
+        /**
+         * @return the bounds
+         */
+        public Rectangle getBounds() {
+            return bounds;
+        }
+
+        /**
+         * @param bounds the bounds to set
+         */
+        public void setBounds(Rectangle bounds) {
+            this.bounds = bounds;
+        }
+
+        /**
+         * @return the textureName
+         */
+        public long getTextureName() {
+            return textureName;
+        }
+
+        /**
+         * @param textureName the textureName to set
+         */
+        public void setTextureName(long textureName) {
+            this.textureName = textureName;
+        }
         
+        
+    }
+    
+    class TextureAlphaMaskProxy extends TextureAlphaMask {
+        private TextureAlphaMask mask;
+        private Rectangle bounds;
+        
+       
+        
+        public TextureAlphaMaskProxy(TextureAlphaMask m, Rectangle bounds){
+            super(m.textureName, m.bounds);
+            mask = m;
+            this.bounds = bounds;
+        }
+        
+        public Rectangle getBounds(){
+            return bounds;
+        }
+        
+        public void setBounds(Rectangle r){
+            bounds = r;
+        }
+        
+        public long getTextureName(){
+            return mask.getTextureName();
+        }
+        
+        public void dispose(){
+            // Don't do anything here... all disposal should 
+            // be done by the original proxy
+        }
         
     }
     
@@ -2497,7 +2598,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         int clipX, clipY, clipW = -1, clipH = -1;
         boolean clipApplied;
         Shape clip;
-        Matrix transform;
+        Matrix transform = Matrix.makeIdentity();
         /**
          * Used with the ES2 pipeline (or any engine where transforms are supported)
          * to record if the clipX, clipY, clipW, and clipH parameters need to be updated.
@@ -2512,6 +2613,10 @@ public class IOSImplementation extends CodenameOneImplementation {
             return (NativeFont)getDefaultFont();
         }
 
+        public void applyTransform(){
+            
+        }
+        
         public void applyClip() {
             if ( isTransformSupported()){
                 //Log.p("In applyClip");
@@ -2622,7 +2727,7 @@ public class IOSImplementation extends CodenameOneImplementation {
          * @param w
          * @param h 
          */
-        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
+        void nativeDrawShape(Shape shape, Stroke stroke){//float lineWidth, int capStyle, int miterStyle, float miterLimit){
       
         }
         
@@ -2639,23 +2744,7 @@ public class IOSImplementation extends CodenameOneImplementation {
 
         }
         
-        /**
-         * Gets the transform for the graphics context.
-         * @param m 
-         */
-        void nativeGetTransform(Matrix m) {
-            
-        }
-        
-        /**
-         * Sets the transform for the graphics context.
-         * @param t
-         * @param originX
-         * @param originY 
-         */
-        void nativeSetTransform(Matrix t, int originX, int originY) {
-            
-        }
+       
         
         
         boolean isTransformSupported(){
@@ -2722,20 +2811,42 @@ public class IOSImplementation extends CodenameOneImplementation {
             }
         }
 
+        public void applyTransform(){
+            if ( isTransformSupported() ){
+                setNativeTransformGlobal(this.transform);
+            }
+        }
+        
         public void resetAffine() {
-            nativeInstance.resetAffineGlobal();
+            if ( isTransformSupported() ){
+                this.transform.setIdentity();
+            } else {
+                nativeInstance.resetAffineGlobal();
+            }
         }
 
         public void scale(float x, float y) {
-            nativeInstance.scaleGlobal(x, y);
+            if ( isTransformSupported() ){
+                this.transform.scale(x, y, 1);
+            } else {
+                nativeInstance.scaleGlobal(x, y);
+            }
         }
 
         public void rotate(float angle) {
-            nativeInstance.rotateGlobal(angle);
+            if ( isTransformSupported() ){
+                this.transform.rotate(angle, 0, 0, 1);
+            } else {
+                nativeInstance.rotateGlobal(angle);
+            }
         }
 
         public void rotate(float angle, int x, int y) {
-            nativeInstance.rotateGlobal(angle, x, y);
+            if ( isTransformSupported() ){
+                this.transform.rotate(angle, x, y, 1);
+            } else {
+                nativeInstance.rotateGlobal(angle, x, y);
+            }
         }
 
         public void shear(float x, float y) {
@@ -2801,20 +2912,29 @@ public class IOSImplementation extends CodenameOneImplementation {
 
         @Override
         void nativeDrawAlphaMask(TextureAlphaMask mask) {
-            if ( mask.textureName != 0 ){
-                Rectangle r = mask.bounds;
-                nativeInstance.drawTextureAlphaMask(mask.textureName, this.color, this.alpha, r.getX(), r.getY(), r.getWidth(), r.getHeight() );
+            if ( mask.getTextureName() != 0 ){
+                Rectangle r = mask.getBounds();
+                nativeInstance.drawTextureAlphaMask(mask.getTextureName(), this.color, this.alpha, r.getX(), r.getY(), r.getWidth(), r.getHeight() );
             }
         }
      
         
         
-        void nativeDrawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit) {
+        void nativeDrawShape(Shape shape, Stroke stroke){//float lineWidth, int capStyle, int miterStyle, float miterLimit) {
+            TextureAlphaMask mask = textureCache.get(shape, stroke);
+            if ( mask == null ){
+                mask = (TextureAlphaMask)createAlphaMask(shape, stroke);
+                textureCache.add(shape, stroke, mask);
+                
+            }
+            nativeDrawAlphaMask(mask);
+            /*
+            
             PathIterator path = shape.getPathIterator();
             Rectangle rb = shape.getBounds();
             // Notice that these will be cleaned up in the dealloc method of the DrawPath objective-c class
             NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
-            NativePathStroker stroker = new NativePathStroker(renderer, lineWidth, capStyle, miterStyle, miterLimit);
+            NativePathStroker stroker = new NativePathStroker(renderer, stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
             //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
             //stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
             NativePathConsumer c = stroker.consumer;
@@ -2823,6 +2943,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             // We don't need the stroker anymore because it has passed the strokes to the renderer.
             stroker.destroy();
             drawPath(renderer, this.color, this.alpha);
+            */
         }
 
         
@@ -2833,6 +2954,8 @@ public class IOSImplementation extends CodenameOneImplementation {
          * @param path the path to draw.
          */
         void nativeFillShape(Shape shape) {
+            nativeDrawShape(shape, null);
+            /*
             PathIterator path = shape.getPathIterator();
 
             Rectangle rb = shape.getBounds();
@@ -2842,24 +2965,11 @@ public class IOSImplementation extends CodenameOneImplementation {
             NativePathConsumer c = renderer.consumer;
             fillPathConsumer(path, c);
             drawPath(renderer, this.color, this.alpha);
+            */
 
         }
         
-        void nativeGetTransform(Matrix m){
-            nativeInstance.nativeGetTransform(m.getData());
-        }
         
-        void nativeSetTransform(Matrix t, int originX, int originY) {
-            float[] m = t.getData();
-
-            nativeInstance.nativeSetTransform(
-                m[0], m[1], m[2], m[3],
-                m[4], m[5], m[6], m[7],
-                m[8], m[9], m[10], m[11],
-                m[12], m[13], m[14], m[15],
-                originX, originY
-            );
-        }
         
         boolean isTransformSupported(){
             return nativeInstance.nativeIsTransformSupportedGlobal();
@@ -3326,6 +3436,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         NativeGraphics ng = (NativeGraphics)graphics;
         //System.out.println("Drawing image " + img);
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         NativeImage nm = (NativeImage)img;
         ng.nativeDrawImage(nm.peer, ng.alpha, x, y, w, h);
@@ -3915,6 +4026,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void fillRectRadialGradient(Object graphics, int startColor, int endColor, int x, int y, int width, int height, float relativeX, float relativeY, float relativeSize) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.fillRectRadialGradient(startColor, endColor, x, y, width, height, relativeX, relativeY, relativeSize);
     }
@@ -3922,6 +4034,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void fillLinearGradient(Object graphics, int startColor, int endColor, int x, int y, int width, int height, boolean horizontal) {
         NativeGraphics ng = (NativeGraphics)graphics;
         ng.checkControl();
+        ng.applyTransform();
         ng.applyClip();
         ng.fillLinearGradient(startColor, endColor, x, y, width, height, horizontal);
     }
@@ -5333,7 +5446,97 @@ public class IOSImplementation extends CodenameOneImplementation {
         nativeInstance.writeToSocketStream(((Long)socket).longValue(), data);
     }
     
-    
+    static int cacheHits = 0;
+    static int cacheMisses = 0;
+    class TextureCache {
+        Map<String, Object> textures = new HashMap<String,Object>();
+        
+        TextureAlphaMaskProxy get(Shape s, Stroke stroke){
+            String shapeID = getShapeID(s, stroke);
+            //Log.p("Getting shape from texture cache: "+shapeID);
+            Object out = textures.get(shapeID);
+            if ( out != null ){
+                
+                out = Display.getInstance().extractHardRef(out);
+                
+                if ( out != null ){
+                    cacheHits++;
+                    //Log.p("Cache hit: "+cacheHits);
+                    TextureAlphaMask mask = (TextureAlphaMask)out;
+                    Rectangle bounds = s.getBounds();
+                    return new TextureAlphaMaskProxy(mask, bounds);
+                    
+                } else {
+                    textures.remove(s);
+                }
+            }
+            cacheMisses++;
+            //Log.p("Cache miss: "+cacheMisses);
+            return null;
+        }
+        
+        void add(Shape s, Stroke stroke, TextureAlphaMask mask){
+            String shapeID = getShapeID(s, stroke);
+            textures.put(shapeID, Display.getInstance().createSoftWeakRef(mask));
+            
+        }
+        
+        
+        String getShapeID(Shape shape, Stroke stroke){
+            Rectangle bounds = shape.getBounds();
+            int x = bounds.getX();
+            int y = bounds.getY();
+            StringBuilder sb = new StringBuilder();
+            PathIterator it = shape.getPathIterator();
+            float[] buf = new float[6];
+            int tx, ty, tx2, ty2, tx3, ty3;
+            if ( stroke != null ){
+                sb.append(stroke.hashCode()).append(":");
+            }
+            sb.append(it.getWindingRule());
+            sb.append(";");
+            while ( !it.isDone() ){
+                int type = it.currentSegment(buf);
+                
+                switch ( type ){
+                    case PathIterator.SEG_MOVETO:
+                       tx = (int)buf[0]-x;
+                       ty = (int)buf[1]-y;
+                        sb.append("M:").append(tx).append(",").append(ty);
+                        break;
+                    case PathIterator.SEG_LINETO:
+                       tx = (int)buf[0]-x;
+                       ty = (int)buf[1]-y;
+                        sb.append("L:").append(tx).append(",").append(ty);
+                        break;
+                    case PathIterator.SEG_QUADTO:
+                        tx = (int)buf[0]-x;
+                        ty = (int)buf[1]-y;
+                        tx2 = (int)buf[2]-x;
+                        ty2 = (int)buf[3]-y;
+                        sb.append("Q:").append(tx).append(",").append(ty).append(",").append(tx2).append(",").append(ty2);
+                        break;
+                    case PathIterator.SEG_CUBICTO:
+                        tx = (int)buf[0]-x;
+                        ty = (int)buf[1]-y;
+                        tx2 = (int)buf[2]-x;
+                        ty2 = (int)buf[3]-y;
+                        tx3 = (int)buf[4]-x;
+                        ty3= (int)buf[5]-y;
+                        sb.append("C:").append(tx).append(",").append(ty).append(",").append(tx2).append(",").append(ty2)
+                                .append(",").append(tx3).append(",").append(ty3);
+                        break;
+                        
+                    case PathIterator.SEG_CLOSE:
+                        sb.append(".");
+                        
+                }
+                it.next();
+            }
+            return sb.toString();
+            
+        }
+    }
     
     static class Graph {
         static class Vertex {

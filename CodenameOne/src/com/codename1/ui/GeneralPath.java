@@ -23,7 +23,6 @@
 package com.codename1.ui;
 
 import com.codename1.impl.CodenameOneImplementation;
-import com.codename1.io.Log;
 import com.codename1.ui.geom.Matrix;
 import com.codename1.ui.geom.PathIterator;
 import com.codename1.ui.geom.Rectangle;
@@ -644,7 +643,11 @@ public final class GeneralPath implements Shape {
      */
     public Rectangle getBounds() {
         float[] r = getBounds2D();
-        return new Rectangle((int) r[0], (int) r[1], (int) r[2], (int) r[3]);
+        int x1 = (int)Math.floor(r[0]);
+        int y1 = (int)Math.floor(r[1]);
+        int x2 = (int)Math.ceil(r[0]+r[2]);
+        int y2 = (int)Math.ceil(r[1]+r[3]);
+        return new Rectangle(x1, y1, x2-x1, y2-y1);
 
     }
     
@@ -911,7 +914,7 @@ public final class GeneralPath implements Shape {
                     prevY = prev[1] = mark[1] = buf[1];
                     out.moveTo(prevX, prevY);
                     
-                    System.out.println("Moving to "+prevX+","+prevY);
+                    //System.out.println("Moving to "+prevX+","+prevY);
                     break;
 
                 case PathIterator.SEG_LINETO:
@@ -933,7 +936,7 @@ public final class GeneralPath implements Shape {
                         }
                        
                     } 
-                    System.out.println("Line to "+currX+","+currY);
+                    //System.out.println("Line to "+currX+","+currY);
                     out.lineTo(currX, currY);
 
                     // Set current position to prev for next iteration.
