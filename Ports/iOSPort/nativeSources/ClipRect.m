@@ -48,13 +48,7 @@ static CGRect drawingRect;
     width = w;
     height = h;
     texture = tex;
-    if ( width == -1 && height == -1 ){
-        "foo";
-        
-    }
-    if ( tex != 0 ){
-        "hello";
-    }
+    
     firstClip = !f;
     return self;
 }
@@ -95,7 +89,7 @@ static CGRect drawingRect;
         glStencilFunc(GL_NEVER, 1, 0xff);
         
         glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);
-        //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
         glStencilMask(0xff);
         glClear(GL_STENCIL_BUFFER_BIT);
         

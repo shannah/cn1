@@ -853,6 +853,33 @@ public class IOSImplementation extends CodenameOneImplementation {
         return ((NativeGraphics)graphics).clipH;
     }
 
+    public void setClipShape(Object graphics, Shape shape){
+        NativeGraphics ng = (NativeGraphics)graphics;
+        Log.p("Setting clip shape "+shape);
+        ng.clip = shape;
+        ng.clipDirty = true;
+        
+    }
+    
+    public Shape getClipShape(Object graphics){
+        NativeGraphics ng = (NativeGraphics)graphics;
+        if ( ng.clip != null ){
+            Log.p("Clip shape is not null");
+            return ng.clip;
+        } else {
+            Log.p("Clip shape is null");
+            return this.getClipRect(graphics);
+        }
+    }
+    
+    public void pushClip(Object graphics){
+        ((NativeGraphics)graphics).pushClip();
+    }
+    
+    public Shape popClip(Object graphics){
+        return ((NativeGraphics)graphics).popClip();
+    }
+    
     public void setClip(Object graphics, int x, int y, int width, int height) {
         //Log.p("In set Clip "+x+","+y+","+width+","+height);
         NativeGraphics ng = ((NativeGraphics)graphics);
@@ -950,6 +977,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             
            if ( mask != null ){
                 //Log.p("Setting native clipping mask global with mask with bounds "+mask.bounds);
+               Log.p("Setting native clipping mask global with bounds "+mask.getBounds()+" : "+shape);
                 nativeInstance.setNativeClippingMaskGlobal(mask.getTextureName(), mask.getBounds().getX(), mask.getBounds().getY(), mask.getBounds().getWidth(), mask.getBounds().getHeight());
             } else {
                 Log.p("Failed to create texture mask for clipping region");
@@ -983,41 +1011,32 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void clipRect(Object graphics, int x, int y, int width, int height) {
         NativeGraphics ng = (NativeGraphics)graphics;
         if ( ng.isTransformSupported() ){
-            //Log.p("In clipRect "+x+","+y+","+width+","+height);
-            //Log.p("Existing clip "+ng.clip);
+            
             
             if ( ng.clip == null ){
-                //Log.p("Clip null: Setting it now to "+x+","+y+","+width+","+height);
+                
                 setClip(graphics, x, y, width, height);
                 return;
             } 
             Rectangle clipBounds = ng.clip.getBounds();
-            //Log.p("Bounds "+clipBounds);
             if ( clipBounds.getWidth() == 0 || clipBounds.getHeight() == 0 ){
-                //Log.p("Zero bounds");
                 return;
             }
-            
             
             if ( ng.transform == null ){
                 ng.transform = Matrix.makeIdentity();
             }
-            //Log.p("Getting transform");
-            //ng.nativeGetTransform(ng.transform);
-            //Log.p("Gotten transform");
-            // Case 1:  There is no transform
-            // We can cheat a bit
+            
             if ( ng.transform.isIdentity() ){
                 // Case 1:  There is no transform
-                //Log.p("TF is identity");
-                //Log.p("Is identity");
+                
                 Shape s = ng.clip;
-                //Log.p("Checking against new clip "+x+","+y+","+width+","+height);
+                
                 
                 if ( s.isRectangle() ){
                     
                     if ( clipBounds.getX() == x && clipBounds.getY() == y && clipBounds.getWidth() == width && clipBounds.getHeight() == height ){
-                        //Log.p("Same as existing clip... just leave it");
+                        
                         return;
                     }
                 }
@@ -1055,32 +1074,14 @@ public class IOSImplementation extends CodenameOneImplementation {
                 
                 
             } else {
-                //Log.p("Is not identity");
-                // Case 2: There is a transform, so we have to transform
-                // the clip rect to produce a shape.
-                //Log.p("Copying matrix "+ng.transform);
-                //Log.p("Original transform: "+ng.transform);
                 Matrix inverseTransform = ng.transform.copy();
-                //Log.p("Inverting matrix");
                 boolean res = inverseTransform.invert();
-                //Log.p("Inverse transform: "+inverseTransform);
-                //Log.p("Inverted matrix "+inverseTransform);
                 if ( ! res ){
                     throw new RuntimeException("Failed to invert transform");
                 }
-                //Log.p("Original Clip:"+ng.clip);
                 GeneralPath clipProjection = new GeneralPath();
-                //Log.p("About to transform the path with the inverse transform for path "+ng.clip);
                 clipProjection.append(ng.clip.getPathIterator(inverseTransform), false);
-                //Log.p("Finished inverting the path");
-                //Log.p("Projected clip: "+clipProjection);
-                
-                
-                //Log.p("About to set bounds in reusable rect");
                 ng.reusableRect.setBounds(x, y, width, height);
-                //Log.p("Clip rect to "+ng.reusableRect);
-                //Log.p("Set bounds in reusable rect");
-                //Log.p("About to get intersection of clips");
                 Shape clipIntersection = clipProjection.intersection(ng.reusableRect);
                 if ( clipIntersection == null ){
                     ng.clip = new Rectangle(0,0,0,0);
@@ -1089,26 +1090,19 @@ public class IOSImplementation extends CodenameOneImplementation {
                     ng.clipApplied = true;
                     return;
                 }
-                //Log.p("Intersection: "+clipIntersection);
-                //Log.p("Gotten intersection of clips "+clipIntersection);
                 ng.clip = new GeneralPath();
                 ((GeneralPath)ng.clip).append(clipIntersection.getPathIterator(ng.transform), false);
-                //Log.p("Appending clip intersection");
+                
                 if ( ng.clip.isRectangle() ){
-                    //Log.p("Clip is rectangle");
+                    
                     Rectangle r = ng.clip.getBounds();
-                    //Log.p("Transformed clip is rectangle : "+r);
-                    //Log.p("Transform :"+ng.transform);
-                    //Log.p("Clip path: "+ng.clip);
+                    
                     ng.clip = r;
                     ng.setNativeClipping(r.getX(), r.getY(), r.getWidth(), r.getHeight(), ng.clipApplied);
                     ng.clipApplied = true;
                     ng.clipDirty = true;
                     return;
                 } else {
-                    //Log.p("Clip is not rectangle and bounds are "+ng.clip.getBounds());
-                    //Log.p("Transform :"+ng.transform);
-                    //Log.p("Clip path: "+ng.clip);
                     ng.setNativeClipping(ng.clip);
                     ng.clipApplied = true;
                     ng.clipDirty = true;
@@ -1310,15 +1304,26 @@ public class IOSImplementation extends CodenameOneImplementation {
     // -------------------------------------------------------------------------
     @Override
     public Object createAlphaMask(Shape shape, Stroke stroke) {
-        long tex = nativeCreateAlphaMaskForShape(shape, stroke);
+        int[] bounds = new int[]{0,0,0,0};
+        long tex = nativeCreateAlphaMaskForShape(shape, stroke, bounds);
         if ( tex == 0 ){
             return null;
         }
-        return new TextureAlphaMask(tex, shape.getBounds());
+        return new TextureAlphaMask(tex, new Rectangle(bounds[0], bounds[1], bounds[2]-bounds[0], bounds[3]-bounds[1]));
     }
     
-    long nativeCreateAlphaMaskForShape(Shape shape, Stroke stroke) {
-        
+    @Override
+    public Image createImage(Shape shape, Stroke stroke, int color){
+        NativePathRenderer renderer = renderShape(shape, stroke);
+        int[] argb = renderer.toARGB(color);
+        int[] bounds = new int[4];
+        renderer.getOutputBounds(bounds);
+        Image out = Image.createImage(argb, bounds[2]-bounds[0], bounds[3]-bounds[1]);
+        renderer.destroy();
+        return out;
+    }
+    
+    private NativePathRenderer renderShape(Shape shape, Stroke stroke){
         if ( stroke != null ){
             float lineWidth = stroke.getLineWidth();
             int capStyle = stroke.getCapStyle();
@@ -1328,7 +1333,8 @@ public class IOSImplementation extends CodenameOneImplementation {
             PathIterator path = shape.getPathIterator();
             Rectangle rb = shape.getBounds();
             // Notice that these will be cleaned up in the dealloc method of the DrawPath objective-c class
-            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
+            
+            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), path.getWindingRule());
             NativePathStroker stroker = new NativePathStroker(renderer, lineWidth, capStyle, miterStyle, miterLimit);
             //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
             //stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
@@ -1338,24 +1344,39 @@ public class IOSImplementation extends CodenameOneImplementation {
             // We don't need the stroker anymore because it has passed the strokes to the renderer.
             stroker.destroy();
             //Log.p("Creating texture with stroke for shape "+shape);
-            long tex = renderer.createTexture();
-            renderer.destroy();
-            return tex;
+            //long tex = renderer.createTexture();
+            return renderer;
+            //renderer.destroy();
+            //return tex;
         } else {
+            Rectangle rb = shape.getBounds();
+            Log.p("Creating texture for shape with bounds "+rb);
             PathIterator path = shape.getPathIterator();
 
-            Rectangle rb = shape.getBounds();
+            
             // Notice that this will be cleaned up in the dealloc method of the DrawPath objective-c class.
-            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), NativePathRenderer.WIND_NON_ZERO);
+            NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), path.getWindingRule());
             //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
             NativePathConsumer c = renderer.consumer;
             fillPathConsumer(path, c);
             //Log.p("Creating texture without stroke for shape "+shape+" bounds "+shape.getBounds());
-            long tex = renderer.createTexture();
-            renderer.destroy();
-            return tex;
+            //long tex = renderer.createTexture();
+            //renderer.destroy();
+            //return tex;
+            
+            return renderer;
             
         }
+    }
+    
+    private long nativeCreateAlphaMaskForShape(Shape shape, Stroke stroke, int[] bounds) {
+        
+        NativePathRenderer renderer = renderShape(shape, stroke);
+        long tex = renderer.createTexture();
+        renderer.getOutputBounds(bounds);
+        renderer.destroy();
+        return tex;
+        
         
         
         
@@ -2497,6 +2518,10 @@ public class IOSImplementation extends CodenameOneImplementation {
        }
         
        
+       int[] toARGB(int color){
+           return nativeInstance.nativePathRendererToARGB(ptr, color);
+       }
+       
     }
     
     
@@ -2599,6 +2624,8 @@ public class IOSImplementation extends CodenameOneImplementation {
         boolean clipApplied;
         Shape clip;
         Matrix transform = Matrix.makeIdentity();
+        Shape[] clipStack = new Shape[20];
+        private int clipStackPtr = 0;
         /**
          * Used with the ES2 pipeline (or any engine where transforms are supported)
          * to record if the clipX, clipY, clipW, and clipH parameters need to be updated.
@@ -2615,6 +2642,19 @@ public class IOSImplementation extends CodenameOneImplementation {
 
         public void applyTransform(){
             
+        }
+        
+        public void pushClip(){
+            clipStack[clipStackPtr++] = getClipShape(this);
+            Log.p("Pushing clip "+clipStack[clipStackPtr-1]);
+            
+        }
+        
+        public Shape popClip(){
+            Shape s = clipStack[--clipStackPtr];
+            Log.p("Popping clip "+s);
+            setClipShape(this, s);
+            return s;
         }
         
         public void applyClip() {
@@ -2927,6 +2967,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                 textureCache.add(shape, stroke, mask);
                 
             }
+            //mask = (TextureAlphaMask)createAlphaMask(shape, stroke);
             nativeDrawAlphaMask(mask);
             /*
             
@@ -5446,8 +5487,6 @@ public class IOSImplementation extends CodenameOneImplementation {
         nativeInstance.writeToSocketStream(((Long)socket).longValue(), data);
     }
     
-    static int cacheHits = 0;
-    static int cacheMisses = 0;
     class TextureCache {
         Map<String, Object> textures = new HashMap<String,Object>();
         
@@ -5460,7 +5499,6 @@ public class IOSImplementation extends CodenameOneImplementation {
                 out = Display.getInstance().extractHardRef(out);
                 
                 if ( out != null ){
-                    cacheHits++;
                     //Log.p("Cache hit: "+cacheHits);
                     TextureAlphaMask mask = (TextureAlphaMask)out;
                     Rectangle bounds = s.getBounds();
@@ -5470,7 +5508,6 @@ public class IOSImplementation extends CodenameOneImplementation {
                     textures.remove(s);
                 }
             }
-            cacheMisses++;
             //Log.p("Cache miss: "+cacheMisses);
             return null;
         }
@@ -5483,13 +5520,13 @@ public class IOSImplementation extends CodenameOneImplementation {
         
         
         String getShapeID(Shape shape, Stroke stroke){
-            Rectangle bounds = shape.getBounds();
-            int x = bounds.getX();
-            int y = bounds.getY();
+            float[] bounds = shape.getBounds2D();
+            float x = bounds[0];
+            float y = bounds[1];
             StringBuilder sb = new StringBuilder();
             PathIterator it = shape.getPathIterator();
             float[] buf = new float[6];
-            int tx, ty, tx2, ty2, tx3, ty3;
+            float tx, ty, tx2, ty2, tx3, ty3;
             if ( stroke != null ){
                 sb.append(stroke.hashCode()).append(":");
             }
@@ -5500,31 +5537,31 @@ public class IOSImplementation extends CodenameOneImplementation {
                 
                 switch ( type ){
                     case PathIterator.SEG_MOVETO:
-                       tx = (int)buf[0]-x;
-                       ty = (int)buf[1]-y;
-                        sb.append("M:").append(tx).append(",").append(ty);
+                       tx = buf[0]-x;
+                       ty = buf[1]-y;
+                        sb.append("M:").append((int)tx).append(",").append((int)ty);
                         break;
                     case PathIterator.SEG_LINETO:
-                       tx = (int)buf[0]-x;
-                       ty = (int)buf[1]-y;
-                        sb.append("L:").append(tx).append(",").append(ty);
+                       tx = buf[0]-x;
+                       ty = buf[1]-y;
+                        sb.append("L:").append((int)tx).append(",").append((int)ty);
                         break;
                     case PathIterator.SEG_QUADTO:
-                        tx = (int)buf[0]-x;
-                        ty = (int)buf[1]-y;
-                        tx2 = (int)buf[2]-x;
-                        ty2 = (int)buf[3]-y;
-                        sb.append("Q:").append(tx).append(",").append(ty).append(",").append(tx2).append(",").append(ty2);
+                        tx = buf[0]-x;
+                        ty = buf[1]-y;
+                        tx2 = buf[2]-x;
+                        ty2 = buf[3]-y;
+                        sb.append("Q:").append((int)tx).append(",").append((int)ty).append(",").append((int)tx2).append(",").append((int)ty2);
                         break;
                     case PathIterator.SEG_CUBICTO:
-                        tx = (int)buf[0]-x;
-                        ty = (int)buf[1]-y;
-                        tx2 = (int)buf[2]-x;
-                        ty2 = (int)buf[3]-y;
-                        tx3 = (int)buf[4]-x;
-                        ty3= (int)buf[5]-y;
-                        sb.append("C:").append(tx).append(",").append(ty).append(",").append(tx2).append(",").append(ty2)
-                                .append(",").append(tx3).append(",").append(ty3);
+                        tx = buf[0]-x;
+                        ty = buf[1]-y;
+                        tx2 = buf[2]-x;
+                        ty2 = buf[3]-y;
+                        tx3 = buf[4]-x;
+                        ty3= buf[5]-y;
+                        sb.append("C:").append((int)tx).append(",").append((int)ty).append(",").append((int)tx2).append(",").append((int)ty2)
+                                .append(",").append((int)tx3).append(",").append((int)ty3);
                         break;
                         
                     case PathIterator.SEG_CLOSE:
@@ -5538,87 +5575,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         }
     }
     
-    static class Graph {
-        static class Vertex {
-            boolean inShape1=false;
-            boolean inShape2=false;
-            float x,y;
-            Edge[] adjacentEdges = new Edge[4];
-            int numEdges = 0;
-            
-            void addEdge(Edge e){
-                adjacentEdges[numEdges++] = e;
-            }
-            
-        }
-        
-        static class Edge {
-            Vertex v1, v2;
-        }
-        
-        Edge[] edges;
-        Vertex[] vertices;
-        
-        
-        Vertex createVertex(float x, float y,  boolean inShape1, boolean inShape2){
-            Vertex  v= new Vertex();
-            v.x = x;
-            v.y = y;
-            v.inShape1 = inShape1;
-            v.inShape2 = inShape2;
-            return v;
-        }
-        
-        Edge createEdge(Vertex v1, Vertex v2){
-            Edge e = new Edge();
-            e.v1=v1;
-            e.v2=v2;
-            v1.addEdge(e);
-            v2.addEdge(e);
-            return e;
-        }
-        
-        
-        Graph(GeneralPath p1, GeneralPath p2){
-            PathIterator p1It = p1.getPathIterator();
-            float[] buf = new float[6];
-            
-            while ( !p1It.isDone() ){
-                p1It.next();
-                p1It.currentSegment(buf);
-                float x1 = buf[0];
-                float y1 = buf[1];
-                if ( !p1It.isDone() ){
-                    p1It.next();
-                    p1It.currentSegment(buf);
-                    float x2 = buf[0];
-                    float y2 = buf[1];
-                    
-                    
-                    
-                }
-                
-                boolean inP1 = true;
-                boolean inP2 = p2.contains(x1, buf[1]);
-                
-                if ( inP1 && inP2 ){
-                    Vertex v1 = createVertex(buf[0], buf[1], inP1, inP2);
-                    
-                }
-                
-                if ( !p1It.isDone() ){
-                    p1It.next();
-                    p1It.currentSegment(buf);
-                }
-                
-                
-                
-                
-            }
-        }
-        
-        
-    }
+   
 }
 
 

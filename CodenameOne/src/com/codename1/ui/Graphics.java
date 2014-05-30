@@ -52,6 +52,7 @@ public final class Graphics {
     private Object[] nativeGraphicsState;
     private float scaleX = 1, scaleY = 1;
     
+    
     /**
      * Constructing new graphics with a given javax.microedition.lcdui.Graphics 
      * @param g an implementation dependent native graphics instance
@@ -59,6 +60,14 @@ public final class Graphics {
     Graphics(Object nativeGraphics) {
         setGraphics(nativeGraphics);
         impl = Display.getInstance().getImplementation();
+    }
+    
+    public void pushClip(){
+        impl.pushClip(nativeGraphics);
+    }
+    
+    public Shape popClip(){
+        return impl.popClip(nativeGraphics);
     }
 
     /**
@@ -637,6 +646,7 @@ public final class Graphics {
      */
     public void fillShape(Shape shape){
         if ( xTranslate != 0 || yTranslate != 0 ){
+            Log.p("Translating shape inside fillShape: "+xTranslate+","+yTranslate);
             GeneralPath p = new GeneralPath();
             Matrix t = Matrix.makeTranslation(xTranslate, yTranslate, 0);
             p.append(shape.getPathIterator(t), true);

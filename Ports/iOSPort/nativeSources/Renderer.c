@@ -637,14 +637,14 @@ static void setAndClearRelativeAlphas(AlphaConsumer *pAC,
 static jint getSubpixMinX(Renderer *pRenderer) {
     jint sampleColMin = (jint) ceil(this.edgeMinX);
     if (sampleColMin < this.boundsMinX) sampleColMin = this.boundsMinX;
-    //if (sampleColMin > this.boundsMaxX) sampleColMin = this.boundsMaxX;
+    if (sampleColMin > this.boundsMaxX) sampleColMin = this.boundsMaxX;
     return sampleColMin;
 }
 
 static jint getSubpixMaxX(Renderer *pRenderer) {
     jint sampleColMax = (jint) ceil(this.edgeMaxX);
     if (sampleColMax > this.boundsMaxX) sampleColMax = this.boundsMaxX;
-    //if (sampleColMax < this.boundsMinX) sampleColMax = this.boundsMinX;
+    if (sampleColMax < this.boundsMinX) sampleColMax = this.boundsMinX;
     return sampleColMax;
 }
 

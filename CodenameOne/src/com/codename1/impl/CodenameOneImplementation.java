@@ -1156,6 +1156,21 @@ public abstract class CodenameOneImplementation {
         Dimension d = rect.getSize();
         setClip(graphics, rect.getX(), rect.getY(), d.getWidth(), d.getHeight());
     }
+    
+    /*
+    public void setClipShape(Object graphics, Shape shape){
+        if ( shape.isRectangle() ){
+            setClipRect(graphics, (Rectangle)shape);
+        } else {
+            throw new RuntimeException("Only rectangle clips supported in this port");
+        }
+    }
+    
+    public Shape getClipShape(Object graphics){
+        return this.getClipRect(graphics);
+    }
+    */
+   
 
     /**
      * Installs a new clipping rectangle
@@ -1193,6 +1208,10 @@ public abstract class CodenameOneImplementation {
      * @param rect rectangle representing the new clipping area
      */
     public abstract void clipRect(Object graphics, int x, int y, int width, int height);
+    
+    public abstract void pushClip(Object graphics);
+    
+    public abstract Shape popClip(Object graphics);
 
     /**
      * Draws a line between the 2 X/Y coordinates
@@ -1340,6 +1359,13 @@ public abstract class CodenameOneImplementation {
     
     
     // METHODS FOR DEALING WITH 2-D Paths
+    
+    public Image createImage(Shape shape, Stroke stroke, int color){
+        
+        return null;
+    }
+    
+    
     
     /**
      * Creates a platform-specific alpha mask for a shape.  This is used to cache 
@@ -1620,10 +1646,12 @@ public abstract class CodenameOneImplementation {
         int clipY = getClipY(nativeGraphics);
         int clipWidth = getClipWidth(nativeGraphics);
         int clipHeight = getClipHeight(nativeGraphics);
+        //pushClip(nativeGraphics);
         clipRect(nativeGraphics, x, y, imageWidth, imageHeight);
         if (getClipWidth(nativeGraphics) > 0 && getClipHeight(nativeGraphics) > 0) {
             drawImage(nativeGraphics, img, x - imageX, y - imageY);
         }
+        popClip(nativeGraphics);
         setClip(nativeGraphics, clipX, clipY, clipWidth, clipHeight);
     }
 

@@ -48,7 +48,7 @@ public interface Shape {
      * @return A {@link Rectangle} that comprises the bounds of the shape.
      */
     public Rectangle getBounds();
-    
+    public float[] getBounds2D();
     
     public boolean isRectangle();
     public boolean contains(int x, int y);

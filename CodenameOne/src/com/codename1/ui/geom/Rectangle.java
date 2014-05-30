@@ -444,6 +444,10 @@ public class Rectangle implements Shape {
         return this;
     }
     
+    public float[] getBounds2D(){
+        return new float[]{getX(), getY(), getWidth(), getHeight()};
+    }
+    
     public boolean isRectangle(){
         return true;
     }

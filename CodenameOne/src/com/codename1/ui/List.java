@@ -1417,7 +1417,7 @@ public class List<T> extends Component {
         int oY = g.getClipY();
         int oWidth = g.getClipWidth();
         int oHeight = g.getClipHeight();
-
+        //g.pushClip();
         g.clipRect(cmp.getX(), cmp.getY(), cmp.getWidth(), cmp.getHeight());
 
         cmp.paint(g);
@@ -1426,6 +1426,7 @@ public class List<T> extends Component {
             cmp.paintBorder(g);
         }
         g.setClip(oX, oY, oWidth, oHeight);
+        //g.popClip();
     }
 
     private void renderComponentBackground(Graphics g, Component cmp, int x, int y, int width, int height) {
@@ -1440,9 +1441,11 @@ public class List<T> extends Component {
         int cY = g.getClipY();
         int cW = g.getClipWidth();
         int cH = g.getClipHeight();
+        //g.pushClip();
         g.clipRect(cmp.getX(), cmp.getY(), cmp.getWidth(), cmp.getHeight());
         cmp.paintBackground(g);
         g.setClip(cX, cY, cW, cH);
+        //g.popClip();
     }
 
     /**

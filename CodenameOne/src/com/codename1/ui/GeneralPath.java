@@ -147,6 +147,10 @@ public final class GeneralPath implements Shape {
         return textureCache[cacheType];
     }
 
+    public Image getImage(Stroke stroke, int color){
+        return Display.getInstance().getImplementation().createImage(this, stroke, color);
+    }
+    
     /**
      * Deletes cached alpha masks.
      *
@@ -642,12 +646,16 @@ public final class GeneralPath implements Shape {
      * @return The bounding box of the path.
      */
     public Rectangle getBounds() {
+        
         float[] r = getBounds2D();
         int x1 = (int)Math.floor(r[0]);
         int y1 = (int)Math.floor(r[1]);
         int x2 = (int)Math.ceil(r[0]+r[2]);
         int y2 = (int)Math.ceil(r[1]+r[3]);
         return new Rectangle(x1, y1, x2-x1, y2-y1);
+        /*
+        float[] r = getBounds2D();
+        return new Rectangle((int)r[0], (int)r[1], (int)r[2], (int)r[3]);*/
 
     }
     

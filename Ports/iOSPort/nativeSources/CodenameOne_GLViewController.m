@@ -438,6 +438,8 @@ BOOL isIOS7() {
 }
 
 
+
+
 void* Java_com_codename1_impl_ios_IOSImplementation_createImageFromARGBImpl
 (int* buffer, int width, int height) {
     size_t bufferLength = width * height * 4;
@@ -449,6 +451,7 @@ void* Java_com_codename1_impl_ios_IOSImplementation_createImageFromARGBImpl
     CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, buffer, bufferLength, NULL);
     
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    
     if(colorSpaceRef == NULL) {
         NSLog(@"Error allocating color space");
         CGDataProviderRelease(provider);
@@ -519,6 +522,25 @@ void* Java_com_codename1_impl_ios_IOSImplementation_createImageFromARGBImpl
     return (BRIDGE_CAST void*) [[GLUIImage alloc] initWithImage:image];
 }
 
+void* Java_com_codename1_impl_ios_createImageFromAlphaMask(JAVA_BYTE* buffer, int width, int height, int color)
+{
+    size_t obufferLength = width * height * 4;
+    size_t obitsPerComponent = 8;
+    size_t obitsPerPixel = 32;
+    size_t obytesPerRow = 4 * width;
+    
+    
+    uint32_t* opixels = (uint32_t*)malloc(obufferLength);
+    
+    
+    size_t ibufferLength = width * height;
+    for ( size_t i=0; i<ibufferLength; i++){
+        opixels[i] = color & (((uint32_t)buffer[i]) << 6);
+    }
+    void* out = Java_com_codename1_impl_ios_IOSImplementation_createImageFromARGBImpl(opixels, width, height);
+    free(opixels);
+    return out;
+}
 
 void* Java_com_codename1_impl_ios_IOSImplementation_scaleImpl
 (void* peer, int width, int height) {
@@ -667,18 +689,24 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
 (Renderer * renderer, int color, int alpha, int x, int y, int w, int h)
 {
-    DrawPath *f = [[DrawPath alloc] initWithArgs:renderer color:color alpha:alpha];
-    [CodenameOne_GLViewController upcoming:f];
-    [f release];
-    // add to pipeline here
+    dispatch_async(dispatch_get_main_queue(), ^{
+        DrawPath *f = [[DrawPath alloc] initWithArgs:renderer color:color alpha:alpha];
+        [CodenameOne_GLViewController upcoming:f];
+        [f release];
+        // add to pipeline here
+    });
 }
 
 
 void Java_com_codename1_impl_ios_IOSImplementation_drawTextureAlphaMaskImpl(GLuint textureName, int color, int alpha, int x, int y, int w, int h)
 {
-    DrawTextureAlphaMask *f = [[DrawTextureAlphaMask alloc] initWithArgs:textureName color:color alpha:alpha x:x y:y w:w h:h];
-    [CodenameOne_GLViewController upcoming:f];
-    [f release];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        POOL_BEGIN();
+        DrawTextureAlphaMask *f = [[DrawTextureAlphaMask alloc] initWithArgs:textureName color:color alpha:alpha x:x y:y w:w h:h];
+        [CodenameOne_GLViewController upcoming:f];
+        [f release];
+        POOL_END();
+    });
 }
 void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_float_int_int(JAVA_OBJECT instanceObject,
                                                                                                                                                        JAVA_FLOAT a0, JAVA_FLOAT a1, JAVA_FLOAT a2, JAVA_FLOAT a3,
@@ -689,15 +717,16 @@ void com_codename1_impl_ios_IOSImplementation_nativeSetTransformImpl___float_flo
                                                                                                                                                                    )
 {
 #ifdef USE_ES2
-
-    GLKMatrix4 m = GLKMatrix4MakeAndTranspose(a0,a1,a2,a3,
-                                  b0,b1,b2,b3,
-                                  c0,c1,c2,c3,
-                                  d0,d1,d2,d3);
-    
-    SetTransform *f = [[SetTransform alloc] initWithArgs:m originX:originX originY:originY];
-    [CodenameOne_GLViewController upcoming:f];
-    [f release];
+//    dispatch_async(dispatch_get_main_queue(), ^{
+        GLKMatrix4 m = GLKMatrix4MakeAndTranspose(a0,a1,a2,a3,
+                                      b0,b1,b2,b3,
+                                      c0,c1,c2,c3,
+                                      d0,d1,d2,d3);
+        
+        SetTransform *f = [[SetTransform alloc] initWithArgs:m originX:originX originY:originY];
+        [CodenameOne_GLViewController upcoming:f];
+        [f release];
+//    });
 #endif
 }
 

@@ -429,6 +429,7 @@ public final class IOSNative {
     native void nativePathRendererGetOutputBounds(long ptr, int[] bounds);
     native long nativePathRendererGetConsumer(long ptr);
     native long nativePathRendererCreateTexture(long ptr);
+    native int[] nativePathRendererToARGB(long ptr, int color);
     native void nativeDeleteTexture(long textureID);
     
     native void nativePathConsumerMoveTo(long ptr, float x, float y);
@@ -464,4 +465,6 @@ public final class IOSNative {
     // End paths
 
     native void setNativeClippingMaskGlobal(long textureName, int x, int y, int width, int height);
+
+    
 }
