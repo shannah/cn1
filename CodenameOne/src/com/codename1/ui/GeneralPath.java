@@ -72,7 +72,7 @@ public final class GeneralPath implements Shape {
     /**
      * Index for the alpha mask for the filled version of this path.
      */
-    private static final int FILL_CACHE = 0;
+    private static final int _FILL_CACHE = 0;
 
     /**
      * Index for the alpha mask for the stroked version of this path. Note that
@@ -82,20 +82,20 @@ public final class GeneralPath implements Shape {
      * cache multiple stroked versions in the cache, then we can look at
      * changing this.
      */
-    private static final int STROKE_CACHE = 1;
+    private static final int _STROKE_CACHE = 1;
 
     /**
      * The last stroke settings for the stroke cache of the alpha mask. If
      * {@link #getAlphaMask} is called with a different stroke setting, then the
      * stroke alpha mask cache will be cleared and a new mask generated.
      */
-    private Stroke cachedStroke = null;
+    private Stroke _cachedStroke = null;
 
     /**
      * Array to store alpha masks for this path. This is only a 2-element cache:
      * 1 for the filled version, and the other for the stroked version.
      */
-    private Object[] textureCache = new Object[2];
+    private Object[] _textureCache = new Object[2];
 
     /**
      * Dirty flag to indicate that the Alpha mask cache needs to be cleared.
@@ -126,7 +126,8 @@ public final class GeneralPath implements Shape {
      * @see com.codename1.impl.CodenameOneImplementation#isAlphaMaskSupported
      * @see #deleteAlphaMasks
      */
-    public Object getAlphaMask(Stroke stroke) {
+    public Object _getAlphaMask(Stroke stroke) {
+        /*
         if (dirty) {
             for (int i = 0; i < textureCache.length; i++) {
                 textureCache[i] = null;
@@ -145,6 +146,8 @@ public final class GeneralPath implements Shape {
             textureCache[cacheType] = Display.getInstance().getImplementation().createAlphaMask(this, stroke);
         }
         return textureCache[cacheType];
+        */
+        return null;
     }
 
     public Image getImage(Stroke stroke, int color){
@@ -156,7 +159,8 @@ public final class GeneralPath implements Shape {
      *
      * @see #getAlphaMask
      */
-    public void deleteAlphaMasks() {
+    public void _deleteAlphaMasks() {
+        /*
         CodenameOneImplementation impl = Display.getInstance().getImplementation();
         for (int i = 0; i < textureCache.length; i++) {
             Object tex = textureCache[i];
@@ -165,6 +169,7 @@ public final class GeneralPath implements Shape {
                 textureCache[i] = null;
             }
         }
+        */
     }
 
     // END Alpha Mask Caching Functionality

@@ -1209,9 +1209,29 @@ public abstract class CodenameOneImplementation {
      */
     public abstract void clipRect(Object graphics, int x, int y, int width, int height);
     
+    // ----- BEGIN CLIP STACK METHODS ---  ADDED TO HELP SUPPORT TRANSFORMATIONS
+    // in the clip.
+    
+    
+    /**
+     * Pushes the current clip onto the clip stack so that it can be retrieved later
+     * by {@link #popClip}.
+     * @param graphics The native graphics context.
+     */
     public abstract void pushClip(Object graphics);
     
+    
+    
+    
+    /**
+     * Pops the clip from the top of the clip stack and sets it as the current clip.
+     * @param graphics The native graphics context.
+     * @return The clip that was popped off the top of the clip stack.
+     */
     public abstract Shape popClip(Object graphics);
+    
+    
+    // ----- END CLIP STACK METHODS
 
     /**
      * Draws a line between the 2 X/Y coordinates
@@ -1387,7 +1407,7 @@ public abstract class CodenameOneImplementation {
      * @see com.codename1.ui.Graphics#drawAlphaMask 
      * @see com.codename1.ui.GeneralPath#getAlphaMask
      */
-    public Object createAlphaMask(Shape shape, Stroke stroke){
+    public Object _createAlphaMask(Shape shape, Stroke stroke){
         return null;
     }
     
@@ -1397,7 +1417,7 @@ public abstract class CodenameOneImplementation {
      * @see #createAlphaMask
      * @see #isAlphaMaskSupported
      */
-    public void deleteAlphaMask(Object texture){}
+    public void _deleteAlphaMask(Object texture){}
     
     /**
      * Draws the given alpha mask (created by {@link #createAlphaMask} to the given graphics context.
@@ -1409,7 +1429,7 @@ public abstract class CodenameOneImplementation {
      * @see com.codename1.ui.Graphics#drawAlphaMask 
      * @see com.codename1.ui.GeneralPath#getAlphaMask
      */
-    public void drawAlphaMask(Object graphics, Object mask){}
+    public void _drawAlphaMask(Object graphics, Object mask){}
     
     /**
      * Checks to see if alpha masks are supported.  If alpha masks are supported, then {@link com.codename1.ui.Graphics#drawShape}
@@ -1422,7 +1442,7 @@ public abstract class CodenameOneImplementation {
      * @see com.codename1.ui.Graphics#drawAlphaMask 
      * @see com.codename1.ui.GeneralPath#getAlphaMask
      */
-    public boolean isAlphaMaskSupported(Object graphics){
+    public boolean _isAlphaMaskSupported(Object graphics){
         return false;
     }
     

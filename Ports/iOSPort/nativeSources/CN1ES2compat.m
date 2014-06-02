@@ -121,14 +121,14 @@ static void CN1compileBasicProgram(){
     "uniform highp sampler2D uTextureMask;\n"
     "uniform highp sampler2D uTextureRGBA;\n"
     
-    "uniform lowp vec4 uColor;\n"
+    "uniform highp vec4 uColor;\n"
     "uniform bool uUseVertexColors;\n"
     "uniform bool uUseAlphaMaskTexture;\n"
     "uniform bool uUseRGBATexture;\n"
     
     "varying highp vec2 vTextureMaskCoord;\n"
     "varying highp vec2 vTextureRGBACoord;\n"
-    "varying lowp vec4 vColor;\n"
+    "varying highp vec4 vColor;\n"
     
     "void main(){\n"
     "   if ( uUseRGBATexture ){ gl_FragColor = texture2D(uTextureRGBA, vTextureRGBACoord);} else {\n"
@@ -185,7 +185,7 @@ static void CN1compileBasicProgram(){
 
     "varying highp vec2 vTextureMaskCoord;\n"
     "varying highp vec2 vTextureRGBACoord;\n"
-    "varying lowp vec4 vColor;\n"
+    "varying highp vec4 vColor;\n"
     
     "void main(){\n"
     "   gl_Position = uProjectionMatrix *  uModelViewMatrix * uTransformMatrix * aVertexCoord;\n"

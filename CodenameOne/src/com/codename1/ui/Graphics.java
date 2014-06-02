@@ -24,10 +24,7 @@
 package com.codename1.ui;
 
 import com.codename1.impl.CodenameOneImplementation;
-import com.codename1.io.Log;
 import com.codename1.ui.geom.Matrix;
-import com.codename1.ui.geom.PathIterator;
-import com.codename1.ui.geom.Rectangle;
 import com.codename1.ui.geom.Shape;
 import com.codename1.ui.plaf.Style;
 
@@ -60,14 +57,6 @@ public final class Graphics {
     Graphics(Object nativeGraphics) {
         setGraphics(nativeGraphics);
         impl = Display.getInstance().getImplementation();
-    }
-    
-    public void pushClip(){
-        impl.pushClip(nativeGraphics);
-    }
-    
-    public Shape popClip(){
-        return impl.popClip(nativeGraphics);
     }
 
     /**
@@ -248,6 +237,22 @@ public final class Graphics {
      */
     public void setClip(int x, int y, int width, int height) {
         impl.setClip(nativeGraphics, xTranslate + x, yTranslate + y, width, height);
+    }
+    
+    /**
+     * Pushes the current clip onto the clip stack.  It can later be restored 
+     * using {@link #popClip}.
+     */
+    public void pushClip(){
+        impl.pushClip(nativeGraphics);
+    }
+    
+    /**
+     * Pops the top clip from the clip stack and sets it as the current clip.
+     * @return The shape of the clip that was popped of the stack.
+     */
+    public Shape popClip(){
+        return impl.popClip(nativeGraphics);
     }
 
     /**
@@ -579,61 +584,14 @@ public final class Graphics {
             p.append(shape.getPathIterator(t), true);
             shape = p;
         }
-        /*
-        if ( isAlphaMaskSupported() && shape instanceof GeneralPath ){
-            GeneralPath gp = (GeneralPath)shape;
-            Object texture = gp.getAlphaMask(stroke);
-            if ( texture != null ){
-                drawAlphaMask(texture);
-                return;
-            }
-            
-        }
-        */
-        if ( isShapeSupported()){
-            impl.drawShape(nativeGraphics, shape, stroke);
-        }
-        //this.drawShape(shape,  stroke.getLineWidth(), stroke.getCapStyle(), stroke.getJoinStyle(), stroke.getMiterLimit());
-    }
-    
-    /*
-    private void drawShape(Shape shape, float lineWidth, int capStyle, int miterStyle, float miterLimit){
-        if ( isShapeSupported()){
-            impl.drawShape(nativeGraphics, shape, stroke);
-        }
-    }
-    */
-    
-    
-    /**
-     * Draws platform-specific alpha mask. This is used by drawShape to help improve performance as shapes
-     * can be cached as an alpha mask and then drawn more efficiently (e.g. can skip the tesselation step).
-     * * <p>NOTE:  For now leaving this as package private because alpha masks aren't exposed
-     * anywhere yet in the public API and it is possible that we never want to expose them.</p>
-     * 
-     * @param mask The mask that is to be drawn.
-     * @see GeneralPath#getAlphaMask
-     * @see com.codename1.impl.CodenameOneImplementation#drawAlphaMask
-     * @see #isAlphaMaskSupported
-     * 
-     */
-    void drawAlphaMask(Object mask){
-        if ( isAlphaMaskSupported()){
-            impl.drawAlphaMask(nativeGraphics, mask);
-        }
         
+        if ( isShapeSupported()){
+            impl.drawShape(nativeGraphics, shape, stroke);
+        }
+       
     }
     
-    /**
-     * Checks if this graphics context supports drawing platform-specific alpha masks.
-     * 
-     * <p>NOTE:  For now leaving this as package private because alpha masks aren't exposed
-     * anywhere yet in the public API and it is possible that we never want to expose them.</p>
-     * @return {@code true} if this graphics context supported alpha masks.
-     */
-    boolean isAlphaMaskSupported(){
-        return impl.isAlphaMaskSupported(nativeGraphics);
-    }
+    
     
     /**
      * Fills the given shape using the current alpha and color settings.
@@ -646,22 +604,12 @@ public final class Graphics {
      */
     public void fillShape(Shape shape){
         if ( xTranslate != 0 || yTranslate != 0 ){
-            Log.p("Translating shape inside fillShape: "+xTranslate+","+yTranslate);
             GeneralPath p = new GeneralPath();
             Matrix t = Matrix.makeTranslation(xTranslate, yTranslate, 0);
             p.append(shape.getPathIterator(t), true);
             shape = p;
         }
-        /*
-        if ( isAlphaMaskSupported() && shape instanceof GeneralPath){
-            GeneralPath gp = (GeneralPath)shape;
-            Object texture = gp.getAlphaMask(null);
-            if ( texture != null ){
-                drawAlphaMask(texture);
-                return;
-            }
-        }
-        */
+        
         if ( isShapeSupported() ){
             impl.fillShape(nativeGraphics, shape);
         }
@@ -734,9 +682,7 @@ public final class Graphics {
      * @see #setTransform(com.codename1.ui.geom.Matrix,int,int)
      */
     public void setTransform(Matrix matrix){
-        //Log.p("Setting transform..");
         if ( isTransformSupported()){
-            //Log.p("Transforms supported");
             impl.setTransform(nativeGraphics, matrix);
         }
     }

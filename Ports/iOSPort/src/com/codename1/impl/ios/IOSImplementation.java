@@ -881,20 +881,14 @@ public class IOSImplementation extends CodenameOneImplementation {
     }
     
     public void setClip(Object graphics, int x, int y, int width, int height) {
-        //Log.p("In set Clip "+x+","+y+","+width+","+height);
         NativeGraphics ng = ((NativeGraphics)graphics);
         ng.checkControl();
         boolean isTransformSupported = ng.isTransformSupported();
-        //if(!isTransformSupported && ng.clipX == x && ng.clipY == y && ng.clipW == width && ng.clipH == height) {
-        //    return;
-        //} 
         
         if ( isTransformSupported ){
             if ( ng.transform == null ){
                 ng.transform = Matrix.makeIdentity();
             }
-            //ng.nativeGetTransform(ng.transform);
-            
             if ( ng.transform.isIdentity()){
                 //Log.p("Identity transform");
                 if ( ng.clip != null ){
@@ -912,7 +906,6 @@ public class IOSImplementation extends CodenameOneImplementation {
                     ng.clipDirty = true;
                 }
             } else {
-                //Log.p("Not identity transform");
                 ng.clip = new Rectangle(x,y,width,height);
                 GeneralPath gp = new GeneralPath();
                 gp.append(ng.clip.getPathIterator(ng.transform), false);
@@ -926,7 +919,6 @@ public class IOSImplementation extends CodenameOneImplementation {
                     }
                 } else {
                     ng.clip = gp;
-                    //Log.p("Clipping path "+ng.clip);
                     if(currentlyDrawingOn == graphics || graphics == globalGraphics) {
                         ng.setNativeClipping(ng.clip);
                         ng.clipApplied = true;
@@ -934,11 +926,9 @@ public class IOSImplementation extends CodenameOneImplementation {
                     }
                 }
             }
-            //Log.p("Exiting setClip 1");
             return;
         }
         if ( ng.clipX == x && ng.clipY == y && ng.clipW == width && ng.clipH == height){
-            //Log.p("Exiting setClip 2");
             return;
         }
         ng.clipApplied = (ng.clipX == x) && (ng.clipY == y) && (ng.clipW == width) && (ng.clipH == height);
@@ -950,25 +940,20 @@ public class IOSImplementation extends CodenameOneImplementation {
             ng.setNativeClipping(x, y, width, height, ng.clipApplied);
             ng.clipApplied = true;
         } 
-        //Log.p("Exiting setClip 3");
     }
 
     private  void setNativeClippingMutable(int x, int y, int width, int height, boolean firstClip) {
         nativeInstance.setNativeClippingMutable(x, y, width, height, firstClip);
     }
     private  void setNativeClippingGlobal(int x, int y, int width, int height, boolean firstClip) {
-        //Log.p("Setting native clipping global to "+x+","+y+","+width+","+height);
         nativeInstance.setNativeClippingGlobal(x, y, width, height, firstClip);
     }
     
     private  void setNativeClippingGlobal(Shape shape){
         Rectangle bounds = shape.getBounds();
         if ( shape.isRectangle() || bounds.getWidth() <= 0 || bounds.getHeight() <= 0){
-            
-            //Log.p("Setting native clipping to "+bounds);
             setNativeClippingGlobal(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), true);
         } else {
-            //Log.p("Setting native clipping to not rect");
             TextureAlphaMask mask = (TextureAlphaMask)textureCache.get(shape, null);
             if ( mask == null ){
                 mask = (TextureAlphaMask)this.createAlphaMask(shape, null);
@@ -976,11 +961,10 @@ public class IOSImplementation extends CodenameOneImplementation {
             }
             
            if ( mask != null ){
-                //Log.p("Setting native clipping mask global with mask with bounds "+mask.bounds);
                Log.p("Setting native clipping mask global with bounds "+mask.getBounds()+" : "+shape);
                 nativeInstance.setNativeClippingMaskGlobal(mask.getTextureName(), mask.getBounds().getX(), mask.getBounds().getY(), mask.getBounds().getWidth(), mask.getBounds().getHeight());
             } else {
-                Log.p("Failed to create texture mask for clipping region");
+               Log.p("Failed to create texture mask for clipping region");
             }
         }
     }
@@ -1011,10 +995,7 @@ public class IOSImplementation extends CodenameOneImplementation {
     public void clipRect(Object graphics, int x, int y, int width, int height) {
         NativeGraphics ng = (NativeGraphics)graphics;
         if ( ng.isTransformSupported() ){
-            
-            
             if ( ng.clip == null ){
-                
                 setClip(graphics, x, y, width, height);
                 return;
             } 
@@ -1041,7 +1022,6 @@ public class IOSImplementation extends CodenameOneImplementation {
                     }
                 }
                 if ( s.contains(x,y) && s.contains(x+width, y) && s.contains(x+width, y+height) && s.contains(x, y+height)){
-                    //Log.p("Contained");
                     ng.setNativeClipping(x, y, width, height, ng.clipApplied);
                     ng.clip = clipBounds;
                     clipBounds.setBounds(x, y, width, height);
@@ -1302,8 +1282,13 @@ public class IOSImplementation extends CodenameOneImplementation {
     // -------------------------------------------------------------------------
     // METHODS FOR DRAWING SHAPES AND TRANSFORMATIONS
     // -------------------------------------------------------------------------
-    @Override
-    public Object createAlphaMask(Shape shape, Stroke stroke) {
+    /**
+     * Creates an alpha mask from a shape.
+     * @param shape
+     * @param stroke
+     * @return 
+     */
+    public TextureAlphaMask createAlphaMask(Shape shape, Stroke stroke) {
         int[] bounds = new int[]{0,0,0,0};
         long tex = nativeCreateAlphaMaskForShape(shape, stroke, bounds);
         if ( tex == 0 ){
@@ -1336,33 +1321,22 @@ public class IOSImplementation extends CodenameOneImplementation {
             
             NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), path.getWindingRule());
             NativePathStroker stroker = new NativePathStroker(renderer, lineWidth, capStyle, miterStyle, miterLimit);
-            //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
-            //stroker.reset(lineWidth, capStyle, miterStyle, miterLimit);
             NativePathConsumer c = stroker.consumer;
             fillPathConsumer(path, c);
 
             // We don't need the stroker anymore because it has passed the strokes to the renderer.
             stroker.destroy();
-            //Log.p("Creating texture with stroke for shape "+shape);
-            //long tex = renderer.createTexture();
             return renderer;
-            //renderer.destroy();
-            //return tex;
+
         } else {
             Rectangle rb = shape.getBounds();
-            Log.p("Creating texture for shape with bounds "+rb);
             PathIterator path = shape.getPathIterator();
 
-            
             // Notice that this will be cleaned up in the dealloc method of the DrawPath objective-c class.
             NativePathRenderer renderer = new NativePathRenderer(rb.getX(), rb.getY(), rb.getWidth(), rb.getHeight(), path.getWindingRule());
-            //renderer.reset(ng.clipX, ng.clipY, ng.clipW, ng.clipH, NativePathRenderer.WIND_NON_ZERO);
+            
             NativePathConsumer c = renderer.consumer;
             fillPathConsumer(path, c);
-            //Log.p("Creating texture without stroke for shape "+shape+" bounds "+shape.getBounds());
-            //long tex = renderer.createTexture();
-            //renderer.destroy();
-            //return tex;
             
             return renderer;
             
@@ -1386,26 +1360,23 @@ public class IOSImplementation extends CodenameOneImplementation {
     
     
 
-    @Override
-    public void deleteAlphaMask(Object mask) {
-        if ( mask instanceof TextureAlphaMask ){
-            ((TextureAlphaMask)mask).dispose();
-        }
+    
+    public void deleteAlphaMask(TextureAlphaMask mask) {
+        mask.dispose();
+        
     }
 
-    @Override
-    public void drawAlphaMask(Object graphics, Object mask) {
-        if ( mask instanceof TextureAlphaMask ){
-            TextureAlphaMask nt = (TextureAlphaMask)mask;
-            NativeGraphics ng = (NativeGraphics)graphics;
-            ng.checkControl();
-            ng.applyTransform();
-            ng.applyClip();
-            ng.nativeDrawAlphaMask(nt);
-        }
+    public void drawAlphaMask(Object graphics, TextureAlphaMask mask) {
+        
+        TextureAlphaMask nt = (TextureAlphaMask)mask;
+        NativeGraphics ng = (NativeGraphics)graphics;
+        ng.checkControl();
+        ng.applyTransform();
+        ng.applyClip();
+        ng.nativeDrawAlphaMask(nt);
+        
     }
 
-    @Override
     public boolean isAlphaMaskSupported(Object graphics) {
         return ((NativeGraphics)graphics).isAlphaMaskSupported();
     }
@@ -1495,22 +1466,8 @@ public class IOSImplementation extends CodenameOneImplementation {
     
     @Override
     public void setTransform(Object graphics, Matrix t) {
-        //Log.p("Setting transform to "+t);
         ((NativeGraphics)graphics).transform = t;
-        /*
-        float[] m = t.getData();
         
-        // Note that Matrix is stored in column-major format but GLKMatrix is stored in row-major
-        // that's why we transpose it here.
-        //Log.p("....Setting transform.....");
-        nativeInstance.nativeSetTransform(
-            m[0], m[4], m[8], m[12],
-            m[1], m[5], m[9], m[13],
-            m[2], m[6], m[10], m[14],
-            m[3], m[7], m[11], m[15],
-            0, 0
-        );
-        */
     }
     
     public void setNativeTransformGlobal(Matrix t){
@@ -1543,15 +1500,123 @@ public class IOSImplementation extends CodenameOneImplementation {
         return ((NativeGraphics)graphics).isShapeSupported();
     }
     
+    /**
+     * A map to cache textures.
+     */
+    class TextureCache {
+        /**
+         * Stores weak references to TextureAlphaMask objects.
+         */
+        Map<String, Object> textures = new HashMap<String,Object>();
+        
+        /**
+         * Gets the alpha mask for a given shape/stroke from the
+         * texture cache.  The mask will be take the bounds of the provided
+         * shape rather than the bounds of the original shape from which the
+         * mask was created.
+         * @param s The shape.
+         * @param stroke The stroke.  If null, then it will get a fill alpha mask.
+         * @return The alpha mask for the shape/stroke or null if it is not currently
+         * in the cache.
+         */
+        TextureAlphaMaskProxy get(Shape s, Stroke stroke){
+            String shapeID = getShapeID(s, stroke);
+            Object out = textures.get(shapeID);
+            if ( out != null ){
+                
+                out = Display.getInstance().extractHardRef(out);
+                
+                if ( out != null ){
+                    TextureAlphaMask mask = (TextureAlphaMask)out;
+                    Rectangle bounds = s.getBounds();
+                    return new TextureAlphaMaskProxy(mask, bounds);
+                    
+                } else {
+                    textures.remove(shapeID);
+                }
+            }
+            return null;
+        }
+        
+        /**
+         * Adds a shape/stroke => TextureAlphaMask to the cache.
+         * @param s The shape.
+         * @param stroke The stroke.  Null for a fill alpha mask.
+         * @param mask The alpha mask
+         */
+        void add(Shape s, Stroke stroke, TextureAlphaMask mask){
+            String shapeID = getShapeID(s, stroke);
+            textures.put(shapeID, Display.getInstance().createSoftWeakRef(mask));
+            
+        }
+        
+        /**
+         * Generates a key to be used in the texture map for a given shape/stroke.
+         * Shapes that are identical but just translated will have identical keys.  
+         * The bounds will be adjusted as part of the {@link #get} method.
+         * @param shape The shape for which to retrieve the mask.
+         * @param stroke The stroke.  If null, then it is a fill mask.  Otherwise it
+         * is a contour mask.
+         * @return The string ID used in the map.
+         */
+        String getShapeID(Shape shape, Stroke stroke){
+            float[] bounds = shape.getBounds2D();
+            float x = bounds[0];
+            float y = bounds[1];
+            StringBuilder sb = new StringBuilder();
+            PathIterator it = shape.getPathIterator();
+            float[] buf = new float[6];
+            float tx, ty, tx2, ty2, tx3, ty3;
+            if ( stroke != null ){
+                sb.append(stroke.hashCode()).append(":");
+            }
+            sb.append(it.getWindingRule());
+            sb.append(";");
+            while ( !it.isDone() ){
+                int type = it.currentSegment(buf);
+                
+                switch ( type ){
+                    case PathIterator.SEG_MOVETO:
+                       tx = buf[0]-x;
+                       ty = buf[1]-y;
+                        sb.append("M:").append((int)tx).append(",").append((int)ty);
+                        break;
+                    case PathIterator.SEG_LINETO:
+                       tx = buf[0]-x;
+                       ty = buf[1]-y;
+                        sb.append("L:").append((int)tx).append(",").append((int)ty);
+                        break;
+                    case PathIterator.SEG_QUADTO:
+                        tx = buf[0]-x;
+                        ty = buf[1]-y;
+                        tx2 = buf[2]-x;
+                        ty2 = buf[3]-y;
+                        sb.append("Q:").append((int)tx).append(",").append((int)ty).append(",").append((int)tx2).append(",").append((int)ty2);
+                        break;
+                    case PathIterator.SEG_CUBICTO:
+                        tx = buf[0]-x;
+                        ty = buf[1]-y;
+                        tx2 = buf[2]-x;
+                        ty2 = buf[3]-y;
+                        tx3 = buf[4]-x;
+                        ty3= buf[5]-y;
+                        sb.append("C:").append((int)tx).append(",").append((int)ty).append(",").append((int)tx2).append(",").append((int)ty2)
+                                .append(",").append((int)tx3).append(",").append((int)ty3);
+                        break;
+                        
+                    case PathIterator.SEG_CLOSE:
+                        sb.append(".");
+                        
+                }
+                it.next();
+            }
+            return sb.toString();
+            
+        }
+    }
     
     
-    
-    
-    
-    
-    
-    
-   
+    // END SHAPES AND TRANSFORMATION CODE
     
     private void nativeDrawImageMutable(long peer, int alpha, int x, int y, int width, int height) {
         nativeInstance.nativeDrawImageMutable(peer, alpha, x, y, width, height);
@@ -5487,93 +5552,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         nativeInstance.writeToSocketStream(((Long)socket).longValue(), data);
     }
     
-    class TextureCache {
-        Map<String, Object> textures = new HashMap<String,Object>();
-        
-        TextureAlphaMaskProxy get(Shape s, Stroke stroke){
-            String shapeID = getShapeID(s, stroke);
-            //Log.p("Getting shape from texture cache: "+shapeID);
-            Object out = textures.get(shapeID);
-            if ( out != null ){
-                
-                out = Display.getInstance().extractHardRef(out);
-                
-                if ( out != null ){
-                    //Log.p("Cache hit: "+cacheHits);
-                    TextureAlphaMask mask = (TextureAlphaMask)out;
-                    Rectangle bounds = s.getBounds();
-                    return new TextureAlphaMaskProxy(mask, bounds);
-                    
-                } else {
-                    textures.remove(s);
-                }
-            }
-            //Log.p("Cache miss: "+cacheMisses);
-            return null;
-        }
-        
-        void add(Shape s, Stroke stroke, TextureAlphaMask mask){
-            String shapeID = getShapeID(s, stroke);
-            textures.put(shapeID, Display.getInstance().createSoftWeakRef(mask));
-            
-        }
-        
-        
-        String getShapeID(Shape shape, Stroke stroke){
-            float[] bounds = shape.getBounds2D();
-            float x = bounds[0];
-            float y = bounds[1];
-            StringBuilder sb = new StringBuilder();
-            PathIterator it = shape.getPathIterator();
-            float[] buf = new float[6];
-            float tx, ty, tx2, ty2, tx3, ty3;
-            if ( stroke != null ){
-                sb.append(stroke.hashCode()).append(":");
-            }
-            sb.append(it.getWindingRule());
-            sb.append(";");
-            while ( !it.isDone() ){
-                int type = it.currentSegment(buf);
-                
-                switch ( type ){
-                    case PathIterator.SEG_MOVETO:
-                       tx = buf[0]-x;
-                       ty = buf[1]-y;
-                        sb.append("M:").append((int)tx).append(",").append((int)ty);
-                        break;
-                    case PathIterator.SEG_LINETO:
-                       tx = buf[0]-x;
-                       ty = buf[1]-y;
-                        sb.append("L:").append((int)tx).append(",").append((int)ty);
-                        break;
-                    case PathIterator.SEG_QUADTO:
-                        tx = buf[0]-x;
-                        ty = buf[1]-y;
-                        tx2 = buf[2]-x;
-                        ty2 = buf[3]-y;
-                        sb.append("Q:").append((int)tx).append(",").append((int)ty).append(",").append((int)tx2).append(",").append((int)ty2);
-                        break;
-                    case PathIterator.SEG_CUBICTO:
-                        tx = buf[0]-x;
-                        ty = buf[1]-y;
-                        tx2 = buf[2]-x;
-                        ty2 = buf[3]-y;
-                        tx3 = buf[4]-x;
-                        ty3= buf[5]-y;
-                        sb.append("C:").append((int)tx).append(",").append((int)ty).append(",").append((int)tx2).append(",").append((int)ty2)
-                                .append(",").append((int)tx3).append(",").append((int)ty3);
-                        break;
-                        
-                    case PathIterator.SEG_CLOSE:
-                        sb.append(".");
-                        
-                }
-                it.next();
-            }
-            return sb.toString();
-            
-        }
-    }
+    
     
    
 }
