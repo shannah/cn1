@@ -31,6 +31,7 @@ import com.codename1.io.services.ImageDownloadService;
 import com.codename1.ui.*;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
+import com.codename1.ui.events.BrowserNavigationCallback;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -196,14 +197,27 @@ public class VServAds extends FullScreenAdService {
             adComponent.getStyle().setOpacity(0xff);
             ImageDownloadService imd = new ImageDownloadService(imageURL, adComponent);
             NetworkManager.getInstance().addToQueueAndWait(imd);
-            adComponent.addActionListener(new ActionListener() {
+            /*adComponent.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     Display.getInstance().execute(getAdDestination());
                 }
-            });
+            });*/
             return adComponent;
         } else {
             WebBrowser wb = new WebBrowser();
+            if(wb.getInternal() instanceof BrowserComponent) {
+                BrowserComponent bc = (BrowserComponent)wb.getInternal();
+                bc.setBrowserNavigationCallback(new BrowserNavigationCallback() {
+                    public boolean shouldNavigate(final String url) {
+                        unlock(new ActionListener() {
+                            public void actionPerformed(ActionEvent evt) {
+                                Display.getInstance().execute(url);
+                            }
+                        });
+                        return false;
+                    }
+                });
+            }
             wb.setURL(imageURL);
             return wb;
         }
