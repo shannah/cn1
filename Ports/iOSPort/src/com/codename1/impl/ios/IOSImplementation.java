@@ -2402,6 +2402,16 @@ public class IOSImplementation extends CodenameOneImplementation {
     }
 
     @Override
+    public boolean isBadgingSupported() {
+        return true;
+    }
+
+    @Override
+    public void setBadgeNumber(int number) {
+        nativeInstance.setBadgeNumber(number);
+    }
+    
+    @Override
     public void execute(String url) {
         nativeInstance.execute(url);
     }
@@ -3609,8 +3619,7 @@ public class IOSImplementation extends CodenameOneImplementation {
      * @inheritDoc
      */
     public void printStackTraceToStream(Throwable t, Writer o) {
-        PrintWriter p = new PrintWriter(o);
-        t.printStackTrace(p);
+        nativeInstance.printStackTraceToStream(t, o);
     }
 
     /**
