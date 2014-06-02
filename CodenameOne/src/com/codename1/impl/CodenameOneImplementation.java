@@ -91,6 +91,7 @@ public abstract class CodenameOneImplementation {
     private Hashtable radialGradientCache;
 
     private boolean builtinSoundEnabled = true;
+    private boolean dragStarted = false;
     private int dragActivationCounter = 0;
     private int dragActivationX = 0;
     private int dragActivationY = 0;
@@ -1982,7 +1983,9 @@ public abstract class CodenameOneImplementation {
      * @param y the position of the event
      */
     protected void pointerDragged(final int[] x, final int[] y) {
-        if (hasDragStarted(x, y)) {
+        
+        if (dragStarted || hasDragStarted(x, y)) {
+            dragStarted = true;
             Display.getInstance().pointerDragged(x, y);
         }
     }
@@ -2147,6 +2150,7 @@ public abstract class CodenameOneImplementation {
                 pointerDragged(x, y);
             }
         }
+        dragStarted = false;        
         dragActivationCounter = 0;
         Display.getInstance().pointerReleased(x, y);
     }
@@ -3722,6 +3726,22 @@ public abstract class CodenameOneImplementation {
     }
     
     /**
+     * Returns true if this is a desktop application
+     * @return true if this is a desktop application
+     */
+    public boolean isDesktop() {
+        return false;
+    }
+    
+    /**
+     * Returns true if the device has dialing capabilities
+     * @return false if it cannot dial
+     */
+    public boolean canDial() {
+        return !isTablet() && !isDesktop();
+    }
+    
+    /**
      * Allows an implementation to modify setting thread priority, some implementations
      * don't handle thread priorities well
      * 
@@ -5264,6 +5284,23 @@ public abstract class CodenameOneImplementation {
      */
     public void dismissNotification(Object o) {
     }
+    
+    
+    /**
+     * Returns true if the underlying OS supports numeric badges on icons. Notice this is only available on iOS
+     * and only when push notification is enabled
+     * @return true if the underlying OS supports numeric badges
+     */
+    public boolean isBadgingSupported() {
+        return false;
+    }
+
+    /**
+     * Sets the number that appears on the application icon in iOS 
+     * @param number number to show on the icon
+     */
+    public void setBadgeNumber(int number) {
+    }    
     
     /**
      * Returns the UDID for devices that support it

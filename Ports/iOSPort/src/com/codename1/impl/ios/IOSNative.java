@@ -24,6 +24,7 @@ package com.codename1.impl.ios;
 
 import com.codename1.contacts.Contact;
 import com.codename1.payment.Product;
+import java.io.Writer;
 import java.util.Vector;
 
 /**
@@ -321,6 +322,7 @@ public final class IOSNative {
     native void registerPush();
 
     native void deregisterPush();
+    native void setBadgeNumber(int number);
 
     native long createImageFile(long imagePeer, boolean jpeg, int width, int height, float quality);
     native int getNSDataSize(long nsData);
@@ -409,8 +411,7 @@ public final class IOSNative {
     public native int getSocketAvailableInput(long socket);
     public native byte[] readFromSocketStream(long socket);
     public native void writeToSocketStream(long socket, byte[] data);
-    
-    
+
     
     // Paths
     native long nativePathStrokerCreate(long consumerOutPtr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
@@ -467,4 +468,7 @@ public final class IOSNative {
     native void setNativeClippingMaskGlobal(long textureName, int x, int y, int width, int height);
 
     
+
+    public native void printStackTraceToStream(Throwable t, Writer o);
+
 }

@@ -52,6 +52,8 @@
 #ifdef USE_ES2
 #import <GLKit/GLKit.h>
 #endif
+#include "java_lang_System.h"
+
 extern void repaintUI();
 extern NSDate* currentDatePickerDate;
 extern bool datepickerPopover;
@@ -157,7 +159,7 @@ int isIPad() {
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
-(int x, int y, int w, int h, void* font, int isSingleLine, int rows, int maxSize,
+(CN1_THREAD_STATE_MULTI_ARG int x, int y, int w, int h, void* font, int isSingleLine, int rows, int maxSize,
  int constraint, const char* str, int len, BOOL forceSlideUp,
  int color, JAVA_LONG imagePeer, int padTop, int padBottom, int padLeft, int padRight, NSString* hintString, BOOL showToolbar) {
     //NSLog(@"Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl");
@@ -246,7 +248,7 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
 #ifndef NEW_CODENAME_ONE_VM
             JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent__();
 #else
-            JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent___R_boolean();
+            JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent___R_boolean(CN1_THREAD_STATE_PASS_SINGLE_ARG);
 #endif
             if (isLastEdit) {
                 utf.returnKeyType = UIReturnKeyDone;
@@ -291,7 +293,7 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
 #ifndef NEW_CODENAME_ONE_VM
                     JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance__();
 #else
-                    JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance___R_com_codename1_ui_plaf_UIManager();
+                    JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance___R_com_codename1_ui_plaf_UIManager(CN1_THREAD_STATE_PASS_SINGLE_ARG);
 #endif
                     JAVA_OBJECT str;
                     UIBarButtonItem *doneButton;
@@ -300,17 +302,17 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
 #ifndef NEW_CODENAME_ONE_VM
                         str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
 #else
-                        str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+                        str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(CN1_THREAD_STATE_PASS_ARG obj, fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"done"), fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"Done"));
 #endif
-                        buttonTitle = toNSString(str);
+                        buttonTitle = toNSString(CN1_THREAD_GET_STATE_PASS_ARG str);
                         doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utf.delegate action:@selector(keyboardDoneClicked)];
                     } else {
 #ifndef NEW_CODENAME_ONE_VM
                         str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
 #else
-                        str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
+                        str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(CN1_THREAD_STATE_PASS_ARG obj, fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"next"), fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"Next"));
 #endif
-                        buttonTitle = toNSString(str);
+                        buttonTitle = toNSString(CN1_THREAD_GET_STATE_PASS_ARG str);
                         doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utf.delegate action:@selector(keyboardNextClicked)];
                         if(vkbAlwaysOpen && (utf.keyboardType == UIKeyboardTypeDecimalPad
                                              || utf.keyboardType == UIKeyboardTypePhonePad
@@ -319,9 +321,9 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
 #ifndef NEW_CODENAME_ONE_VM
                             str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
 #else
-                            str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+                            str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(CN1_THREAD_STATE_PASS_ARG obj, fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"done"), fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"Done"));
 #endif
-                            buttonTitle = toNSString(str);
+                            buttonTitle = toNSString(CN1_THREAD_GET_STATE_PASS_ARG str);
                             UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utf.delegate action:@selector(keyboardDoneClicked)];
                             itemsArray = [NSArray arrayWithObjects: flexButton, anotherButton, doneButton, nil];
 #ifndef CN1_USE_ARC
@@ -377,8 +379,8 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
                 JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent__();
                 JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance__();
 #else
-                JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent___R_boolean();
-                JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance___R_com_codename1_ui_plaf_UIManager();
+                JAVA_BOOLEAN isLastEdit = com_codename1_impl_ios_TextEditUtil_isLastEditComponent___R_boolean(CN1_THREAD_STATE_PASS_SINGLE_ARG);
+                JAVA_OBJECT obj = com_codename1_ui_plaf_UIManager_getInstance___R_com_codename1_ui_plaf_UIManager(CN1_THREAD_STATE_PASS_SINGLE_ARG);
 #endif
                 JAVA_OBJECT str;
                 UIBarButtonItem *doneButton;
@@ -386,17 +388,17 @@ void Java_com_codename1_impl_ios_IOSImplementation_editStringAtImpl
 #ifndef NEW_CODENAME_ONE_VM
                     str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
 #else 
-                    str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"done"), fromNSString(@"Done"));
+                    str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(CN1_THREAD_STATE_PASS_ARG obj, fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"done"), fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"Done"));
 #endif
-                    buttonTitle = toNSString(str);
+                    buttonTitle = toNSString(CN1_THREAD_GET_STATE_PASS_ARG str);
                     doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utv.delegate action:@selector(keyboardDoneClicked)];
                 } else {
 #ifndef NEW_CODENAME_ONE_VM
                     str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
 #else 
-                    str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(obj, fromNSString(@"next"), fromNSString(@"Next"));
+                    str = com_codename1_ui_plaf_UIManager_localize___java_lang_String_java_lang_String_R_java_lang_String(CN1_THREAD_STATE_PASS_ARG obj, fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"next"), fromNSString(CN1_THREAD_GET_STATE_PASS_ARG @"Next"));
 #endif
-                    buttonTitle = toNSString(str);
+                    buttonTitle = toNSString(CN1_THREAD_GET_STATE_PASS_ARG str);
                     doneButton = [[UIBarButtonItem alloc]initWithTitle:buttonTitle style:UIBarButtonItemStyleDone target:utv.delegate action:@selector(keyboardNextClicked)];
                 }
                 NSArray *itemsArray = [NSArray arrayWithObjects: flexButton, doneButton, nil];
@@ -1239,31 +1241,31 @@ bool lockDrawing;
 
 - (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
     if (receivedEvent.type == UIEventTypeRemoteControl) {
-        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__();
+        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
 #ifndef NEW_CODENAME_ONE_VM
         o = com_codename1_ui_Display_getImplementation__(o);
 #else
-        o = com_codename1_ui_Display_getImplementation___R_com_codename1_impl_CodenameOneImplementation(o);
+        o = com_codename1_ui_Display_getImplementation___R_com_codename1_impl_CodenameOneImplementation(CN1_THREAD_GET_STATE_PASS_ARG o);
 #endif
         switch (receivedEvent.subtype) {
             case UIEventSubtypeRemoteControlPlay:
             case UIEventSubtypeRemoteControlPause:
             case UIEventSubtypeRemoteControlTogglePlayPause:
                 NSLog(@"Play or stop invoked");
-                com_codename1_impl_CodenameOneImplementation_keyPressed___int(o, -24);
-                com_codename1_impl_CodenameOneImplementation_keyReleased___int(o, -24);
+                com_codename1_impl_CodenameOneImplementation_keyPressed___int(CN1_THREAD_GET_STATE_PASS_ARG o, -24);
+                com_codename1_impl_CodenameOneImplementation_keyReleased___int(CN1_THREAD_GET_STATE_PASS_ARG o, -24);
                 break;
                 
             case UIEventSubtypeRemoteControlPreviousTrack:
                 NSLog(@"Previous invoked");
-                com_codename1_impl_CodenameOneImplementation_keyPressed___int(o, -21);
-                com_codename1_impl_CodenameOneImplementation_keyReleased___int(o, -21);
+                com_codename1_impl_CodenameOneImplementation_keyPressed___int(CN1_THREAD_GET_STATE_PASS_ARG o, -21);
+                com_codename1_impl_CodenameOneImplementation_keyReleased___int(CN1_THREAD_GET_STATE_PASS_ARG o, -21);
                 break;
                 
             case UIEventSubtypeRemoteControlNextTrack:
                 NSLog(@"Next invoked");
-                com_codename1_impl_CodenameOneImplementation_keyPressed___int(o, -20);
-                com_codename1_impl_CodenameOneImplementation_keyReleased___int(o, -20);
+                com_codename1_impl_CodenameOneImplementation_keyPressed___int(CN1_THREAD_GET_STATE_PASS_ARG o, -20);
+                com_codename1_impl_CodenameOneImplementation_keyReleased___int(CN1_THREAD_GET_STATE_PASS_ARG o, -20);
                 break;
                 
             default:
@@ -1316,7 +1318,7 @@ bool lockDrawing;
     self.displayLink = nil;
     
     const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
-    drawTextureSupported = strstr(extensions, "OES_draw_texture") != 0;
+    drawTextureSupported = extensions == 0 || strstr(extensions, "OES_draw_texture") != 0;
     //NSLog(@"Draw texture extension %i", (int)drawTextureSupported);
     
     // register for keyboard notifications
@@ -1444,7 +1446,7 @@ int keyboardHeight;
     if(!modifiedViewHeight || vkbAlwaysOpen) {
         return;
     }
-    com_codename1_impl_ios_IOSImplementation_paintNow__();
+    com_codename1_impl_ios_IOSImplementation_paintNow__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
     NSDictionary* userInfo = [n userInfo];
     
     // get the size of the keyboard
@@ -1575,10 +1577,11 @@ int keyboardHeight;
 {
     // Releases the view if it doesn't have a superview.
     //[super didReceiveMemoryWarning];
-    com_codename1_impl_ios_IOSImplementation_flushSoftRefMap__();
+    com_codename1_impl_ios_IOSImplementation_flushSoftRefMap__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
 #ifndef NEW_CODENAME_ONE_VM
     GC_gcollect_and_unmap();
 #else
+    java_lang_System_gc__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
 #endif
 
     // Release any cached data, images, etc. that aren't in use.
@@ -1680,7 +1683,7 @@ int keyboardHeight;
         [currentTarget removeAllObjects];
         lockDrawing = YES;
     }
-    com_codename1_impl_ios_IOSImplementation_paintNow__();
+    com_codename1_impl_ios_IOSImplementation_paintNow__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
     @synchronized([CodenameOne_GLViewController instance]) {
         [currentTarget addObjectsFromArray:upcomingTarget];
         [upcomingTarget removeAllObjects];
@@ -1833,7 +1836,7 @@ int keyboardHeight;
             com_codename1_impl_ios_IOSImplementation* impl = (com_codename1_impl_ios_IOSImplementation*)com_codename1_impl_ios_IOSImplementation_GET_instance();
             com_codename1_ui_Component* comp = (com_codename1_ui_Component*)impl->fields.com_codename1_impl_ios_IOSImplementation.currentEditing_;
 #else
-            struct obj__com_codename1_impl_ios_IOSImplementation* impl = (struct obj__com_codename1_impl_ios_IOSImplementation*)get_static_com_codename1_impl_ios_IOSImplementation_instance();
+            struct obj__com_codename1_impl_ios_IOSImplementation* impl = (struct obj__com_codename1_impl_ios_IOSImplementation*)get_static_com_codename1_impl_ios_IOSImplementation_instance(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
             JAVA_OBJECT comp = impl->com_codename1_impl_ios_IOSImplementation_currentEditing;
 #endif
             if(comp != NULL) {
@@ -1841,8 +1844,8 @@ int keyboardHeight;
                 float newEditCompoentX = (com_codename1_ui_Component_getAbsoluteX__(comp) + editComponentPadLeft) / scaleValue;
                 float newEditCompoentY = (com_codename1_ui_Component_getAbsoluteY__(comp) + editComponentPadTop) / scaleValue;
 #else
-                float newEditCompoentX = (com_codename1_ui_Component_getAbsoluteX___R_int((JAVA_OBJECT)comp) + editComponentPadLeft) / scaleValue;
-                float newEditCompoentY = (com_codename1_ui_Component_getAbsoluteY___R_int((JAVA_OBJECT)comp) + editComponentPadTop) / scaleValue;
+                float newEditCompoentX = (com_codename1_ui_Component_getAbsoluteX___R_int(CN1_THREAD_GET_STATE_PASS_ARG (JAVA_OBJECT)comp) + editComponentPadLeft) / scaleValue;
+                float newEditCompoentY = (com_codename1_ui_Component_getAbsoluteY___R_int(CN1_THREAD_GET_STATE_PASS_ARG (JAVA_OBJECT)comp) + editComponentPadTop) / scaleValue;
 #endif
                 if(newEditCompoentX != editCompoentX || newEditCompoentY != editCompoentY) {
                     for (UIWindow *window in [[UIApplication sharedApplication] windows])
@@ -2163,6 +2166,7 @@ static BOOL skipNextTouch = NO;
 }
 
 -(void)foldKeyboard:(CGPoint) point {
+    POOL_BEGIN();
     if(editingComponent != nil) {
         if(!(editCompoentX <= point.x && editCompoentY <= point.y && editCompoentW + editCompoentX >= point.x &&
              editCompoentY + editCompoentH >= point.y)) {
@@ -2188,6 +2192,7 @@ static BOOL skipNextTouch = NO;
             //return;
         }
     }
+    POOL_END();
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -2236,7 +2241,7 @@ static BOOL skipNextTouch = NO;
     int xArray[[touches count]];
     int yArray[[touches count]];
     CGPoint point = [touch locationInView:self.view];
-    NSLog(@"Released %i fingers", [touches count]);
+    //NSLog(@"Released %i fingers", [touches count]);
     if([touches count] > 1) {
         for(int iter = 0 ; iter < [ts count] ; iter++) {
             UITouch* currentTouch = [ts objectAtIndex:iter];
@@ -2284,7 +2289,7 @@ static BOOL skipNextTouch = NO;
 - (void) locationManager:(CLLocationManager *)manager
      didUpdateToLocation:(CLLocation *)newLocation
             fromLocation:(CLLocation *)oldLocation{
-    com_codename1_impl_ios_IOSImplementation_locationUpdate__();
+    com_codename1_impl_ios_IOSImplementation_locationUpdate__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
 }
 
 
@@ -2293,7 +2298,7 @@ extern int popoverSupported();
 
 -(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     //[self dismissModalViewControllerAnimated:YES];
-    com_codename1_impl_ios_IOSImplementation_capturePictureResult___java_lang_String(nil);
+    com_codename1_impl_ios_IOSImplementation_capturePictureResult___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG nil);
     [picker dismissModalViewControllerAnimated:YES];
 }
 
@@ -2335,14 +2340,14 @@ extern int popoverSupported();
                 [originalImage release];
 #endif
             }
-            com_codename1_impl_ios_IOSImplementation_capturePictureResult___java_lang_String(fromNSString(path));
+            com_codename1_impl_ios_IOSImplementation_capturePictureResult___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG fromNSString(CN1_THREAD_GET_STATE_PASS_ARG path));
             POOL_END();
         });
         
 	} else {
         // was movie type
         NSString *moviePath = [[info objectForKey: UIImagePickerControllerMediaURL] absoluteString];
-        com_codename1_impl_ios_IOSImplementation_captureMovieResult___java_lang_String(fromNSString(moviePath));
+        com_codename1_impl_ios_IOSImplementation_captureMovieResult___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG fromNSString(CN1_THREAD_GET_STATE_PASS_ARG moviePath));
     }
 	
 	if(popoverSupported() && popoverController != nil) {
@@ -2380,25 +2385,25 @@ extern JAVA_OBJECT productsArrayPending;
         JAVA_ARRAY_OBJECT* data = (JAVA_ARRAY_OBJECT*)pArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
 #else
         JAVA_ARRAY pArray = (JAVA_ARRAY)productsArrayPending;
-        JAVA_OBJECT* data = pArray->data;
+        JAVA_ARRAY_OBJECT* data = (JAVA_ARRAY_OBJECT*)pArray->data;
 #endif
         NSArray* arr = response.products;
         int count = arr.count;
         for(int iter = 0 ; iter < count ; iter++) {
             SKProduct* prod = [arr objectAtIndex:iter];
             NSString* sku = [prod productIdentifier];
-            com_codename1_payment_Product_setSku___java_lang_String(data[iter], fromNSString(sku));
+            com_codename1_payment_Product_setSku___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG data[iter], fromNSString(CN1_THREAD_GET_STATE_PASS_ARG sku));
             
             NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
             [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
             [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
             [numberFormatter setLocale:prod.priceLocale];
             NSString *formattedString = [numberFormatter stringFromNumber:prod.price];
-            com_codename1_payment_Product_setLocalizedPrice___java_lang_String(data[iter], fromNSString(formattedString));
+            com_codename1_payment_Product_setLocalizedPrice___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG data[iter], fromNSString(CN1_THREAD_GET_STATE_PASS_ARG formattedString));
             
             
-            com_codename1_payment_Product_setDescription___java_lang_String(data[iter], fromNSString([prod localizedDescription]));
-            com_codename1_payment_Product_setDisplayName___java_lang_String(data[iter], fromNSString([prod localizedTitle]));
+            com_codename1_payment_Product_setDescription___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG data[iter], fromNSString(CN1_THREAD_GET_STATE_PASS_ARG [prod localizedDescription]));
+            com_codename1_payment_Product_setDisplayName___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG data[iter], fromNSString(CN1_THREAD_GET_STATE_PASS_ARG [prod localizedTitle]));
         }
     }
     productsArrayPending = nil;
@@ -2418,12 +2423,12 @@ extern SKPayment *paymentInstance;
         {
             case SKPaymentTransactionStatePurchased:
                 [[SKPaymentQueue defaultQueue] finishTransaction: transaction];
-                com_codename1_impl_ios_IOSImplementation_itemPurchased___java_lang_String(fromNSString(transaction.payment.productIdentifier));
+                com_codename1_impl_ios_IOSImplementation_itemPurchased___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG fromNSString(CN1_THREAD_GET_STATE_PASS_ARG transaction.payment.productIdentifier));
                 continue;
             case SKPaymentTransactionStateFailed:
                 if (transaction.error.code != SKErrorPaymentCancelled) {
                     NSLog(@"Transaction error %@", transaction.error);
-                    com_codename1_impl_ios_IOSImplementation_itemPurchaseError___java_lang_String_java_lang_String(fromNSString(transaction.payment.productIdentifier), fromNSString(transaction.error.localizedDescription));
+                    com_codename1_impl_ios_IOSImplementation_itemPurchaseError___java_lang_String_java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG fromNSString(CN1_THREAD_GET_STATE_PASS_ARG transaction.payment.productIdentifier), fromNSString(CN1_THREAD_GET_STATE_PASS_ARG transaction.error.localizedDescription));
                 }
                 [[SKPaymentQueue defaultQueue] finishTransaction: transaction];
                 continue;
@@ -2458,7 +2463,7 @@ extern SKPayment *paymentInstance;
 -(void)paymentSuccessWithResponse: (ZooZPaymentResponse *)response{ 
     NSString* tid = response.transactionID;
     JAVA_FLOAT amount = response.paidAmount;
-    com_codename1_impl_ios_ZoozPurchase_paymentSuccessWithResponse___java_lang_String_float(fromNSString(tid), amount);
+    com_codename1_impl_ios_ZoozPurchase_paymentSuccessWithResponse___java_lang_String_float(CN1_THREAD_GET_STATE_PASS_ARG fromNSString(CN1_THREAD_GET_STATE_PASS_ARG tid), amount);
     dispatch_async(dispatch_get_main_queue(), ^{
         repaintUI();
     });
@@ -2471,7 +2476,7 @@ extern SKPayment *paymentInstance;
     });
 }
 -(void)paymentCanceled{
-    com_codename1_impl_ios_ZoozPurchase_paymentCanceledOrFailed___java_lang_String(JAVA_NULL);
+    com_codename1_impl_ios_ZoozPurchase_paymentCanceledOrFailed___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG JAVA_NULL);
     //User decided to close the dialog and not to pay
     dispatch_async(dispatch_get_main_queue(), ^{
         repaintUI();
@@ -2479,7 +2484,7 @@ extern SKPayment *paymentInstance;
 }
 -(void)openPaymentRequestFailed: (ZooZPaymentRequest *)request withErrorCode:
 (int)errorCode andErrorMessage: (NSString *)errorMessage{
-    com_codename1_impl_ios_ZoozPurchase_paymentCanceledOrFailed___java_lang_String(fromNSString(errorMessage));
+    com_codename1_impl_ios_ZoozPurchase_paymentCanceledOrFailed___java_lang_String(CN1_THREAD_GET_STATE_PASS_ARG fromNSString(CN1_THREAD_GET_STATE_PASS_ARG errorMessage));
     //Some error occurred with opening the request to ZooZ servers, usually a network issue or wrong credentials issue
     dispatch_async(dispatch_get_main_queue(), ^{
         repaintUI();
@@ -2495,7 +2500,7 @@ extern SKPayment *paymentInstance;
 #endif
             currentDatePickerDate = nil;
         }
-        com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
+        com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG -1);
         datepickerPopover = NO;
     }
 }
@@ -2522,9 +2527,9 @@ extern JAVA_LONG defaultDatePickerDate;
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if(currentDatePickerDate == nil) {
         if(pickerStringArray == nil) {
-            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
+            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG -1);
         } else {
-            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(stringPickerSelection);
+            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG stringPickerSelection);
 #ifndef NEW_CODENAME_ONE_VM
             pickerStringArray = nil;
 #else 
@@ -2532,7 +2537,7 @@ extern JAVA_LONG defaultDatePickerDate;
 #endif
         }
     } else {
-        com_codename1_impl_ios_IOSImplementation_datePickerResult___long([currentDatePickerDate timeIntervalSince1970] * 1000);
+        com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG [currentDatePickerDate timeIntervalSince1970] * 1000);
 #ifndef CN1_USE_ARC
         [currentDatePickerDate release];
 #endif
@@ -2546,9 +2551,9 @@ extern JAVA_LONG defaultDatePickerDate;
     [sheet dismissWithClickedButtonIndex:0 animated:YES];
     if(currentDatePickerDate == nil) {
         if(pickerStringArray == nil) {
-            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
+            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG -1);
         } else {
-            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(stringPickerSelection);
+            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG stringPickerSelection);
 #ifndef NEW_CODENAME_ONE_VM
             pickerStringArray = nil;
 #else 
@@ -2556,7 +2561,7 @@ extern JAVA_LONG defaultDatePickerDate;
 #endif
         }
     } else {
-        com_codename1_impl_ios_IOSImplementation_datePickerResult___long([currentDatePickerDate timeIntervalSince1970] * 1000);
+        com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG [currentDatePickerDate timeIntervalSince1970] * 1000);
         currentDatePickerDate = nil;
     }
 }
@@ -2569,14 +2574,14 @@ UIPopoverController* popoverControllerInstance;
         if(currentDatePickerDate == nil) {
             if(pickerStringArray == nil) {
                 if(defaultDatePickerDate != 0) {
-                    com_codename1_impl_ios_IOSImplementation_datePickerResult___long(defaultDatePickerDate);
+                    com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG defaultDatePickerDate);
                     defaultDatePickerDate = 0;
                     currentDatePickerDate = nil;
                 } else {
-                    com_codename1_impl_ios_IOSImplementation_datePickerResult___long(-1);
+                    com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG -1);
                 }
             } else {
-                com_codename1_impl_ios_IOSImplementation_datePickerResult___long(stringPickerSelection);
+                com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG stringPickerSelection);
                 defaultDatePickerDate = nil;
 #ifndef NEW_CODENAME_ONE_VM
                 pickerStringArray = nil;
@@ -2585,7 +2590,7 @@ UIPopoverController* popoverControllerInstance;
 #endif
             }
         } else {
-            com_codename1_impl_ios_IOSImplementation_datePickerResult___long([currentDatePickerDate timeIntervalSince1970] * 1000);
+            com_codename1_impl_ios_IOSImplementation_datePickerResult___long(CN1_THREAD_GET_STATE_PASS_ARG [currentDatePickerDate timeIntervalSince1970] * 1000);
             defaultDatePickerDate = nil;
             currentDatePickerDate = nil;
         }
@@ -2623,8 +2628,8 @@ UIPopoverController* popoverControllerInstance;
     return toNSString(data[row]);
 #else 
     JAVA_ARRAY arr = (JAVA_ARRAY)pickerStringArray;
-    JAVA_OBJECT* o = (JAVA_OBJECT*)arr->data;
-    return toNSString(o[row]);
+    JAVA_ARRAY_OBJECT* o = (JAVA_ARRAY_OBJECT*)arr->data;
+    return toNSString(CN1_THREAD_GET_STATE_PASS_ARG o[row]);
 #endif
 }
  

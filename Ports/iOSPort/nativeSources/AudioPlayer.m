@@ -20,7 +20,9 @@
  * Please contact Codename One through http://www.codenameone.com/ if you 
  * need additional information or have any questions.
  */
+
 #import "AudioPlayer.h"
+#import "CodenameOne_GLViewController.h"
 #include "java_lang_Runnable.h"
 #include "com_codename1_ui_Display.h"
 #include "xmlvm.h"
@@ -97,7 +99,7 @@ AudioPlayer* currentlyPlaying = nil;
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
     if(runnableCallback != 0) {
 #ifdef NEW_CODENAME_ONE_VM
-        virtual_java_lang_Runnable_run__((JAVA_OBJECT)runnableCallback);
+        virtual_java_lang_Runnable_run__(CN1_THREAD_GET_STATE_PASS_ARG (JAVA_OBJECT)runnableCallback);
 #else
         (*(void (*)(JAVA_OBJECT)) *(((java_lang_Object*)runnableCallback)->tib->itableBegin)[XMLVM_ITABLE_IDX_java_lang_Runnable_run__])(runnableCallback);
 #endif
@@ -111,15 +113,15 @@ AudioPlayer* currentlyPlaying = nil;
     }
 #endif
     if(runnableCallback != 0) {
-        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__();
-        com_codename1_ui_Display_callSerially___java_lang_Runnable(o, runnableCallback);
+        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
+        com_codename1_ui_Display_callSerially___java_lang_Runnable(CN1_THREAD_GET_STATE_PASS_ARG o, runnableCallback);
     }
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
     if(runnableCallback != 0) {
-        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__();
-        com_codename1_ui_Display_callSerially___java_lang_Runnable(o, runnableCallback);
+        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
+        com_codename1_ui_Display_callSerially___java_lang_Runnable(CN1_THREAD_GET_STATE_PASS_ARG o, runnableCallback);
     }
 }
 
@@ -157,8 +159,8 @@ AudioPlayer* currentlyPlaying = nil;
     } else if(avPlayerInstance != nil){
         [avPlayerInstance play];
     } else if(runnableCallback != 0) {
-        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__();
-        com_codename1_ui_Display_callSerially___java_lang_Runnable(o, runnableCallback);
+        JAVA_OBJECT o = com_codename1_ui_Display_getInstance__(CN1_THREAD_GET_STATE_PASS_SINGLE_ARG);
+        com_codename1_ui_Display_callSerially___java_lang_Runnable(CN1_THREAD_GET_STATE_PASS_ARG o, runnableCallback);
     }
 }
 
