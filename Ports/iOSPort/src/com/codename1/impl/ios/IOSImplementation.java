@@ -82,7 +82,7 @@ import com.codename1.io.Log;
 import com.codename1.media.MediaManager;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
-import com.codename1.ui.GeneralPath;
+import com.codename1.ui.geom.GeneralPath;
 import com.codename1.ui.Stroke;
 import com.codename1.ui.geom.Matrix;
 import com.codename1.ui.geom.PathIterator;

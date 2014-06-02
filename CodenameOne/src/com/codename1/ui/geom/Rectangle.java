@@ -23,8 +23,6 @@
  */
 package com.codename1.ui.geom;
 
-import com.codename1.ui.GeneralPath;
-
 /**
  * Represents a Rectangle position (x, y) and {@link Dimension} (width, height),
  * this is useful for measuring coordinates within the application.

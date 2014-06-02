@@ -23,6 +23,7 @@
  */
 package com.codename1.ui;
 
+import com.codename1.ui.geom.GeneralPath;
 import com.codename1.impl.CodenameOneImplementation;
 import com.codename1.ui.geom.Matrix;
 import com.codename1.ui.geom.Shape;
