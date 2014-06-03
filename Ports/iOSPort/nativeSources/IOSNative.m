@@ -66,8 +66,6 @@
 #import "ZooZ.h"
 #endif
 #import "Rotate.h"
-#import "Translate.h"
-
 extern int popoverSupported();
 
 #define INCLUDE_CN1_PUSH2
@@ -775,26 +773,9 @@ void com_codename1_impl_ios_IOSNative_rotateGlobal___float_int_int(CN1_THREAD_ST
     [f release];
 #endif
 }
-extern int currentTranslationX;
-extern int currentTranslationY;
-void com_codename1_impl_ios_IOSNative_translateGlobal___int_int(JAVA_OBJECT instanceObject, JAVA_INT x, JAVA_INT y) {
-    NSLog(@"Inside translateGlobal");
-    currentTranslationX += x;
-    currentTranslationY += y;
-    Translate* f = [[Translate alloc] initWithArgs:x y:y];
-    [CodenameOne_GLViewController upcoming:f];
-#ifndef CN1_USE_ARC
-    [f release];
-#endif
-}
 
 
-int com_codename1_impl_ios_IOSNative_getTranslateXGlobal__(JAVA_OBJECT instanceObject){
-    return currentTranslationX;
-}
-int com_codename1_impl_ios_IOSNative_getTranslateYGlobal__(JAVA_OBJECT instanceObject){
-    return currentTranslationY;
-}
+
 
 void com_codename1_impl_ios_IOSNative_shearGlobal___float_float(CN1_THREAD_STATE_MULTI_ARG JAVA_OBJECT instanceObject, JAVA_FLOAT x, JAVA_FLOAT y) {
     

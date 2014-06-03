@@ -127,7 +127,9 @@
 {
     glDeleteTextures(1, &tex);
     Renderer_destroy(renderer);
+#ifndef CN1_USE_ARC
     [super dealloc];
+#endif
     
 }
 @end
