@@ -2390,10 +2390,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         ((NativeGraphics)nativeGraphics).rotate(angle * 57.2957795f, x, y);
     }
 
-    @Override
-    public void translate(Object graphics, int x, int y) {
-        ((NativeGraphics)graphics).translate(x, y);
-    }
+    
 
     @Override
     public boolean isTranslationSupported() {
@@ -2404,24 +2401,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         return false;
     }
 
-    @Override
-    public int getTranslateX(Object graphics) {
-        // Note:  This is disabled right now.
-        // see isTranslationSupported()
-        return ((NativeGraphics)graphics).getTranslateX();
-    }
-
-    @Override
-    public int getTranslateY(Object graphics) {
-        // Note: This is disabled right now
-        // see isTranslationSupported()
-        return ((NativeGraphics)graphics).getTranslateY();
-    }
     
-    
-    
-    
-
     
     
     public void shear(Object nativeGraphics, float x, float y) {
@@ -2956,18 +2936,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             nativeInstance.shearGlobal(x, y);
         }
         
-        public void translate(int x, int y){
-            nativeInstance.translateGlobal(x, y);
-        }
         
-        public int getTranslateX(){
-            return nativeInstance.getTranslateXGlobal();
-            
-        }
-        
-        public int getTranslateY(){
-            return nativeInstance.getTranslateYGlobal();
-        }
 
         void setNativeClipping(int x, int y, int width, int height, boolean firstClip) {
             setNativeClippingGlobal(x, y, width, height, firstClip);

@@ -97,9 +97,11 @@ public final class IOSNative {
 
     native void rotateGlobal(float angle);
     native void rotateGlobal(float angle, int x, int y);
+    /*
     native void translateGlobal(int x, int y);
     native int getTranslateXGlobal();
     native int getTranslateYGlobal();
+    */
 
     native void shearGlobal(float x, float y);
 
