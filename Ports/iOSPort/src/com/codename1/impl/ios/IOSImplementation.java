@@ -792,7 +792,6 @@ public class IOSImplementation extends CodenameOneImplementation {
                 if ( ng.clip == null ){
                     return;
                 }
-                //ng.nativeGetTransform(ng.transform);
                 if ( ng.transform.isIdentity() ){
                     Rectangle r = ng.clip.getBounds();
                     ng.clipX = r.getX();
@@ -1459,7 +1458,6 @@ public class IOSImplementation extends CodenameOneImplementation {
     @Override
     public Matrix getTransform(Object graphics) {
         return ((NativeGraphics)graphics).transform;
-        //((NativeGraphics)graphics).nativeGetTransform(m);
     }
 
     

@@ -783,7 +783,9 @@ void com_codename1_impl_ios_IOSNative_translateGlobal___int_int(JAVA_OBJECT inst
     currentTranslationY += y;
     Translate* f = [[Translate alloc] initWithArgs:x y:y];
     [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
     [f release];
+#endif
 }
 
 
@@ -4415,7 +4417,11 @@ void com_codename1_impl_ios_IOSNative_writeToSocketStream___long_byte_1ARRAY(CN1
     POOL_END();
 }
 
-//native long nativePathStrokerCreate(long consumerOutPtr, float lineWidth, int capStyle, int joinStyle, float miterLimit);
+
+// ---------------- ES2 Port ADDITION: Shape Drawing -------------------------------------
+
+
+
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerCreate___long_float_int_int_float(JAVA_OBJECT instanceObject, JAVA_LONG consumerOutPtr, JAVA_FLOAT lineWidth, JAVA_INT capStyle, JAVA_INT joinStyle, JAVA_FLOAT miterLimit)
 {
     Stroker *stroker = (Stroker*)malloc(sizeof(Stroker));
@@ -4440,6 +4446,7 @@ void com_codename1_impl_ios_IOSNative_nativePathStrokerReset___long_float_int_in
     Stroker_reset((Stroker*)ptr, lineWidth, capStyle, joinStyle, miterLimit);
 }
 //native long nativePathStrokerGetConsumer(long ptr);
+
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerGetConsumer___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
 {
     return (JAVA_LONG)&(((Stroker*)ptr)->consumer);
@@ -4448,6 +4455,8 @@ JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerGetConsumer___long(J
 //native long nativePathRendererCreate(int pix_boundsX, int pix_boundsY,
 //                                     int pix_boundsWidth, int pix_boundsHeight,
 //                                     int windingRule);
+
+
 
 static BOOL rendererIsSetup = NO;
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreate___int_int_int_int_int(JAVA_OBJECT instanceObject, JAVA_INT pix_boundsX, JAVA_INT pix_boundsY, JAVA_INT pix_boundsWidth, JAVA_INT pix_boundsHeight, JAVA_INT windingRule)
@@ -4470,7 +4479,6 @@ void com_codename1_impl_ios_IOSNative_nativePathRendererSetup___int_int(JAVA_OBJ
         
         Renderer_setup(subpixelLgPositionsX, subpixelLgPositionsY);
     }
-    //Renderer_setup(1, 1);
 }
 //native void nativePathRendererCleanup(long ptr);
 void com_codename1_impl_ios_IOSNative_nativePathRendererCleanup___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
@@ -4493,6 +4501,7 @@ void com_codename1_impl_ios_IOSNative_nativePathRendererGetOutputBounds___long_i
     Renderer_getOutputBounds(renderer, iArr);
 }
 //native long nativePathRendererGetConsumer(long ptr);
+
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererGetConsumer___long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
 {
     //NSLog(@"In getConsumer()");
@@ -4555,13 +4564,14 @@ void com_codename1_impl_ios_IOSNative_drawTextureAlphaMask___long_int_int_int_in
 
 void com_codename1_impl_ios_IOSNative_nativeDeleteTexture___long(JAVA_OBJECT instanceObject, JAVA_LONG textureName)
 {
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         GLuint tex = (GLuint)textureName;
         //POOL_BEGIN();
         glDeleteTextures(1, &tex);
         //POOL_END();
     });
 }
+
 
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)>(b)?(a):(b))
@@ -4615,6 +4625,7 @@ JAVA_OBJECT com_codename1_impl_ios_IOSNative_nativePathRendererToARGB___long_int
     return (JAVA_OBJECT)idata;
 
 }
+
 
 JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreateTexture___long(JAVA_OBJECT instanceObject, JAVA_LONG renderer)
 {
@@ -4753,12 +4764,6 @@ void com_codename1_impl_ios_IOSNative_nativeSetTransform___float_float_float_flo
      );
 }
 
-extern void com_codename1_impl_ios_IOSImplementation_nativeGetTransformImpl___float_1ARRAY(JAVA_OBJECT instanceObject,JAVA_OBJECT n1);
-
-void com_codename1_impl_ios_IOSNative_nativeGetTransform___float_1ARRAY(JAVA_OBJECT instanceObject,JAVA_OBJECT n1)
-{
-    com_codename1_impl_ios_IOSImplementation_nativeGetTransformImpl___float_1ARRAY(instanceObject, n1);
-}
 
 JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsTransformSupportedGlobal__(JAVA_OBJECT instanceObject){
 #ifdef USE_ES2
@@ -4776,6 +4781,7 @@ JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsPerspectiveTransformSuppor
 #endif
 }
 
+
 JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsShapeSupportedGlobal__(JAVA_OBJECT instanceObject){
 #ifdef USE_ES2
     return YES;
@@ -4783,6 +4789,7 @@ JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsShapeSupportedGlobal__(JAV
     return NO;
 #endif
 }
+
 
 JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsAlphaMaskSupportedGlobal__(JAVA_OBJECT instanceObject){
 #ifdef USE_ES2
@@ -4792,10 +4799,69 @@ JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsAlphaMaskSupportedGlobal__
 #endif
 }
 
+// End Shapes
+
+
 
 #ifdef NEW_CODENAME_ONE_VM
+
+// Start Shapes (ES2)
+
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerCreate___long_float_int_int_float_R_long(JAVA_OBJECT instanceObject, JAVA_LONG consumerOutPtr, JAVA_FLOAT lineWidth, JAVA_INT capStyle, JAVA_INT joinStyle, JAVA_FLOAT miterLimit)
+{
+    return com_codename1_impl_ios_IOSNative_nativePathStrokerCreate___long_float_int_int_float( instanceObject, JAVA_LONG consumerOutPtr,  lineWidth,  capStyle,  joinStyle,  miterLimit);
+}
+
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathStrokerGetConsumer___long_R_long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    return com_codename1_impl_ios_IOSNative_nativePathStrokerGetConsumer___long( instanceObject,  ptr);
+}
+
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreate___int_int_int_int_int_R_long(JAVA_OBJECT instanceObject, JAVA_INT pix_boundsX, JAVA_INT pix_boundsY, JAVA_INT pix_boundsWidth, JAVA_INT pix_boundsHeight, JAVA_INT windingRule)
+{
+    return com_codename1_impl_ios_IOSNative_nativePathRendererCreate___int_int_int_int_int( instanceObject,  pix_boundsX,  pix_boundsY,  pix_boundsWidth,  pix_boundsHeight,  windingRule);
+}
+
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererGetConsumer___long_R_long(JAVA_OBJECT instanceObject, JAVA_LONG ptr)
+{
+    return com_codename1_impl_ios_IOSNative_nativePathRendererGetConsumer___long(instanceObject, ptr);
+}
+
+JAVA_OBJECT com_codename1_impl_ios_IOSNative_nativePathRendererToARGB___long_int_R_int_1ARRAY(JAVA_OBJECT instanceObject, JAVA_LONG renderer, JAVA_INT color)
+{
+    return com_codename1_impl_ios_IOSNative_nativePathRendererToARGB___long_int(instanceObject, renderer, color);
+}
+
+
+JAVA_LONG com_codename1_impl_ios_IOSNative_nativePathRendererCreateTexture___long_R_long(JAVA_OBJECT instanceObject, JAVA_LONG renderer)
+{
+    return com_codename1_impl_ios_IOSNative_nativePathRendererCreateTexture___long(instanceObject, renderer);
+}
+
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsTransformSupportedGlobal___R_boolean(JAVA_OBJECT instanceObject){
+    return com_codename1_impl_ios_IOSNative_nativeIsTransformSupportedGlobal__(instanceObject);
+}
+
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsPerspectiveTransformSupportedGlobal___R_boolean(JAVA_OBJECT instanceObject)
+{
+    return com_codename1_impl_ios_IOSNative_nativeIsPerspectiveTransformSupportedGlobal__(instanceObject);
+}
+
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsShapeSupportedGlobal___R_boolean(JAVA_OBJECT instanceObject)
+{
+    return com_codename1_impl_ios_IOSNative_nativeIsShapeSupportedGlobal__(instanceObject);
+}
+
+
+// END Shapes (ES2)
+
 JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_isPainted___R_boolean(CN1_THREAD_STATE_MULTI_ARG JAVA_OBJECT instanceObject) {
     return com_codename1_impl_ios_IOSNative_isPainted__(CN1_THREAD_STATE_PASS_ARG instanceObject);
+}
+
+JAVA_BOOLEAN com_codename1_impl_ios_IOSNative_nativeIsAlphaMaskSupportedGlobal___R_boolean(JAVA_OBJECT instanceObject)
+{
+    return com_codename1_impl_ios_IOSNative_nativeIsAlphaMaskSupportedGlobal__(instanceObject);
 }
 
 JAVA_INT com_codename1_impl_ios_IOSNative_getDisplayWidth___R_int(CN1_THREAD_STATE_MULTI_ARG JAVA_OBJECT instanceObject) {

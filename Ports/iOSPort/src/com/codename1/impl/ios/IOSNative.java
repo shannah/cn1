@@ -449,9 +449,7 @@ public final class IOSNative {
             float d0, float d1, float d2, float d3,
             int originX, int originY
     );
-    native void nativeGetTransform(
-            float[] data
-    );
+    
     
     native boolean nativeIsTransformSupportedGlobal();
     native boolean nativeIsShapeSupportedGlobal();

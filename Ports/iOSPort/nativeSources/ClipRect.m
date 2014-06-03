@@ -71,17 +71,9 @@ static CGRect drawingRect;
 
 -(void)execute {
 #ifdef USE_ES2
-    //return;
     if ( texture != 0 ){
-        //if ( x == clipX && y == clipY && width == clipW && height == clipH){
-        //    return;
-        //}
-        //if ( width == -1 || height == -1 ){
-        //    return;
-       // }
         clipX = x; clipY=y; clipW=width; clipH=height;
-        //NSLog(@"Using ES2 clipping %d %d %d %d ", x, y, width, height);
-        glClearStencil(0x0);
+         glClearStencil(0x0);
         
         glEnable(GL_STENCIL_TEST);
         //glDisable(GL_STENCIL_TEST);
@@ -98,8 +90,9 @@ static CGRect drawingRect;
         DrawTextureAlphaMask *f = [[DrawTextureAlphaMask alloc] initWithArgs:texture color:0xffffff alpha:0xff x:x y:y w:width h:height];
         [f execute];
         
-        
+#ifndef CN1_USE_ARC
         [f release];
+#endif
         glSetTransformES2(transform);
         
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -107,14 +100,9 @@ static CGRect drawingRect;
         glStencilFunc(GL_EQUAL, 1, 0xff);
         clipIsTexture = YES;
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-        //f = [[FillRect alloc] initWithArgs:0xff0000 a:0x44 xpos:x ypos:y w:width h:height];
-        //[f execute];
-        //[f release];
         
         return;
     }
-    
-    //NSLog(@"Using RECT clipping %d %d %d %d ", x, y, width, height);
 
     
 #endif

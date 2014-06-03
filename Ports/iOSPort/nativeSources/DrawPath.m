@@ -40,20 +40,12 @@
     color = c;
     alpha = a;
     renderer = r;
-    //boundsX = xx;
-    //boundsY = yy;
-    //boundsW = ww;
-    //boundsH = hh;
     return self;
 }
 -(void)execute
 {
     
     GlColorFromRGB(color, alpha);
-    //NSLog(@"In drawPath::execute()");
-    //return;
-    //_glEnableCN1State(CN1_GL_ALPHA_TEXTURE);
-    
     JAVA_INT outputBounds[4];
     
     Renderer_getOutputBounds(renderer, (JAVA_INT*)&outputBounds);
@@ -68,16 +60,6 @@
     if ( width < 0 ) width = -width;
     if ( height < 0 ) height = -height;
     
-    //NSLog(@"W: %d H: %d", width, height);
-    
-    
-   
-    //GLfloat vertexes[] = {
-    //    x, y,
-    //    x + width, y,
-    //    x, y + height,
-    //    x + width, y + height
-    //};
     GLfloat vertexes[] = {
           (GLfloat)x, (GLfloat)y,
           (GLfloat)(x+width), (GLfloat)y,
@@ -91,10 +73,7 @@
         1, 1,
     };
     
-    //if ( width < 0 ) width = -width;
-    //if ( height <0 ) height = -height;
-
-   
+    
     AlphaConsumer ac = {
         x,
         y,
@@ -102,14 +81,8 @@
         height,
     };
     
-    //NSLog(@"AC Width %d", ac.width);
-    
     jbyte maskArray[ac.width*ac.height];
     
-    //NSLog(@"Mask width %d height %d",
-    //      ac.width,
-    //      ac.height
-    //      );
     ac.alphas = (JAVA_BYTE*)&maskArray;
     Renderer_produceAlphas(renderer, &ac);
     
