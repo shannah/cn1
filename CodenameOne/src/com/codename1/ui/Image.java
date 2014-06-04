@@ -616,21 +616,8 @@ public class Image {
             return new Image(Display.getInstance().getImplementation().createMutableImage(width, height, fillColor));
         }
     }
-    
-    /**
-     * Creates an image of a given shape with the specified stroke and color.
-     * <p>Note that this is only supported if the implementation supports shapes.</p>
-     * @param shape The shape to rasterize.
-     * @param stroke If provided this specifies the stroke of the contour that is 
-     * drawn. If null, then the image will be a fill mask.
-     * @param color The color to fill or stroke the shape with.
-     * @return An image raster of the given shape with the provided stroke and color settings.
-     */
-    public static Image createImage(Shape shape, Stroke stroke, int color){
-        return Display.getInstance().getImplementation().createImage(shape, stroke, color);
-    }
-    
-    
+
+
     /**
      * creates an image from a given byte array data
      * 

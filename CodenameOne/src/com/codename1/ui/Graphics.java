@@ -601,6 +601,7 @@ public final class Graphics {
         impl.drawConvexPolygon(nativeGraphics, shape, null, getColor(), getAlpha());
     }
     
+
     
     /**
      * Fills the given shape using the current alpha and color settings.

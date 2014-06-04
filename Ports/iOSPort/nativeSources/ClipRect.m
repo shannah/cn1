@@ -62,16 +62,15 @@ static CGRect drawingRect;
     return self;
 }
 
+
 -(id)initWithArgs:(int)xpos ypos:(int)ypos w:(int)w h:(int)h f:(BOOL)f texture:(GLuint)tex{
     x = xpos;
     y = ypos;
     width = w;
     height = h;
     texture = tex;
-    if ( texture != 0 ){
-        texture = tex;
-    }
     numPoints = 0;
+
     firstClip = !f;
     return self;
 }
@@ -97,7 +96,6 @@ static CGRect drawingRect;
     if ( texture != 0 || numPoints > 0 ){
         clipX = x; clipY=y; clipW=width; clipH=height;
         glClearStencil(0x0);
-        
         glEnable(GL_STENCIL_TEST);
         //glDisable(GL_STENCIL_TEST);
         _glDisable(GL_SCISSOR_TEST);
@@ -117,7 +115,7 @@ static CGRect drawingRect;
             f = [[FillPolygon alloc] initWithArgs:xPoints y:yPoints num:numPoints color:0xffffff alpha: 0xff];
         }
         [f execute];
-            
+
 #ifndef CN1_USE_ARC
         [f release];
 #endif

@@ -720,7 +720,6 @@ void Java_com_codename1_impl_ios_IOSImplementation_fillConvexPolygonImpl(JAVA_OB
 }
 
 
-
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
 (Renderer * renderer, int color, int alpha, int x, int y, int w, int h)
 {
@@ -953,6 +952,7 @@ void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingPolygonGloba
 #endif
     POOL_END();
 }
+
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineMutableImpl
 (int color, int alpha, int x1, int y1, int x2, int y2) {
