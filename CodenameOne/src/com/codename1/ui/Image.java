@@ -615,8 +615,7 @@ public class Image {
             return new Image(Display.getInstance().getImplementation().createMutableImage(width, height, fillColor));
         }
     }
-    
-    
+        
     /**
      * creates an image from a given byte array data
      * 
