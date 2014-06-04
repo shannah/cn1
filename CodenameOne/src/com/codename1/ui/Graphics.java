@@ -593,6 +593,14 @@ public final class Graphics {
     }
     
     
+    public void drawConvexPolygon(Shape shape, Stroke stroke){
+        impl.drawConvexPolygon(nativeGraphics, shape, stroke, getColor(), getAlpha());
+    }
+    
+    public void fillConvexPolygon(Shape shape){
+        impl.drawConvexPolygon(nativeGraphics, shape, null, getColor(), getAlpha());
+    }
+    
     
     /**
      * Fills the given shape using the current alpha and color settings.

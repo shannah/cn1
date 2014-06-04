@@ -28,6 +28,7 @@
 #import "ClipRect.h"
 #import "DrawLine.h"
 #import "DrawRect.h"
+#import "FillPolygon.h"
 #import "DrawString.h"
 #import "DrawPath.h"
 #import "DrawTextureAlphaMask.h"
@@ -689,6 +690,37 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
 }
 
 // START ES2 ADDITION: Drawing Shapes ------------------------------------------------------------------------------
+
+void Java_com_codename1_impl_ios_IOSImplementation_fillConvexPolygonImpl(JAVA_OBJECT points, int color, int alpha)
+{
+    POOL_BEGIN();
+    org_xmlvm_runtime_XMLVMArray* pArray = points;
+    JAVA_ARRAY_FLOAT* data = (JAVA_ARRAY_FLOAT*)pArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
+    int len = pArray->fields.org_xmlvm_runtime_XMLVMArray.length_;
+    //NSLog(@"Len is %d", len);
+    JAVA_FLOAT x[len/2];
+    JAVA_FLOAT y[len/2];
+    
+    int j = 0;
+    for ( int i=0; i<len; i+=2){
+
+        x[j] = data[i];
+        y[j] = data[i+1];
+        j++;
+    }
+    
+    
+    
+    FillPolygon *f = [[FillPolygon alloc] initWithArgs:x y:y num:(int)len/2 color:(int)color alpha:(int)alpha];
+    [CodenameOne_GLViewController upcoming:f];
+#ifndef CN1_USE_ARC
+    [f release];
+#endif
+    POOL_END();
+}
+
+
+
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawPathImpl
 (Renderer * renderer, int color, int alpha, int x, int y, int w, int h)
 {
@@ -894,6 +926,32 @@ void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingMaskGlobalIm
     [f release];
 #endif
 #endif
+}
+
+void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingPolygonGlobalImpl(JAVA_OBJECT points)
+{
+    POOL_BEGIN();
+    org_xmlvm_runtime_XMLVMArray* pArray = points;
+    JAVA_ARRAY_FLOAT* data = (JAVA_ARRAY_FLOAT*)pArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
+    int len = pArray->fields.org_xmlvm_runtime_XMLVMArray.length_;
+    //NSLog(@"Len is %d", len);
+    JAVA_FLOAT x[len/2];
+    JAVA_FLOAT y[len/2];
+    
+    int j = 0;
+    for ( int i=0; i<len; i+=2){
+        
+        x[j] = data[i];
+        y[j] = data[i+1];
+        j++;
+    }
+    
+    ClipRect* f = [[ClipRect alloc] initWithPolygon:x y:y length:len/2];
+    [[CodenameOne_GLViewController instance] upcomingAddClip:f];
+#ifndef CN1_USE_ARC
+    [f release];
+#endif
+    POOL_END();
 }
 
 void Java_com_codename1_impl_ios_IOSImplementation_nativeDrawLineMutableImpl

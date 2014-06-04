@@ -949,6 +949,9 @@ public class IOSImplementation extends CodenameOneImplementation {
         if ( shape.isRectangle() || bounds.getWidth() <= 0 || bounds.getHeight() <= 0){
             setNativeClippingGlobal(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), true);
         } else {
+            float[] points = shapeToPolygon(shape);
+            nativeInstance.setNativeClippingPolygonGlobal(points);
+            /*
             TextureAlphaMask mask = (TextureAlphaMask)textureCache.get(shape, null);
             if ( mask == null ){
                 mask = (TextureAlphaMask)this.createAlphaMask(shape, null);
@@ -961,6 +964,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             } else {
                Log.p("Failed to create texture mask for clipping region");
             }
+            */
         }
     }
 
@@ -1359,12 +1363,61 @@ public class IOSImplementation extends CodenameOneImplementation {
         renderer.getOutputBounds(bounds);
         renderer.destroy();
         return tex;
-        
-        
-        
+ 
+    }
+    
+    private float[] shapeToPolygon(Shape shape){
+        PathIterator it = shape.getPathIterator();
+        float[] buf = new float[6];
+        int size = 0;
+        while ( !it.isDone()){
+            int type = it.currentSegment(buf);
+            switch ( type ){
+                case PathIterator.SEG_MOVETO:
+                case PathIterator.SEG_LINETO:
+                    size++;
+                    break;
+
+            }
+            it.next();
+        }
+        it = shape.getPathIterator();
+        float[] points = new float[size*2];
+        int i=0;
+        while ( !it.isDone()){
+            int type = it.currentSegment(buf);
+            switch ( type ){
+                case PathIterator.SEG_MOVETO:
+                case PathIterator.SEG_LINETO:
+                    points[i++] = buf[0];
+                    points[i++] = buf[1];
+                    break;
+            }
+            it.next();
+        }
+        return points;
+    }
+    
+    @Override
+    public void drawConvexPolygon(Object graphics, Shape shape, Stroke stroke, int color, int alpha){
+        NativeGraphics ng = (NativeGraphics)graphics;
+        if ( ng.isShapeSupported()){
+            ng.checkControl();
+            ng.applyTransform();
+            ng.applyClip();
+            float[] points = shapeToPolygon(shape);
+            if ( stroke == null ){
+                ng.fillConvexPolygon(points, color, alpha);
+
+            } else {
+                ng.drawConvexPolygon(points, color, alpha, stroke.getLineWidth(), stroke.getJoinStyle(), stroke.getCapStyle(), stroke.getMiterLimit());
+            }
+        }
         
     }
 
+    
+    
 
     
     
@@ -2704,7 +2757,8 @@ public class IOSImplementation extends CodenameOneImplementation {
         Shape clip;
         Matrix transform = Matrix.makeIdentity();
         Shape[] clipStack = new Shape[20];
-        private int clipStackPtr = 0;
+        private int clipStackPtr = 0;  
+        
         /**
          * Used with the ES2 pipeline (or any engine where transforms are supported)
          * to record if the clipX, clipY, clipW, and clipH parameters need to be updated.
@@ -2918,6 +2972,14 @@ public class IOSImplementation extends CodenameOneImplementation {
         public void fillLinearGradient(int startColor, int endColor, int x, int y, int width, int height, boolean horizontal) {
             nativeInstance.fillLinearGradientMutable(startColor, endColor, x, y, width, height, horizontal);
         }
+
+        void fillConvexPolygon(float[] points, int color, int alpha) {
+            
+        }
+
+        void drawConvexPolygon(float[] points, int color, int alpha, float lineWidth, int joinStyle, int capStyle, float miterLimit) {
+            
+        }
     }
 
     class GlobalGraphics extends NativeGraphics {
@@ -3026,7 +3088,13 @@ public class IOSImplementation extends CodenameOneImplementation {
             }
         }
      
-        
+        void fillConvexPolygon(float[] points, int color, int alpha) {
+            nativeInstance.fillConvexPolygonGlobal(points, color, alpha);
+        }
+
+        void drawConvexPolygon(float[] points, int color, int alpha, float lineWidth, int joinStyle, int capStyle, float miterLimit) {
+            nativeInstance.drawConvexPolygonGlobal(points, color, alpha, lineWidth, joinStyle, capStyle, miterLimit);
+        }
         
         void nativeDrawShape(Shape shape, Stroke stroke){//float lineWidth, int capStyle, int miterStyle, float miterLimit) {
             TextureAlphaMask mask = textureCache.get(shape, stroke);

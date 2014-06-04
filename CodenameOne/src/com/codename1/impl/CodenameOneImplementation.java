@@ -1392,7 +1392,9 @@ public abstract class CodenameOneImplementation {
         return null;
     }
     
-    
+    public void drawConvexPolygon(Object graphics, Shape shape, Stroke stroke, int color, int alpha){
+        
+    }
     /**
      * Draws outline of shape on the given graphics context.
      * <p>The last 4 parameters specify a bounding box for drawing the Shape.  The shape's bounds will
