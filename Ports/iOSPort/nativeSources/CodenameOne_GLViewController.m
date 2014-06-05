@@ -693,10 +693,14 @@ void Java_com_codename1_impl_ios_IOSImplementation_nativeFillArcGlobalImpl
 
 void Java_com_codename1_impl_ios_IOSImplementation_fillConvexPolygonImpl(JAVA_OBJECT points, int color, int alpha)
 {
-    POOL_BEGIN();
+#ifndef NEW_CODENAME_ONE_VM
     org_xmlvm_runtime_XMLVMArray* pArray = points;
     JAVA_ARRAY_FLOAT* data = (JAVA_ARRAY_FLOAT*)pArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
     int len = pArray->fields.org_xmlvm_runtime_XMLVMArray.length_;
+#else
+    JAVA_ARRAY_FLOAT* data = (JAVA_ARRAY_FLOAT*)((JAVA_ARRAY)points)->data;
+    int len = ((JAVA_ARRAY)points)->length;
+#endif
     //NSLog(@"Len is %d", len);
     JAVA_FLOAT x[len/2];
     JAVA_FLOAT y[len/2];
@@ -716,7 +720,6 @@ void Java_com_codename1_impl_ios_IOSImplementation_fillConvexPolygonImpl(JAVA_OB
 #ifndef CN1_USE_ARC
     [f release];
 #endif
-    POOL_END();
 }
 
 
@@ -929,10 +932,14 @@ void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingMaskGlobalIm
 
 void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingPolygonGlobalImpl(JAVA_OBJECT points)
 {
-    POOL_BEGIN();
+#ifndef NEW_CODENAME_ONE_VM
     org_xmlvm_runtime_XMLVMArray* pArray = points;
     JAVA_ARRAY_FLOAT* data = (JAVA_ARRAY_FLOAT*)pArray->fields.org_xmlvm_runtime_XMLVMArray.array_;
     int len = pArray->fields.org_xmlvm_runtime_XMLVMArray.length_;
+#else
+    JAVA_ARRAY_FLOAT* data = (JAVA_ARRAY_FLOAT*)((JAVA_ARRAY)points)->data;
+    int len = ((JAVA_ARRAY)points)->length;
+#endif
     //NSLog(@"Len is %d", len);
     JAVA_FLOAT x[len/2];
     JAVA_FLOAT y[len/2];
@@ -950,7 +957,6 @@ void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingPolygonGloba
 #ifndef CN1_USE_ARC
     [f release];
 #endif
-    POOL_END();
 }
 
 

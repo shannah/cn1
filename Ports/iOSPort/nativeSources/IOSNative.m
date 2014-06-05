@@ -467,9 +467,11 @@ void com_codename1_impl_ios_IOSNative_setNativeClippingMaskGlobal___long_int_int
 }
 
 extern void Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingPolygonGlobalImpl(JAVA_OBJECT points);
-void com_codename1_impl_ios_IOSNative_setNativeClippingPolygonGlobal___float_1ARRAY(JAVA_OBJECT instanceObject, JAVA_OBJECT points)
+void com_codename1_impl_ios_IOSNative_setNativeClippingPolygonGlobal___float_1ARRAY(CN1_THREAD_STATE_MULTI_ARG JAVA_OBJECT instanceObject, JAVA_OBJECT points)
 {
+    POOL_BEGIN();
     Java_com_codename1_impl_ios_IOSImplementation_setNativeClippingPolygonGlobalImpl(points);
+    POOL_END();
 }
 
 void com_codename1_impl_ios_IOSNative_nativeDrawLineMutable___int_int_int_int_int_int(CN1_THREAD_STATE_MULTI_ARG JAVA_OBJECT instanceObject, JAVA_INT n1, JAVA_INT n2, JAVA_INT n3, JAVA_INT n4, JAVA_INT n5, JAVA_INT n6)
@@ -4410,9 +4412,11 @@ void com_codename1_impl_ios_IOSNative_writeToSocketStream___long_byte_1ARRAY(CN1
 
 //native void fillConvexPolygonGlobal(float[] points, int color, int alpha);
 //extern void Java_com_codename1_impl_ios_IOSImplementation_fillConvexPolygonImpl(JAVA_OBJECT points, int color, int alpha);
-void com_codename1_impl_ios_IOSNative_fillConvexPolygonGlobal___float_1ARRAY_int_int(JAVA_OBJECT instanceObject, JAVA_OBJECT points, int color, int alpha)
+void com_codename1_impl_ios_IOSNative_fillConvexPolygonGlobal___float_1ARRAY_int_int(CN1_THREAD_STATE_MULTI_ARG JAVA_OBJECT instanceObject, JAVA_OBJECT points, int color, int alpha)
 {
+    POOL_BEGIN();
     Java_com_codename1_impl_ios_IOSImplementation_fillConvexPolygonImpl(points, color,alpha);
+    POOL_END();
 }
 
 void com_codename1_impl_ios_IOSNative_drawConvexPolygonGlobal___float_1ARRAY_int_int_float_int_int_float(JAVA_OBJECT instanceObject, JAVA_OBJECT points, JAVA_INT color, JAVA_INT alpha, JAVA_FLOAT lineWidth, JAVA_INT joinStyle, JAVA_INT capStyle, JAVA_FLOAT miterLimit)
