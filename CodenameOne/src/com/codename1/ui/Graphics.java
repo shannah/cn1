@@ -25,7 +25,6 @@ package com.codename1.ui;
 
 import com.codename1.ui.geom.GeneralPath;
 import com.codename1.impl.CodenameOneImplementation;
-import com.codename1.ui.geom.Matrix;
 import com.codename1.ui.geom.Shape;
 import com.codename1.ui.plaf.Style;
 
@@ -579,29 +578,17 @@ public final class Graphics {
      * @see #isShapeSupported
      */
     public void drawShape(Shape shape, Stroke stroke){
-        if ( xTranslate != 0 || yTranslate != 0 ){
-            GeneralPath p = new GeneralPath();
-            Matrix t = Matrix.makeTranslation(xTranslate, yTranslate, 0);
-            p.append(shape.getPathIterator(t), true);
-            shape = p;
-        }
-        
         if ( isShapeSupported()){
+            if ( xTranslate != 0 || yTranslate != 0 ){
+                GeneralPath p = new GeneralPath();
+                Transform t = Transform.makeTranslation(xTranslate, yTranslate, 0);
+                p.append(shape.getPathIterator(t), true);
+                shape = p;
+            }
             impl.drawShape(nativeGraphics, shape, stroke);
         }
        
     }
-    
-    
-    public void drawConvexPolygon(Shape shape, Stroke stroke){
-        impl.drawConvexPolygon(nativeGraphics, shape, stroke, getColor(), getAlpha());
-    }
-    
-    public void fillConvexPolygon(Shape shape){
-        impl.drawConvexPolygon(nativeGraphics, shape, null, getColor(), getAlpha());
-    }
-    
-
     
     /**
      * Fills the given shape using the current alpha and color settings.
@@ -613,14 +600,15 @@ public final class Graphics {
      * @see #isShapeSupported
      */
     public void fillShape(Shape shape){
-        if ( xTranslate != 0 || yTranslate != 0 ){
-            GeneralPath p = new GeneralPath();
-            Matrix t = Matrix.makeTranslation(xTranslate, yTranslate, 0);
-            p.append(shape.getPathIterator(t), true);
-            shape = p;
-        }
         
         if ( isShapeSupported() ){
+            if ( xTranslate != 0 || yTranslate != 0 ){
+                GeneralPath p = new GeneralPath();
+                Transform t = Transform.makeTranslation(xTranslate, yTranslate, 0);
+                p.append(shape.getPathIterator(t), true);
+                shape = p;
+            }
+        
             impl.fillShape(nativeGraphics, shape);
         }
     }
@@ -691,10 +679,9 @@ public final class Graphics {
      * @see #isPerspectiveTransformSupported
      * @see #setTransform(com.codename1.ui.geom.Matrix,int,int)
      */
-    public void setTransform(Matrix matrix){
-        if ( isTransformSupported()){
-            impl.setTransform(nativeGraphics, matrix);
-        }
+    public void setTransform(Transform transform){
+        impl.setTransform(nativeGraphics, transform);
+        
     }
     
     /**
@@ -702,12 +689,8 @@ public final class Graphics {
      * @return The current transformation matrix.
      * @see #setTransform
      */
-    public Matrix getTransform(){
-        if ( isTransformSupported() ){
-            return impl.getTransform(nativeGraphics);
-        } else {
-            return Matrix.makeIdentity();
-        }
+    public Transform getTransform(){
+        return impl.getTransform(nativeGraphics);
         
     }
     

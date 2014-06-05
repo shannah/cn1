@@ -79,7 +79,7 @@ import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.geom.GeneralPath;
 import com.codename1.ui.Stroke;
-import com.codename1.ui.geom.Matrix;
+import com.codename1.ui.Transform;
 import com.codename1.ui.geom.PathIterator;
 import com.codename1.ui.geom.Shape;
 import com.codename1.ui.plaf.Style;
@@ -783,7 +783,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             if ( ng.isTransformSupported()){
 
                 if ( ng.transform == null ){
-                    ng.transform = Matrix.makeIdentity();
+                    ng.transform = Transform.makeIdentity();
                 }
                 if ( ng.clip == null ){
                     return;
@@ -795,10 +795,10 @@ public class IOSImplementation extends CodenameOneImplementation {
                     ng.clipW = r.getWidth();
                     ng.clipH = r.getHeight();
                 } else {
-                    Matrix inverted = ng.transform.copy();
-                    inverted.invert();
+                    Transform inverted = ng.transform.getInverse();
                     GeneralPath gp = new GeneralPath();
                     gp.append(ng.clip.getPathIterator(inverted), false);
+                    //gp.append(ng.clip.getPathIterator(inverted), false);
                     Rectangle r = gp.getBounds();
                     ng.clipX = r.getX();
                     ng.clipY = r.getY();
@@ -850,7 +850,7 @@ public class IOSImplementation extends CodenameOneImplementation {
 
     public void setClipShape(Object graphics, Shape shape){
         NativeGraphics ng = (NativeGraphics)graphics;
-        Log.p("Setting clip shape "+shape);
+        //Log.p("Setting clip shape "+shape);
         ng.clip = shape;
         ng.clipDirty = true;
         
@@ -859,10 +859,10 @@ public class IOSImplementation extends CodenameOneImplementation {
     public Shape getClipShape(Object graphics){
         NativeGraphics ng = (NativeGraphics)graphics;
         if ( ng.clip != null ){
-            Log.p("Clip shape is not null");
+            //Log.p("Clip shape is not null");
             return ng.clip;
         } else {
-            Log.p("Clip shape is null");
+            //Log.p("Clip shape is null");
             return this.getClipRect(graphics);
         }
     }
@@ -882,7 +882,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         
         if ( isTransformSupported ){
             if ( ng.transform == null ){
-                ng.transform = Matrix.makeIdentity();
+                ng.transform = Transform.makeIdentity();
             }
             if ( ng.transform.isIdentity()){
                 //Log.p("Identity transform");
@@ -904,6 +904,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                 ng.clip = new Rectangle(x,y,width,height);
                 GeneralPath gp = new GeneralPath();
                 gp.append(ng.clip.getPathIterator(ng.transform), false);
+                //gp.append(ng.clip.getPathIterator(ng.transform), false);
                 if ( gp.isRectangle() ){
                     Rectangle r = (Rectangle)gp.getBounds();
                     ng.clip = r;
@@ -1004,7 +1005,7 @@ public class IOSImplementation extends CodenameOneImplementation {
             }
             
             if ( ng.transform == null ){
-                ng.transform = Matrix.makeIdentity();
+                ng.transform = Transform.makeIdentity();
             }
             
             if ( ng.transform.isIdentity() ){
@@ -1053,13 +1054,13 @@ public class IOSImplementation extends CodenameOneImplementation {
                 
                 
             } else {
-                Matrix inverseTransform = ng.transform.copy();
-                boolean res = inverseTransform.invert();
-                if ( ! res ){
+                Transform inverseTransform = ng.transform.getInverse();
+                if ( inverseTransform == null ){
                     throw new RuntimeException("Failed to invert transform");
                 }
                 GeneralPath clipProjection = new GeneralPath();
                 clipProjection.append(ng.clip.getPathIterator(inverseTransform), false);
+                //clipProjection.append(ng.clip.getPathIterator(inverseTransform), false);
                 ng.reusableRect.setBounds(x, y, width, height);
                 Shape clipIntersection = clipProjection.intersection(ng.reusableRect);
                 if ( clipIntersection == null ){
@@ -1071,6 +1072,7 @@ public class IOSImplementation extends CodenameOneImplementation {
                 }
                 ng.clip = new GeneralPath();
                 ((GeneralPath)ng.clip).append(clipIntersection.getPathIterator(ng.transform), false);
+                //((GeneralPath)ng.clip).append(clipIntersection.getPathIterator(ng.transform), false);
                 
                 if ( ng.clip.isRectangle() ){
                     
@@ -1113,6 +1115,101 @@ public class IOSImplementation extends CodenameOneImplementation {
         }
     }
 
+    @Override
+    public boolean isTransformSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isPerspectiveTransformSupported() {
+        return true;
+    }
+
+    @Override
+    public Object makeTransformTranslation(float translateX, float translateY, float translateZ) {
+        return Matrix.makeTranslation(translateX, translateY, translateZ);
+    }
+    @Override
+    public Object makeTransformScale(float scaleX, float scaleY, float scaleZ) {
+        Matrix out = Matrix.makeIdentity();
+        out.scale(scaleX, scaleY, scaleZ);
+        return out;
+    }
+
+    @Override
+    public Object makeTransformRotation(float angle, float x, float y, float z) {
+        return Matrix.makeRotation(angle, x, y, z);
+    }
+
+    @Override
+    public Object makeTransformPerspective(float fovy, float aspect, float zNear, float zFar) {
+        return Matrix.makePerspective(fovy, aspect, zNear, zFar);
+    }
+
+    @Override
+    public Object makeTransformOrtho(float left, float right, float bottom, float top, float near, float far) {
+        return Matrix.makeOrtho(left, right, bottom, top, near, far);
+    }
+
+    @Override
+    public Object makeTransformCamera(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ, float upX, float upY, float upZ) {
+        return Matrix.makeCamera(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ);
+    }
+
+    @Override
+    public void transformRotate(Object nativeTransform, float angle, float x, float y, float z) {
+        ((Matrix)nativeTransform).rotate(angle, x, y, z);
+    }
+
+    @Override
+    public void transformTranslate(Object nativeTransform, float x, float y, float z) {
+        ((Matrix)nativeTransform).translate(x, y, z);
+    }
+
+    @Override
+    public void transformScale(Object nativeTransform, float x, float y, float z) {
+        ((Matrix)nativeTransform).scale(x, y, z);
+    }
+
+    @Override
+    public Object makeTransformInverse(Object nativeTransform) {
+        Matrix copy = ((Matrix)nativeTransform).copy();
+        if ( copy.invert() ){
+            return copy;
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    public Object makeTransformIdentity(){
+        return Matrix.makeIdentity();
+    }
+
+    @Override
+    public void copyTransform(Object src, Object dest) {
+        Matrix srcM = (Matrix)src;
+        Matrix destM = (Matrix)dest;
+        System.arraycopy(srcM.data, 0, destM.data, 0, 16);
+    }
+
+    @Override
+    public void concatenateTransform(Object t1, Object t2) {
+        ((Matrix)t1).concatenate((Matrix)t2);
+    }
+
+    
+    @Override
+    public void transformPoint(Object nativeTransform, float[] in, float[] out) {
+        ((Matrix)nativeTransform).transformCoord(in, out);
+    }
+    
+   
+    
+    
+    // END TRANSFORMATION METHODS--------------------------------------------------------------------
+    
+    
     private static void nativeDrawLineMutable(int color, int alpha, int x1, int y1, int x2, int y2) {
         nativeInstance.nativeDrawLineMutable(color, alpha, x1, y1, x2, y2);
     }
@@ -1398,7 +1495,6 @@ public class IOSImplementation extends CodenameOneImplementation {
         return points;
     }
     
-    @Override
     public void drawConvexPolygon(Object graphics, Shape shape, Stroke stroke, int color, int alpha){
         NativeGraphics ng = (NativeGraphics)graphics;
         if ( ng.isShapeSupported()){
@@ -1545,19 +1641,20 @@ public class IOSImplementation extends CodenameOneImplementation {
     }
 
     @Override
-    public Matrix getTransform(Object graphics) {
+    public Transform getTransform(Object graphics) {
         return ((NativeGraphics)graphics).transform;
     }
 
     
     
     @Override
-    public void setTransform(Object graphics, Matrix t) {
-        ((NativeGraphics)graphics).transform = t;
+    public void setTransform(Object graphics, Transform transform) {
+        ((NativeGraphics)graphics).transform = transform;
         
     }
     
-    public void setNativeTransformGlobal(Matrix t){
+    public void setNativeTransformGlobal(Transform transform){
+        Matrix t = (Matrix)transform.getNativeTransform();
         float[] m = t.getData();
         
         // Note that Matrix is stored in column-major format but GLKMatrix is stored in row-major
@@ -2755,7 +2852,7 @@ public class IOSImplementation extends CodenameOneImplementation {
         int clipX, clipY, clipW = -1, clipH = -1;
         boolean clipApplied;
         Shape clip;
-        Matrix transform = Matrix.makeIdentity();
+        Transform transform = Transform.makeIdentity();
         Shape[] clipStack = new Shape[20];
         private int clipStackPtr = 0;  
         
@@ -2779,13 +2876,13 @@ public class IOSImplementation extends CodenameOneImplementation {
         
         public void pushClip(){
             clipStack[clipStackPtr++] = getClipShape(this);
-            Log.p("Pushing clip "+clipStack[clipStackPtr-1]);
+            //Log.p("Pushing clip "+clipStack[clipStackPtr-1]);
             
         }
         
         public Shape popClip(){
             Shape s = clipStack[--clipStackPtr];
-            Log.p("Popping clip "+s);
+            //Log.p("Popping clip "+s);
             setClipShape(this, s);
             return s;
         }
@@ -2881,6 +2978,9 @@ public class IOSImplementation extends CodenameOneImplementation {
         
         //----------------------------------------------------------------------
         // BEGIN DRAW SHAPE METHODS
+        
+        
+        
         
         
         void nativeDrawAlphaMask(TextureAlphaMask mask){
