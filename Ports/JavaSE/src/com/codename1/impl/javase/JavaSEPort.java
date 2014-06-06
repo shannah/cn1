@@ -117,6 +117,7 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.awt.event.WindowAdapter;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 import java.io.*;
 import java.net.*;
 import java.sql.DriverManager;
@@ -513,7 +514,6 @@ public class JavaSEPort extends CodenameOneImplementation {
     }
 
     class C extends JPanel implements KeyListener, MouseListener, MouseMotionListener, HierarchyBoundsListener, AdjustmentListener, MouseWheelListener {
-
         private BufferedImage buffer;
         boolean painted;
         private Graphics2D g2dInstance;
@@ -543,7 +543,7 @@ public class JavaSEPort extends CodenameOneImplementation {
         public boolean isOpaque() {
             return true;
         }
-
+        
         /*
          * public void update(java.awt.Graphics g) { paint(g);           
         }
@@ -3507,6 +3507,37 @@ public class JavaSEPort extends CodenameOneImplementation {
         }
     }
 
+    @Override
+    public void pushClip(Object graphics) {
+        checkEDT();
+        Graphics2D g2d = getGraphics(graphics);
+        Shape currentClip = g2d.getClip();
+        
+        if ( graphics instanceof NativeScreenGraphics ){
+            NativeScreenGraphics g = (NativeScreenGraphics)graphics;
+            g.clipStack.push(currentClip);  
+        }
+        
+    }
+
+    @Override
+    public void popClip(Object graphics) {
+        checkEDT();
+        Graphics2D g2d = getGraphics(graphics);
+        
+        if ( graphics instanceof NativeScreenGraphics ){
+            NativeScreenGraphics g = (NativeScreenGraphics)graphics;
+            Shape oldClip = g.clipStack.pop();
+            g2d.setClip(oldClip);
+        }
+        
+    }
+    
+    
+
+    
+    
+    
     /**
      * @inheritDoc
      */
@@ -4025,7 +4056,7 @@ public class JavaSEPort extends CodenameOneImplementation {
     public void fillShape(Object graphics, com.codename1.ui.geom.Shape shape) {
         checkEDT();
         Graphics2D nativeGraphics = getGraphics(graphics);
-        Shape s = makeShape(shape);
+        Shape s = cn1ShapeToAwtShape(shape);
         nativeGraphics.fill(s);
         
     }
@@ -4034,7 +4065,7 @@ public class JavaSEPort extends CodenameOneImplementation {
     public void drawShape(Object graphics, com.codename1.ui.geom.Shape shape, com.codename1.ui.Stroke stroke) {
         checkEDT();
         Graphics2D nativeGraphics = getGraphics(graphics);
-        Shape s = makeShape(shape);
+        Shape s = cn1ShapeToAwtShape(shape);
         
         Stroke oldStroke = nativeGraphics.getStroke();
         BasicStroke bs = new BasicStroke(stroke.getLineWidth(), stroke.getCapStyle() , stroke.getJoinStyle(), stroke.getMiterLimit());
@@ -4313,11 +4344,42 @@ public class JavaSEPort extends CodenameOneImplementation {
     
     
     
-    
+    private com.codename1.ui.geom.Shape awtShapeToCn1Shape(Shape shape){
+        com.codename1.ui.geom.GeneralPath p = new com.codename1.ui.geom.GeneralPath();
+        PathIterator it = shape.getPathIterator(AffineTransform.getScaleInstance(1, 1));
+        p.setWindingRule(it.getWindingRule()==PathIterator.WIND_EVEN_ODD ? com.codename1.ui.geom.PathIterator.WIND_EVEN_ODD : com.codename1.ui.geom.PathIterator.WIND_NON_ZERO);
+        float[] buf = new float[6];
+        while (!it.isDone()){
+            int type = it.currentSegment(buf);
+            switch ( type ){
+                case PathIterator.SEG_MOVETO:
+                    p.moveTo(buf[0], buf[1]);
+                    break;
+                case PathIterator.SEG_LINETO: 
+                    p.lineTo(buf[0], buf[1]);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    p.quadTo(buf[0], buf[1], buf[2], buf[3]);
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    p.curveTo(buf[0], buf[1], buf[2], buf[3], buf[4], buf[5]);
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    p.closePath();
+                    break;
+                    
+            }
+            it.next();
+        }
+        
+        return p;
+        
+        
+    }
     
     
 
-    private Shape makeShape(com.codename1.ui.geom.Shape shape){
+    private Shape cn1ShapeToAwtShape(com.codename1.ui.geom.Shape shape){
         GeneralPath p = new GeneralPath();
         com.codename1.ui.geom.PathIterator it = shape.getPathIterator();
         p.setWindingRule(it.getWindingRule()==com.codename1.ui.geom.PathIterator.WIND_EVEN_ODD ? GeneralPath.WIND_EVEN_ODD : GeneralPath.WIND_NON_ZERO);
@@ -4664,7 +4726,8 @@ public class JavaSEPort extends CodenameOneImplementation {
 
         BufferedImage sourceImage;
         Graphics2D cachedGraphics;
-        com.codename1.ui.Transform transform;
+        Transform transform;
+        LinkedList<Shape> clipStack = new LinkedList<Shape>();
     }
     
     private void setNativeScreenGraphicsTransform(Object nativeGraphics, com.codename1.ui.Transform transform){
