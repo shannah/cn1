@@ -22,7 +22,7 @@
  */
 #import "CN1ES2compat.h"
 #import "DrawTextureAlphaMask.h"
-
+#ifdef USE_ES2
 extern GLKMatrix4 CN1modelViewMatrix;
 extern GLKMatrix4 CN1projectionMatrix;
 extern GLKMatrix4 CN1transformMatrix;
@@ -101,7 +101,7 @@ static GLuint getOGLProgram(){
     return program;
 }
 
-
+#endif
 
 @implementation DrawTextureAlphaMask
 
@@ -116,6 +116,7 @@ static GLuint getOGLProgram(){
     h = pH;
     return self;
 }
+#ifdef USE_ES2
 -(void)execute
 {
     
@@ -218,4 +219,7 @@ static GLuint getOGLProgram(){
     glBindTexture(GL_TEXTURE_2D, 0);
     GLErrorLog;
 }
+#else 
+-execute{}
+#endif
 @end
