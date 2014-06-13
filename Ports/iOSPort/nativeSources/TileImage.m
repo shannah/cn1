@@ -40,8 +40,6 @@ static GLuint textureUniform;
 static GLuint colorUniform;
 static GLuint vertexCoordAtt;
 static GLuint textureCoordAtt;
-static GLuint textureVertexBuffer=0;
-static GLuint vertexBuffer=0;
 static const GLshort textureCoordinates[] = {
     0, 1,
     1, 1,
@@ -57,7 +55,7 @@ static NSString *fragmentShaderSrc =
 "varying highp vec2 vTextureRGBACoord;\n"
 
 "void main(){\n"
-"   gl_FragColor = texture2D(uTextureRGBA, vTextureRGBACoord).rgba; \n"
+"   gl_FragColor = texture2D(uTextureRGBA, vTextureRGBACoord) * uColor; \n"
 "}\n";
 
 static NSString *vertexShaderSrc =
@@ -71,7 +69,7 @@ static NSString *vertexShaderSrc =
 "varying highp vec2 vTextureRGBACoord;\n"
 
 "void main(){\n"
-"   gl_Position = uProjectionMatrix *  uModelViewMatrix * aVertexCoord;\n"
+"   gl_Position = uProjectionMatrix *  uModelViewMatrix * uTransformMatrix * aVertexCoord;\n"
 "   vTextureRGBACoord = aTextureRGBACoord;\n"
 "}";
 
@@ -95,26 +93,7 @@ static GLuint getOGLProgram(){
         GLErrorLog;
         colorUniform = glGetUniformLocation(program, "uColor");
         GLErrorLog;
-        //glGenBuffers(1, &textureVertexBuffer);
-        //GLErrorLog;
         
-        //glBindBuffer(GL_ARRAY_BUFFER, textureVertexBuffer);
-        //GLErrorLog;
-        
-        //textureCoordinates = malloc(sizeof(GLshort)*8);
-        
-        //glBufferData(GL_ARRAY_BUFFER, sizeof(GLshort)*4, textureCoordinates, GL_STATIC_DRAW);
-        
-        //glGenBuffers(1, &vertexBuffer);
-        //GLErrorLog;
-        
-        //glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        //GLErrorLog;
-        
-        //vertexes = malloc(sizeof(GLfloat)*8);
-        
-        //glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*4, vertexes, GL_DYNAMIC_DRAW);
-        //GLErrorLog;
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         GLErrorLog;
@@ -160,9 +139,6 @@ GLfloat* createVertexArray(int x, int y, int imageWidth, int imageHeight) {
     glUseProgram(getOGLProgram());
     GLKVector4 color = GLKVector4Make(((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f, ((float)alpha) / 255.0f);
     
-    
-    //glEnable(GL_TEXTURE_2D);
-    
     int imageWidth = (int)[[img getImage] size].width;
     int imageHeight = (int)[[img getImage] size].height;
     GLuint tex = [img getTexture:imageWidth texHeight:imageHeight];
@@ -171,31 +147,6 @@ GLfloat* createVertexArray(int x, int y, int imageWidth, int imageHeight) {
     glBindTexture(GL_TEXTURE_2D, tex);
     
     GLErrorLog;
-    
-    //static const GLshort textureCoordinates[] = {
-    //    0, 1,
-    //    1, 1,
-    //    0, 0,
-    //    1, 0,
-    //};
-    
-    
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //GLErrorLog;
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //GLErrorLog;
-    //glEnableClientState(GL_VERTEX_ARRAY);
-    //glEnableVertexAttribArray(vertexCoordAtt);
-    
-    //GLErrorLog;
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    //glEnableVertexAttribArray(textureCoordAtt);
-    //GLErrorLog;
-    //glTexCoordPointer(2, GL_SHORT, 0, textureCoordinates);
-    
-    //int elSize = sizeOf(GL_SHORT);
-    //glBindBuffer(GL_ARRAY_BUFFER, textureVertexBuffer);
-    //GLErrorLog;
     
     glEnableVertexAttribArray(textureCoordAtt);
     GLErrorLog;
@@ -214,18 +165,14 @@ GLfloat* createVertexArray(int x, int y, int imageWidth, int imageHeight) {
     glUniform1i(textureUniform, 0);
     GLErrorLog;
     glUniform4fv(colorUniform, 1, color.v);
-    
-    
     GLErrorLog;
-    //glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    
+    //glVertexAttribPointer(vertexCoordAtt, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     //GLErrorLog;
-    glVertexAttribPointer(vertexCoordAtt, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    GLErrorLog;
+    
     for (int xPos = 0; xPos <= width; xPos += imageWidth) {
         for (int yPos = 0; yPos < height; yPos += imageHeight) {
             GLfloat* vertexes = createVertexArray(x + xPos, y + yPos, imageWidth, imageHeight);
-            //memcpy(vertexes, vertexesTmp, 8*sizeof(GLfloat));
-            //NSLog(@"Vertexes: %f,%f %f,%f %f,%f %f,%f %f,%f", vertexes[0], vertexes[1], vertexes[2], vertexes[3], vertexes[4], vertexes[5], vertexes[6], vertexes[7], vertexes[8]);
             glVertexAttribPointer(vertexCoordAtt, 2, GL_FLOAT, GL_FALSE, 0, vertexes);
             GLErrorLog;
             
@@ -238,19 +185,14 @@ GLfloat* createVertexArray(int x, int y, int imageWidth, int imageHeight) {
     glDisableVertexAttribArray(textureCoordAtt);
     GLErrorLog;
     
-    
-    //glDisableClientState(GL_VERTEX_ARRAY);
-    //GLErrorLog;
     glDisableVertexAttribArray(vertexCoordAtt);
     GLErrorLog;
-    //_glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    //GLErrorLog;
+    
     glBindTexture(GL_TEXTURE_2D, 0);
     GLErrorLog;
-    //glDisable(GL_TEXTURE_2D);
+    
+    //glUseProgram(CN1activeProgram);
     //GLErrorLog;
-    glUseProgram(CN1activeProgram);
-    GLErrorLog;
 }
 
 #else
